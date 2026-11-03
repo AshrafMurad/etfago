@@ -53,9 +53,9 @@ describe("Sprint 7 End-to-End Release Smoke Acceptance Scenario (D1-D5)", () => 
   let commitmentId: string;
   let attachmentId: string;
 
-  const aliceEmail = "alice.founder@example.com";
-  const bobEmail = "bob.consultant@example.com";
-  const charlieEmail = "charlie.outsider@example.com";
+  const aliceEmail = "alice.smoke@example.com";
+  const bobEmail = "bob.smoke@example.com";
+  const charlieEmail = "charlie.smoke@example.com";
 
   beforeAll(async () => {
     // 1. Clean up test users
