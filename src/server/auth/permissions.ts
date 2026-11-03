@@ -192,3 +192,113 @@ export async function assertCanReview(
     throw new ForbiddenError("You are not an authorized required reviewer for this version");
   }
 }
+
+/**
+ * Checks whether an actor can submit a change request.
+ * Any active participant or the organizer can propose changes as long as agreement is not archived.
+ */
+export async function canCreateChangeRequest(
+  actorUserId: string,
+  agreementId: string
+): Promise<boolean> {
+  if (!actorUserId || !agreementId) return false;
+
+  const agreement = await db.agreement.findUnique({
+    where: { id: agreementId },
+    select: {
+      id: true,
+      organizerUserId: true,
+      lifecycleStatus: true,
+      participants: {
+        where: {
+          userId: actorUserId,
+          removedAt: null,
+        },
+        select: { id: true },
+      },
+    },
+  });
+
+  if (!agreement || agreement.lifecycleStatus === "ARCHIVED") return false;
+
+  return (
+    agreement.organizerUserId === actorUserId ||
+    agreement.participants.length > 0
+  );
+}
+
+export async function assertCanCreateChangeRequest(
+  actorUserId: string,
+  agreementId: string
+): Promise<void> {
+  const allowed = await canCreateChangeRequest(actorUserId, agreementId);
+  if (!allowed) {
+    throw new ForbiddenError("You are not authorized to propose changes on this agreement");
+  }
+}
+
+/**
+ * Checks whether an actor can accept or decline a change request.
+ * Only the organizer (or editor) can accept/decline proposals.
+ */
+export async function canManageChangeRequest(
+  actorUserId: string,
+  agreementId: string
+): Promise<boolean> {
+  return await canEditDraft(actorUserId, agreementId);
+}
+
+export async function assertCanManageChangeRequest(
+  actorUserId: string,
+  agreementId: string
+): Promise<void> {
+  const allowed = await canManageChangeRequest(actorUserId, agreementId);
+  if (!allowed) {
+    throw new ForbiddenError("Only the organizer or editor can accept or decline change proposals");
+  }
+}
+
+/**
+ * Checks whether an actor can post comments on an agreement.
+ * Any active participant or organizer can comment, provided the agreement is not archived.
+ */
+export async function canComment(
+  actorUserId: string,
+  agreementId: string
+): Promise<boolean> {
+  if (!actorUserId || !agreementId) return false;
+
+  const agreement = await db.agreement.findUnique({
+    where: { id: agreementId },
+    select: {
+      id: true,
+      organizerUserId: true,
+      lifecycleStatus: true,
+      participants: {
+        where: {
+          userId: actorUserId,
+          removedAt: null,
+        },
+        select: { id: true },
+      },
+    },
+  });
+
+  if (!agreement || agreement.lifecycleStatus === "ARCHIVED") return false;
+
+  return (
+    agreement.organizerUserId === actorUserId ||
+    agreement.participants.length > 0
+  );
+}
+
+export async function assertCanComment(
+  actorUserId: string,
+  agreementId: string
+): Promise<void> {
+  const allowed = await canComment(actorUserId, agreementId);
+  if (!allowed) {
+    throw new ForbiddenError("You are not authorized to post comments on this agreement");
+  }
+}
+

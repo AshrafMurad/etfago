@@ -6,6 +6,8 @@ import {
   getVersionDetail,
   listAgreementVersions,
 } from "../../../../server/agreements/versions";
+import { listChangeRequests } from "../../../../server/agreements/proposals";
+import { listComments } from "../../../../server/agreements/comments";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { ForbiddenError, NotFoundError } from "../../../../lib/errors";
@@ -18,6 +20,10 @@ import { VersionReviewBanner } from "../../../../features/agreements/VersionRevi
 import { CurrentApprovedVersionCard } from "../../../../features/agreements/CurrentApprovedVersionCard";
 import { SubmitForReviewModal } from "../../../../features/agreements/SubmitForReviewModal";
 import { VersionHistoryList } from "../../../../features/agreements/VersionHistoryList";
+import { ChangeProposalsList } from "../../../../features/agreements/ChangeProposalsList";
+import { ProposeChangeModal } from "../../../../features/agreements/ProposeChangeModal";
+import { VersionDiffViewer } from "../../../../features/agreements/VersionDiffViewer";
+import { CommentThread } from "../../../../features/agreements/CommentThread";
 
 interface AgreementDetailPageProps {
   params: Promise<{ locale: string; id: string }>;
@@ -41,6 +47,8 @@ export default async function AgreementDetailPage({
   let pendingReview = null;
   let currentApprovedVersion = null;
   let versions: Awaited<ReturnType<typeof listAgreementVersions>> = [];
+  let proposals: Awaited<ReturnType<typeof listChangeRequests>> = [];
+  let comments: Awaited<ReturnType<typeof listComments>> = [];
 
   try {
     agreement = await getAgreementDetail(user.id, id);
@@ -53,6 +61,8 @@ export default async function AgreementDetailPage({
       );
     }
     versions = await listAgreementVersions(user.id, id);
+    proposals = await listChangeRequests(user.id, id);
+    comments = await listComments(user.id, id);
   } catch (err: unknown) {
     if (err instanceof ForbiddenError || err instanceof NotFoundError) {
       notFound();
@@ -60,11 +70,22 @@ export default async function AgreementDetailPage({
     throw err;
   }
 
-  const [tAgreements, tTerms, tInvitations, tCommon] = await Promise.all([
+  const [
+    tAgreements,
+    tTerms,
+    tInvitations,
+    tCommon,
+    tProposals,
+    tDiscussions,
+    tDiff,
+  ] = await Promise.all([
     getTranslations({ locale, namespace: "Agreements" }),
     getTranslations({ locale, namespace: "Terms" }),
     getTranslations({ locale, namespace: "Invitations" }),
     getTranslations({ locale, namespace: "Common" }),
+    getTranslations({ locale, namespace: "Proposals" }),
+    getTranslations({ locale, namespace: "Discussions" }),
+    getTranslations({ locale, namespace: "Diff" }),
   ]);
 
   const draftEditorTranslations = {
@@ -224,8 +245,123 @@ export default async function AgreementDetailPage({
       VERSION_PROMOTED_TO_AGREED: tAgreements("actions.VERSION_PROMOTED_TO_AGREED"),
       VERSION_WITHDRAWN: tAgreements("actions.VERSION_WITHDRAWN"),
       DRAFT_RESET_FROM_VERSION: tAgreements("actions.DRAFT_RESET_FROM_VERSION"),
+      CHANGE_REQUEST_CREATED: tAgreements("actions.CHANGE_REQUEST_CREATED"),
+      CHANGE_REQUEST_ACCEPTED: tAgreements("actions.CHANGE_REQUEST_ACCEPTED"),
+      CHANGE_REQUEST_DECLINED: tAgreements("actions.CHANGE_REQUEST_DECLINED"),
+      CHANGE_REQUEST_CANCELLED: tAgreements("actions.CHANGE_REQUEST_CANCELLED"),
+      COMMENT_ADDED: tAgreements("actions.COMMENT_ADDED"),
     },
   };
+
+  const proposalsTranslations = {
+    noProposals: tProposals("noProposals"),
+    createFirstProposal: tProposals("createFirstProposal"),
+    proposedBy: tProposals("proposedBy"),
+    termLabel: tProposals("termLabel"),
+    reasonLabel: tProposals("reasonLabel"),
+    beforeLabel: tProposals("beforeLabel"),
+    afterLabel: tProposals("afterLabel"),
+    acceptIntoDraft: tProposals("acceptIntoDraft"),
+    decline: tProposals("decline"),
+    cancelProposal: tProposals("cancelProposal"),
+    confirmAccept: tProposals("confirmAccept"),
+    confirmDeclineTitle: tProposals("confirmDeclineTitle"),
+    declineReasonPlaceholder: tProposals("declineReasonPlaceholder"),
+    confirmCancel: tProposals("confirmCancel"),
+    status: {
+      OPEN: tProposals("status.OPEN"),
+      ACCEPTED_IN_DRAFT: tProposals("status.ACCEPTED_IN_DRAFT"),
+      DECLINED: tProposals("status.DECLINED"),
+      CANCELLED: tProposals("status.CANCELLED"),
+    },
+    operations: {
+      ADD: tProposals("operations.ADD"),
+      UPDATE: tProposals("operations.UPDATE"),
+      REMOVE: tProposals("operations.REMOVE"),
+    },
+    loading: tCommon("loading"),
+    cancel: tCommon("cancel"),
+    filterAll: tProposals("filterAll"),
+    filterOpen: tProposals("filterOpen"),
+    filterResolved: tProposals("filterResolved"),
+  };
+
+  const proposeModalTranslations = {
+    proposeChangeButton: tProposals("proposeChangeButton"),
+    modalTitle: tProposals("modalTitle"),
+    modalSubtitle: tProposals("modalSubtitle"),
+    operationLabel: tProposals("operationLabel"),
+    operations: {
+      UPDATE: tProposals("operations.UPDATE"),
+      ADD: tProposals("operations.ADD"),
+      REMOVE: tProposals("operations.REMOVE"),
+    },
+    selectTermLabel: tProposals("selectTermLabel"),
+    termTitleLabel: tProposals("termTitleLabel"),
+    termBodyLabel: tProposals("termBodyLabel"),
+    amountLabel: tProposals("amountLabel"),
+    currencyLabel: tProposals("currencyLabel"),
+    dueDateLabel: tProposals("dueDateLabel"),
+    reasonLabel: tProposals("reasonLabel"),
+    reasonPlaceholder: tProposals("reasonPlaceholder"),
+    submitProposal: tProposals("submitProposal"),
+    cancel: tCommon("cancel"),
+    loading: tCommon("loading"),
+    disclaimer: tProposals("disclaimer"),
+  };
+
+  const commentThreadTranslations = {
+    discussionTitle: tDiscussions("discussionTitle"),
+    noCommentsYet: tDiscussions("noCommentsYet"),
+    addFirstComment: tDiscussions("addFirstComment"),
+    postCommentPlaceholder: tDiscussions("postCommentPlaceholder"),
+    postCommentButton: tDiscussions("postCommentButton"),
+    edit: tDiscussions("edit"),
+    delete: tDiscussions("delete"),
+    save: tDiscussions("save"),
+    cancel: tDiscussions("cancel"),
+    edited: tDiscussions("edited"),
+    confirmDelete: tDiscussions("confirmDelete"),
+    loading: tCommon("loading"),
+  };
+
+  const diffViewerTranslations = {
+    title: tDiff("title"),
+    description: tDiff("description"),
+    noDifferences: tDiff("noDifferences"),
+    addedCount: tDiff("addedCount"),
+    removedCount: tDiff("removedCount"),
+    modifiedCount: tDiff("modifiedCount"),
+    unchangedCount: tDiff("unchangedCount"),
+    filterAll: tDiff("filterAll"),
+    filterChangesOnly: tDiff("filterChangesOnly"),
+    fields: {
+      title: tDiff("fields.title"),
+      body: tDiff("fields.body"),
+      amount: tDiff("fields.amount"),
+      currency: tDiff("fields.currency"),
+      dueDate: tDiff("fields.dueDate"),
+      assignedParticipantId: tDiff("fields.assignedParticipantId"),
+    },
+    statuses: {
+      ADDED: tDiff("statuses.ADDED"),
+      REMOVED: tDiff("statuses.REMOVED"),
+      MODIFIED: tDiff("statuses.MODIFIED"),
+      UNCHANGED: tDiff("statuses.UNCHANGED"),
+    },
+    before: tDiff("before"),
+    after: tDiff("after"),
+  };
+
+  const activeTerms =
+    currentApprovedVersion?.snapshot.terms ||
+    agreement.draft?.content.terms ||
+    [];
+
+  // Terms for Diffing
+  const baseDiffTerms = currentApprovedVersion?.snapshot.terms || [];
+  const compareDiffTerms =
+    pendingReview?.snapshot.terms || agreement.draft?.content.terms || [];
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -320,6 +456,15 @@ export default async function AgreementDetailPage({
 
           {/* Action buttons */}
           <div className="flex items-center gap-2 shrink-0">
+            {agreement.lifecycleStatus !== "ARCHIVED" && activeTerms.length > 0 && (
+              <ProposeChangeModal
+                agreementId={agreement.id}
+                baseVersionId={agreement.currentApprovedVersionId}
+                terms={activeTerms}
+                translations={proposeModalTranslations}
+              />
+            )}
+
             {agreement.isOrganizer &&
               !pendingReview &&
               agreement.lifecycleStatus !== "ARCHIVED" &&
@@ -355,10 +500,10 @@ export default async function AgreementDetailPage({
       </div>
 
       {/* Tabs Bar */}
-      <div className="flex border-b border-zinc-200 dark:border-zinc-800 gap-6 text-sm font-medium">
+      <div className="flex border-b border-zinc-200 dark:border-zinc-800 gap-6 text-sm font-medium overflow-x-auto">
         <Link
           href={`/${locale}/agreements/${agreement.id}?tab=terms`}
-          className={`pb-3 border-b-2 transition-colors ${
+          className={`pb-3 border-b-2 whitespace-nowrap transition-colors ${
             tab === "terms"
               ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-bold"
               : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
@@ -368,8 +513,41 @@ export default async function AgreementDetailPage({
         </Link>
 
         <Link
+          href={`/${locale}/agreements/${agreement.id}?tab=proposals`}
+          className={`pb-3 border-b-2 whitespace-nowrap transition-colors ${
+            tab === "proposals"
+              ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-bold"
+              : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+          }`}
+        >
+          {tAgreements("tabs.proposals")} ({proposals.length})
+        </Link>
+
+        <Link
+          href={`/${locale}/agreements/${agreement.id}?tab=diff`}
+          className={`pb-3 border-b-2 whitespace-nowrap transition-colors ${
+            tab === "diff"
+              ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-bold"
+              : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+          }`}
+        >
+          {tAgreements("tabs.diff")}
+        </Link>
+
+        <Link
+          href={`/${locale}/agreements/${agreement.id}?tab=discussion`}
+          className={`pb-3 border-b-2 whitespace-nowrap transition-colors ${
+            tab === "discussion"
+              ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-bold"
+              : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+          }`}
+        >
+          {tAgreements("tabs.discussion")} ({comments.length})
+        </Link>
+
+        <Link
           href={`/${locale}/agreements/${agreement.id}?tab=participants`}
-          className={`pb-3 border-b-2 transition-colors ${
+          className={`pb-3 border-b-2 whitespace-nowrap transition-colors ${
             tab === "participants"
               ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-bold"
               : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
@@ -380,7 +558,7 @@ export default async function AgreementDetailPage({
 
         <Link
           href={`/${locale}/agreements/${agreement.id}?tab=versions`}
-          className={`pb-3 border-b-2 transition-colors ${
+          className={`pb-3 border-b-2 whitespace-nowrap transition-colors ${
             tab === "versions"
               ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-bold"
               : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
@@ -391,7 +569,7 @@ export default async function AgreementDetailPage({
 
         <Link
           href={`/${locale}/agreements/${agreement.id}?tab=activity`}
-          className={`pb-3 border-b-2 transition-colors ${
+          className={`pb-3 border-b-2 whitespace-nowrap transition-colors ${
             tab === "activity"
               ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-bold"
               : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
@@ -421,6 +599,62 @@ export default async function AgreementDetailPage({
               />
             )}
           </div>
+        )}
+
+        {tab === "proposals" && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
+                  {tProposals("title")}
+                </h3>
+                <p className="text-xs text-zinc-500">
+                  {tProposals("subtitle")}
+                </p>
+              </div>
+
+              {agreement.lifecycleStatus !== "ARCHIVED" && activeTerms.length > 0 && (
+                <ProposeChangeModal
+                  agreementId={agreement.id}
+                  baseVersionId={agreement.currentApprovedVersionId}
+                  terms={activeTerms}
+                  translations={proposeModalTranslations}
+                />
+              )}
+            </div>
+
+            <ChangeProposalsList
+              agreementId={agreement.id}
+              proposals={proposals}
+              currentUserId={user.id}
+              isOrganizer={agreement.isOrganizer}
+              canEdit={agreement.canEdit && !pendingReview}
+              translations={proposalsTranslations}
+            />
+          </div>
+        )}
+
+        {tab === "diff" && (
+          <VersionDiffViewer
+            baseVersionNumber={currentApprovedVersion?.versionNumber}
+            compareVersionNumber={
+              pendingReview?.versionNumber ?? (agreement.draft ? "Draft" : undefined)
+            }
+            baseTerms={baseDiffTerms}
+            compareTerms={compareDiffTerms}
+            translations={diffViewerTranslations}
+          />
+        )}
+
+        {tab === "discussion" && (
+          <CommentThread
+            agreementId={agreement.id}
+            versionId={agreement.currentApprovedVersionId}
+            comments={comments}
+            currentUserId={user.id}
+            isOrganizer={agreement.isOrganizer}
+            translations={commentThreadTranslations}
+          />
         )}
 
         {tab === "participants" && (

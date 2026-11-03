@@ -72,6 +72,9 @@
     "upcomingSprintNotice": "The agreement parties listed below can review and approve frozen versions according to their roles.",
     "tabs": {
       "terms": "Terms & Draft",
+      "proposals": "Change Proposals",
+      "diff": "Version Comparison",
+      "discussion": "Discussion",
       "participants": "Parties & Reviewers",
       "versions": "Versions & Reviews",
       "activity": "Activity Log"
@@ -115,7 +118,12 @@
       "VERSION_REJECTED": "Version review ended and marked rejected due to change request",
       "VERSION_PROMOTED_TO_AGREED": "Version officially approved and agreed upon unanimous acceptance",
       "VERSION_WITHDRAWN": "Version withdrawn from review by organizer",
-      "DRAFT_RESET_FROM_VERSION": "New amendment draft started from version"
+      "DRAFT_RESET_FROM_VERSION": "New amendment draft started from version",
+      "CHANGE_REQUEST_CREATED": "Change proposal submitted on term",
+      "CHANGE_REQUEST_ACCEPTED": "Change proposal accepted into draft",
+      "CHANGE_REQUEST_DECLINED": "Change proposal declined",
+      "CHANGE_REQUEST_CANCELLED": "Change proposal cancelled",
+      "COMMENT_ADDED": "New comment posted"
     },
     "withdrawReview": "Withdraw Review",
     "withdrawConfirm": "Are you sure you want to withdraw this version from review? This will reopen the draft for further editing.",
@@ -240,5 +248,91 @@
     "memberAdded": "Member added successfully",
     "memberRemoved": "Member removed successfully",
     "roleUpdated": "Member role updated successfully"
+  },
+  "Proposals": {
+    "title": "Change Proposals",
+    "subtitle": "Suggest structured revisions to agreement terms without altering the current approved version",
+    "proposeChangeButton": "Propose Term Change",
+    "modalTitle": "Propose a Term Change",
+    "modalSubtitle": "Specify the change operation and propose modified terms with reasons",
+    "operationLabel": "Change Operation",
+    "operations": {
+      "UPDATE": "Modify Existing Term",
+      "ADD": "Add New Term",
+      "REMOVE": "Request Term Removal"
+    },
+    "selectTermLabel": "Select Term to Modify",
+    "termTitleLabel": "Proposed Term Title",
+    "termBodyLabel": "Proposed Term Details & Conditions",
+    "amountLabel": "Proposed Amount (optional)",
+    "currencyLabel": "Proposed Currency (optional)",
+    "dueDateLabel": "Proposed Due Date (optional)",
+    "reasonLabel": "Reason for Proposal",
+    "reasonPlaceholder": "Explain why this change is suggested...",
+    "submitProposal": "Submit Proposal",
+    "noProposals": "No change proposals recorded yet.",
+    "createFirstProposal": "Any active participant can submit term changes for the organizer to review into the draft.",
+    "proposedBy": "Proposed by",
+    "termLabel": "Term",
+    "beforeLabel": "Current Content",
+    "afterLabel": "Proposed Content",
+    "acceptIntoDraft": "Accept into Draft",
+    "decline": "Decline",
+    "cancelProposal": "Cancel Proposal",
+    "confirmAccept": "Are you sure you want to accept this proposal into the draft? The mutable draft will be updated immediately.",
+    "confirmDeclineTitle": "Decline Change Proposal",
+    "declineReasonPlaceholder": "Explain reason for declining (optional)...",
+    "confirmCancel": "Are you sure you want to cancel this proposal?",
+    "status": {
+      "OPEN": "Open",
+      "ACCEPTED_IN_DRAFT": "Accepted into Draft",
+      "DECLINED": "Declined",
+      "CANCELLED": "Cancelled"
+    },
+    "filterAll": "All",
+    "filterOpen": "Open",
+    "filterResolved": "Resolved",
+    "disclaimer": "Accepting a proposal updates the mutable working draft only; it does not change the approved agreement until a new frozen version is submitted and unanimously approved."
+  },
+  "Discussions": {
+    "title": "Discussions & Comments",
+    "discussionTitle": "Agreement Discussions",
+    "noCommentsYet": "No comments or discussion notes yet.",
+    "addFirstComment": "Post a note or question to start a discussion with participating parties.",
+    "postCommentPlaceholder": "Write your comment or question here...",
+    "postCommentButton": "Post Comment",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edited": "edited",
+    "confirmDelete": "Are you sure you want to delete this comment?"
+  },
+  "Diff": {
+    "title": "Version Comparison",
+    "description": "Inspect added, removed, or modified terms between versions",
+    "noDifferences": "No differences found between compared versions; terms are identical.",
+    "addedCount": "added",
+    "removedCount": "removed",
+    "modifiedCount": "modified",
+    "unchangedCount": "unchanged",
+    "filterAll": "All Terms",
+    "filterChangesOnly": "Changed Terms Only",
+    "fields": {
+      "title": "Term Title",
+      "body": "Term Details",
+      "amount": "Financial Amount",
+      "currency": "Currency",
+      "dueDate": "Due Date",
+      "assignedParticipantId": "Assignee"
+    },
+    "statuses": {
+      "ADDED": "New Term",
+      "REMOVED": "Removed Term",
+      "MODIFIED": "Modified Term",
+      "UNCHANGED": "Unchanged"
+    },
+    "before": "Before",
+    "after": "After"
   }
 }

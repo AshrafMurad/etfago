@@ -72,6 +72,9 @@
     "upcomingSprintNotice": "أطراف الاتفاق المذكورون أدناه يمكنهم مراجعة النسخ واعتمادها وفق أدوارهم.",
     "tabs": {
       "terms": "البنود والمسودة",
+      "proposals": "اقتراحات التعديل",
+      "diff": "مقارنة النسخ",
+      "discussion": "النقاشات",
       "participants": "الأطراف والمراجعون",
       "versions": "النسخ والمراجعات",
       "activity": "سجل النشاط"
@@ -115,7 +118,12 @@
       "VERSION_REJECTED": "تم إنهاء المراجعة ورفض النسخة لطلب تعديلات",
       "VERSION_PROMOTED_TO_AGREED": "تم اعتماد النسخة رسميًا بعد موافقة جميع الأطراف بالإجماع",
       "VERSION_WITHDRAWN": "تم سحب النسخة من المراجعة",
-      "DRAFT_RESET_FROM_VERSION": "تم بدء مسودة جديدة مستندة إلى النسخة"
+      "DRAFT_RESET_FROM_VERSION": "تم بدء مسودة جديدة مستندة إلى النسخة",
+      "CHANGE_REQUEST_CREATED": "تم تقديم اقتراح تعديل على أحد البنود",
+      "CHANGE_REQUEST_ACCEPTED": "تم قبول اقتراح التعديل وإدراجه في المسودة",
+      "CHANGE_REQUEST_DECLINED": "تم رفض اقتراح التعديل",
+      "CHANGE_REQUEST_CANCELLED": "تم إلغاء اقتراح التعديل",
+      "COMMENT_ADDED": "تمت إضافة تعليق جديد"
     },
     "withdrawReview": "سحب المراجعة",
     "withdrawConfirm": "هل أنت متأكد من سحب هذه النسخة من المراجعة؟ سيؤدي ذلك لفتح المسودة للتعديل مجددًا.",
@@ -240,5 +248,91 @@
     "memberAdded": "تمت إضافة العضو بنجاح",
     "memberRemoved": "تمت إزالة العضو بنجاح",
     "roleUpdated": "تم تحديث الدور بنجاح"
+  },
+  "Proposals": {
+    "title": "اقتراحات التعديل",
+    "subtitle": "اقتراح تعديل على بنود الاتفاق للمنظم دون التأثير المباشر على النسخة المعتمدة",
+    "proposeChangeButton": "اقتراح تعديل على بند",
+    "modalTitle": "اقتراح تعديل جديد",
+    "modalSubtitle": "حدد نوع التعديل وقدم الصياغة المقترحة مع توضيح الأسباب",
+    "operationLabel": "نوع التعديل المقترح",
+    "operations": {
+      "UPDATE": "تعديل بند حالي",
+      "ADD": "إضافة بند جديد",
+      "REMOVE": "طلب حذف بند"
+    },
+    "selectTermLabel": "اختر البند المراد تعديله",
+    "termTitleLabel": "عنوان البند المقترح",
+    "termBodyLabel": "تفاصيل وصياغة البند المقترح",
+    "amountLabel": "المبلغ المقترح (اختياري)",
+    "currencyLabel": "العملة (اختياري)",
+    "dueDateLabel": "تاريخ الاستحقاق المقترح (اختياري)",
+    "reasonLabel": "سبب التعديل والتوضيحات",
+    "reasonPlaceholder": "اشرح للأطراف ومنظم الاتفاق مبررات هذا التعديل المقترح...",
+    "submitProposal": "إرسال الاقتراح",
+    "noProposals": "لا توجد اقتراحات تعديل مسجلة حاليًا.",
+    "createFirstProposal": "يمكن لأي طرف مشارك تقديم اقتراحات تعديل لمراجعتها وإدراجها في المسودة.",
+    "proposedBy": "مقدم الاقتراح",
+    "termLabel": "البند",
+    "beforeLabel": "الصياغة الحالية",
+    "afterLabel": "الصياغة المقترحة",
+    "acceptIntoDraft": "قبول وإدراج في المسودة",
+    "decline": "رفض الاقتراح",
+    "cancelProposal": "إلغاء الاقتراح",
+    "confirmAccept": "هل أنت متأكد من قبول هذا الاقتراح؟ سيتم تحديث بنود المسودة القابلة للتحرير فورًا.",
+    "confirmDeclineTitle": "رفض اقتراح التعديل",
+    "declineReasonPlaceholder": "وضح سبب الرفض (اختياري)...",
+    "confirmCancel": "هل أنت متأكد من رغبتك في إلغاء هذا الاقتراح؟",
+    "status": {
+      "OPEN": "قيد النظر",
+      "ACCEPTED_IN_DRAFT": "تم القبول في المسودة",
+      "DECLINED": "مرفوض",
+      "CANCELLED": "ملغي"
+    },
+    "filterAll": "الكل",
+    "filterOpen": "قيد النظر",
+    "filterResolved": "المحسومة",
+    "disclaimer": "قبول الاقتراح يدرجه في المسودة فقط ولا يغير النسخة المعتمدة حتى يتم إرسال نسخة جديدة واعتمادها بالإجماع."
+  },
+  "Discussions": {
+    "title": "النقاشات والملاحظات",
+    "discussionTitle": "نقاشات الاتفاق",
+    "noCommentsYet": "لا توجد ملاحظات أو نقاشات بعد.",
+    "addFirstComment": "أضف ملاحظتك أو استفسارك لبدء النقاش مع بقية الأطراف.",
+    "postCommentPlaceholder": "اكتب تعليقك أو استفسارك هنا...",
+    "postCommentButton": "إرسال التعليق",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "edited": "معدل",
+    "confirmDelete": "هل أنت متأكد من حذف هذا التعليق؟"
+  },
+  "Diff": {
+    "title": "مقارنة النسخ والتعديلات",
+    "description": "فحص دقيق لكافة البنود المضافة أو المحذوفة أو المعدلة بين النسخ",
+    "noDifferences": "لا توجد فروقات بين النسختين؛ كافة البنود متطابقة تمامًا.",
+    "addedCount": "بند مضاف",
+    "removedCount": "بند محذوف",
+    "modifiedCount": "بند معدل",
+    "unchangedCount": "بند مطابق",
+    "filterAll": "كافة البنود",
+    "filterChangesOnly": "البنود المعدلة فقط",
+    "fields": {
+      "title": "عنوان البند",
+      "body": "نص وتفاصيل البند",
+      "amount": "المبلغ المالي",
+      "currency": "العملة",
+      "dueDate": "تاريخ الاستحقاق",
+      "assignedParticipantId": "الطرف المكلف"
+    },
+    "statuses": {
+      "ADDED": "بند جديد",
+      "REMOVED": "بند محذوف",
+      "MODIFIED": "بند معدل",
+      "UNCHANGED": "بدون تعديل"
+    },
+    "before": "قبل التعديل",
+    "after": "بعد التعديل"
   }
 }

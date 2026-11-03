@@ -47,10 +47,20 @@ export function ActivityTimeline({
           let summaryDisplay: string | null = null;
           if (item.summaryJson && typeof item.summaryJson === "object") {
             const summary = item.summaryJson as Record<string, unknown>;
-            if (summary.title) {
+            if (summary.termId && summary.operation) {
+              summaryDisplay = `${summary.operation} (#${summary.termId})${
+                summary.reason ? ` — ${summary.reason}` : ""
+              }`;
+            } else if (summary.snippet) {
+              summaryDisplay = `"${summary.snippet}"`;
+            } else if (summary.versionNumber) {
+              summaryDisplay = `Version ${summary.versionNumber}`;
+            } else if (summary.title) {
               summaryDisplay = `${summary.title}`;
             } else if (summary.revision) {
-              summaryDisplay = `نسخة المسودة: ${summary.revision}`;
+              summaryDisplay = `Revision ${summary.revision}`;
+            } else if (summary.inviteeEmail) {
+              summaryDisplay = `${summary.inviteeEmail}`;
             }
           }
 
