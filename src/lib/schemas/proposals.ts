@@ -31,7 +31,7 @@ export const CreateChangeRequestBaseSchema = z.object({
     .nullable(),
 });
 
-export type CreateChangeRequestInput = z.infer<typeof CreateChangeRequestBaseSchema>;
+export type CreateChangeRequestInput = z.input<typeof CreateChangeRequestBaseSchema>;
 
 export const CreateChangeRequestSchema = CreateChangeRequestBaseSchema.superRefine(
   (data, ctx) => {

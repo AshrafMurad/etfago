@@ -72,6 +72,8 @@
     "upcomingSprintNotice": "The agreement parties listed below can review and approve frozen versions according to their roles.",
     "tabs": {
       "terms": "Terms & Draft",
+      "commitments": "Commitments",
+      "files": "Attachments",
       "proposals": "Change Proposals",
       "diff": "Version Comparison",
       "discussion": "Discussion",
@@ -79,6 +81,7 @@
       "versions": "Versions & Reviews",
       "activity": "Activity Log"
     },
+    "exportSummary": "Export & Print",
     "status": {
       "DRAFT": "Draft",
       "AGREED": "Agreed",
@@ -123,7 +126,14 @@
       "CHANGE_REQUEST_ACCEPTED": "Change proposal accepted into draft",
       "CHANGE_REQUEST_DECLINED": "Change proposal declined",
       "CHANGE_REQUEST_CANCELLED": "Change proposal cancelled",
-      "COMMENT_ADDED": "New comment posted"
+      "COMMENT_ADDED": "New comment posted",
+      "COMMITMENT_CREATED": "New commitment created",
+      "COMMITMENT_STATUS_UPDATED": "Commitment status updated",
+      "COMMITMENT_UPDATED": "Commitment details updated",
+      "COMMITMENT_DELETED": "Commitment deleted",
+      "COMMITMENT_FLAGGED_FOR_REVIEW": "Commitment flagged for review after agreement amendment",
+      "FILE_UPLOADED": "Private file attachment uploaded to server",
+      "FILE_DELETED": "Attachment file deleted"
     },
     "withdrawReview": "Withdraw Review",
     "withdrawConfirm": "Are you sure you want to withdraw this version from review? This will reopen the draft for further editing.",
@@ -200,7 +210,28 @@
     "assignedTo": "Assignee (optional)"
   },
   "Commitments": {
-    "title": "Commitments",
+    "title": "Action Commitments",
+    "subtitle": "Track operational tasks, deliverables, assignees, and deadlines",
+    "createButton": "Add Commitment",
+    "modalTitle": "Create Operational Commitment",
+    "modalSubtitle": "Specify task title, assignee, and optional due date",
+    "titleLabel": "Commitment Title",
+    "titlePlaceholder": "e.g., Deliver architectural schematics",
+    "detailsLabel": "Additional Details (optional)",
+    "detailsPlaceholder": "Specific obligations or conditions for this task...",
+    "assigneeLabel": "Assigned Party",
+    "noAssignee": "Unassigned",
+    "unassigned": "Unassigned",
+    "dueDateLabel": "Due Date",
+    "noDueDate": "No due date",
+    "linkTermLabel": "Link to Agreement Term (optional)",
+    "noLinkedTerm": "No linked term",
+    "submit": "Save Commitment",
+    "noCommitments": "No commitments recorded for this agreement yet.",
+    "createFirst": "Add the first commitment to start tracking deliverables.",
+    "needsReviewNotice": "Notice: Linked agreement term was modified during amendment. Please review this task.",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete this commitment?",
     "outstanding": "Outstanding commitments",
     "needsReview": "Needs review after amendment",
     "status": {
@@ -213,8 +244,14 @@
   "Files": {
     "title": "Private Attachments",
     "upload": "Upload File",
-    "privateStorageNotice": "Files are stored securely on private server disk with no public URLs.",
-    "allowedFormats": "PDF, JPG, PNG, and WebP only (up to 10 MB per file)."
+    "uploading": "Uploading...",
+    "privateStorageNotice": "Files are stored securely on persistent server disk with strictly authorized access and no public URLs.",
+    "allowedFormats": "PDF, JPG, PNG, and WebP only (up to 10 MB per file).",
+    "noAttachments": "No private files attached to this agreement yet.",
+    "uploadedBy": "Uploaded by",
+    "download": "Download",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete this file attachment from the server?"
   },
   "Auth": {
     "signInTitle": "Sign in or Create Account",

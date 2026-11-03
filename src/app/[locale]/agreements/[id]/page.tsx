@@ -8,6 +8,8 @@ import {
 } from "../../../../server/agreements/versions";
 import { listChangeRequests } from "../../../../server/agreements/proposals";
 import { listComments } from "../../../../server/agreements/comments";
+import { listCommitments } from "../../../../server/commitments/service";
+import { listAttachments } from "../../../../server/storage/service";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { ForbiddenError, NotFoundError } from "../../../../lib/errors";
@@ -24,6 +26,9 @@ import { ChangeProposalsList } from "../../../../features/agreements/ChangePropo
 import { ProposeChangeModal } from "../../../../features/agreements/ProposeChangeModal";
 import { VersionDiffViewer } from "../../../../features/agreements/VersionDiffViewer";
 import { CommentThread } from "../../../../features/agreements/CommentThread";
+import { CommitmentList } from "../../../../features/commitments/CommitmentList";
+import { CreateCommitmentModal } from "../../../../features/commitments/CreateCommitmentModal";
+import { AttachmentsCard } from "../../../../features/files/AttachmentsCard";
 
 interface AgreementDetailPageProps {
   params: Promise<{ locale: string; id: string }>;
@@ -49,6 +54,8 @@ export default async function AgreementDetailPage({
   let versions: Awaited<ReturnType<typeof listAgreementVersions>> = [];
   let proposals: Awaited<ReturnType<typeof listChangeRequests>> = [];
   let comments: Awaited<ReturnType<typeof listComments>> = [];
+  let commitments: Awaited<ReturnType<typeof listCommitments>> = [];
+  let attachments: Awaited<ReturnType<typeof listAttachments>> = [];
 
   try {
     agreement = await getAgreementDetail(user.id, id);
@@ -63,6 +70,8 @@ export default async function AgreementDetailPage({
     versions = await listAgreementVersions(user.id, id);
     proposals = await listChangeRequests(user.id, id);
     comments = await listComments(user.id, id);
+    commitments = await listCommitments(user.id, id);
+    attachments = await listAttachments(user.id, id);
   } catch (err: unknown) {
     if (err instanceof ForbiddenError || err instanceof NotFoundError) {
       notFound();
@@ -78,6 +87,8 @@ export default async function AgreementDetailPage({
     tProposals,
     tDiscussions,
     tDiff,
+    tCommitments,
+    tFiles,
   ] = await Promise.all([
     getTranslations({ locale, namespace: "Agreements" }),
     getTranslations({ locale, namespace: "Terms" }),
@@ -86,6 +97,8 @@ export default async function AgreementDetailPage({
     getTranslations({ locale, namespace: "Proposals" }),
     getTranslations({ locale, namespace: "Discussions" }),
     getTranslations({ locale, namespace: "Diff" }),
+    getTranslations({ locale, namespace: "Commitments" }),
+    getTranslations({ locale, namespace: "Files" }),
   ]);
 
   const draftEditorTranslations = {
@@ -353,6 +366,56 @@ export default async function AgreementDetailPage({
     after: tDiff("after"),
   };
 
+  const commitmentTranslations = {
+    noCommitments: tCommitments("noCommitments"),
+    createFirst: tCommitments("createFirst"),
+    needsReviewNotice: tCommitments("needsReviewNotice"),
+    status: {
+      TODO: tCommitments("status.TODO"),
+      IN_PROGRESS: tCommitments("status.IN_PROGRESS"),
+      DONE: tCommitments("status.DONE"),
+      CANCELLED: tCommitments("status.CANCELLED"),
+    },
+    assigneeLabel: tCommitments("assigneeLabel"),
+    unassigned: tCommitments("unassigned"),
+    dueDateLabel: tCommitments("dueDateLabel"),
+    noDueDate: tCommitments("noDueDate"),
+    delete: tCommitments("delete"),
+    confirmDelete: tCommitments("confirmDelete"),
+    loading: tCommon("loading"),
+  };
+
+  const createCommitmentTranslations = {
+    createButton: tCommitments("createButton"),
+    modalTitle: tCommitments("modalTitle"),
+    modalSubtitle: tCommitments("modalSubtitle"),
+    titleLabel: tCommitments("titleLabel"),
+    titlePlaceholder: tCommitments("titlePlaceholder"),
+    detailsLabel: tCommitments("detailsLabel"),
+    detailsPlaceholder: tCommitments("detailsPlaceholder"),
+    assigneeLabel: tCommitments("assigneeLabel"),
+    noAssignee: tCommitments("noAssignee"),
+    dueDateLabel: tCommitments("dueDateLabel"),
+    linkTermLabel: tCommitments("linkTermLabel"),
+    noLinkedTerm: tCommitments("noLinkedTerm"),
+    submit: tCommitments("submit"),
+    cancel: tCommon("cancel"),
+    loading: tCommon("loading"),
+  };
+
+  const attachmentsTranslations = {
+    title: tFiles("title"),
+    upload: tFiles("upload"),
+    uploading: tFiles("uploading"),
+    privateStorageNotice: tFiles("privateStorageNotice"),
+    allowedFormats: tFiles("allowedFormats"),
+    noAttachments: tFiles("noAttachments"),
+    uploadedBy: tFiles("uploadedBy"),
+    download: tFiles("download"),
+    delete: tFiles("delete"),
+    confirmDelete: tFiles("confirmDelete"),
+  };
+
   const activeTerms =
     currentApprovedVersion?.snapshot.terms ||
     agreement.draft?.content.terms ||
@@ -456,6 +519,16 @@ export default async function AgreementDetailPage({
 
           {/* Action buttons */}
           <div className="flex items-center gap-2 shrink-0">
+            <Link
+              href={`/${locale}/agreements/${agreement.id}/export`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700/60 transition-colors"
+            >
+              <span>🖨️</span>
+              <span>{tAgreements("exportSummary")}</span>
+            </Link>
+
             {agreement.lifecycleStatus !== "ARCHIVED" && activeTerms.length > 0 && (
               <ProposeChangeModal
                 agreementId={agreement.id}
@@ -510,6 +583,28 @@ export default async function AgreementDetailPage({
           }`}
         >
           {tAgreements("tabs.terms")} ({agreement.draft?.content.terms.length || 0})
+        </Link>
+
+        <Link
+          href={`/${locale}/agreements/${agreement.id}?tab=commitments`}
+          className={`pb-3 border-b-2 whitespace-nowrap transition-colors ${
+            tab === "commitments"
+              ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-bold"
+              : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+          }`}
+        >
+          {tAgreements("tabs.commitments")} ({commitments.length})
+        </Link>
+
+        <Link
+          href={`/${locale}/agreements/${agreement.id}?tab=files`}
+          className={`pb-3 border-b-2 whitespace-nowrap transition-colors ${
+            tab === "files"
+              ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-bold"
+              : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+          }`}
+        >
+          {tAgreements("tabs.files")} ({attachments.length})
         </Link>
 
         <Link
@@ -599,6 +694,50 @@ export default async function AgreementDetailPage({
               />
             )}
           </div>
+        )}
+
+        {tab === "commitments" && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
+                  {tCommitments("title")}
+                </h3>
+                <p className="text-xs text-zinc-500">
+                  {tCommitments("subtitle")}
+                </p>
+              </div>
+
+              {agreement.canEdit && agreement.lifecycleStatus !== "ARCHIVED" && (
+                <CreateCommitmentModal
+                  agreementId={agreement.id}
+                  sourceVersionId={agreement.currentApprovedVersionId}
+                  participants={agreement.participants}
+                  terms={activeTerms}
+                  translations={createCommitmentTranslations}
+                />
+              )}
+            </div>
+
+            <CommitmentList
+              agreementId={agreement.id}
+              commitments={commitments}
+              currentUserId={user.id}
+              isOrganizer={agreement.isOrganizer}
+              canEdit={agreement.canEdit && agreement.lifecycleStatus !== "ARCHIVED"}
+              translations={commitmentTranslations}
+            />
+          </div>
+        )}
+
+        {tab === "files" && (
+          <AttachmentsCard
+            agreementId={agreement.id}
+            attachments={attachments}
+            currentUserId={user.id}
+            isOrganizer={agreement.isOrganizer}
+            translations={attachmentsTranslations}
+          />
         )}
 
         {tab === "proposals" && (

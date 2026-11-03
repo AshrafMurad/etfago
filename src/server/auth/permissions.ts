@@ -302,3 +302,78 @@ export async function assertCanComment(
   }
 }
 
+/**
+ * Checks whether an actor can create or manage commitments.
+ * Organizer and authorized editors can create and manage commitments.
+ */
+export async function canManageCommitment(
+  actorUserId: string,
+  agreementId: string
+): Promise<boolean> {
+  return await canEditDraft(actorUserId, agreementId);
+}
+
+export async function assertCanManageCommitment(
+  actorUserId: string,
+  agreementId: string
+): Promise<void> {
+  const allowed = await canManageCommitment(actorUserId, agreementId);
+  if (!allowed) {
+    throw new ForbiddenError("You are not authorized to manage commitments on this agreement");
+  }
+}
+
+/**
+ * Checks whether an actor can update a commitment's status.
+ * Can be performed by the assigned participant, or the organizer/editor.
+ */
+export async function canUpdateCommitmentStatus(
+  actorUserId: string,
+  agreementId: string,
+  commitmentId: string
+): Promise<boolean> {
+  if (!actorUserId || !agreementId || !commitmentId) return false;
+
+  const isManager = await canManageCommitment(actorUserId, agreementId);
+  if (isManager) return true;
+
+  // Check if actor is the assignee participant
+  const commitment = await db.commitment.findFirst({
+    where: {
+      id: commitmentId,
+      agreementId,
+    },
+    select: {
+      assigneeParticipantId: true,
+    },
+  });
+
+  if (!commitment || !commitment.assigneeParticipantId) return false;
+
+  const participant = await db.agreementParticipant.findFirst({
+    where: {
+      id: commitment.assigneeParticipantId,
+      userId: actorUserId,
+      removedAt: null,
+    },
+  });
+
+  return !!participant;
+}
+
+export async function assertCanUpdateCommitmentStatus(
+  actorUserId: string,
+  agreementId: string,
+  commitmentId: string
+): Promise<void> {
+  const allowed = await canUpdateCommitmentStatus(
+    actorUserId,
+    agreementId,
+    commitmentId
+  );
+  if (!allowed) {
+    throw new ForbiddenError("You are not authorized to update this commitment status");
+  }
+}
+
+

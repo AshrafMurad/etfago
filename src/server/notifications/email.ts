@@ -5,6 +5,7 @@ export interface SendVerificationEmailParams {
   toEmail: string;
   userId?: string;
   token: string;
+  name?: string;
   locale?: string;
 }
 
@@ -16,6 +17,21 @@ export interface SendInvitationEmailParams {
   locale?: string;
 }
 
+export interface SendReviewNoticeParams {
+  toEmail: string;
+  agreementTitle: string;
+  versionNumber: number;
+  locale?: string;
+}
+
+export interface SendCommitmentNoticeParams {
+  toEmail: string;
+  agreementTitle: string;
+  commitmentTitle: string;
+  dueAt?: Date | null;
+  locale?: string;
+}
+
 export interface SentEmailRecord {
   toEmail: string;
   subject: string;
@@ -24,8 +40,8 @@ export interface SentEmailRecord {
   sentAt: Date;
 }
 
-// In-memory record of sent emails for development and test harnesses
-const devOutbox: SentEmailRecord[] = [];
+// In-memory development & test outbox
+export const devOutbox: SentEmailRecord[] = [];
 
 export function getDevOutbox(): readonly SentEmailRecord[] {
   return devOutbox;
@@ -42,8 +58,7 @@ export function getLatestTokenForEmail(email: string): string | undefined {
 }
 
 /**
- * Sends or enqueues an email verification message.
- * Emits to NotificationOutbox and logs in development/testing.
+ * Sends or enqueues an account verification email.
  */
 export async function sendVerificationEmail({
   toEmail,
@@ -52,14 +67,15 @@ export async function sendVerificationEmail({
   locale = "ar",
 }: SendVerificationEmailParams): Promise<void> {
   const appUrl = process.env.APP_URL || "http://localhost:3000";
-  const verifyUrl = `${appUrl}/${locale}/auth/verify?token=${encodeURIComponent(token)}&email=${encodeURIComponent(toEmail)}`;
+  const verifyUrl = `${appUrl}/${locale}/auth/verify?token=${encodeURIComponent(
+    token
+  )}&email=${encodeURIComponent(toEmail)}`;
 
   const subject =
     locale === "ar"
-      ? "تأكيد بريدك الإلكتروني في اتفقنا"
-      : "Verify your email on Etfago";
+      ? "تأكيد بريدك الإلكتروني لمنصة اتفقنا"
+      : "Verify your email for Etfago";
 
-  // Record into in-memory dev outbox for tests/local dev
   devOutbox.push({
     toEmail,
     subject,
@@ -68,39 +84,35 @@ export async function sendVerificationEmail({
     sentAt: new Date(),
   });
 
-  // Log in development
   if (process.env.NODE_ENV !== "production") {
     console.log(`[Email Mock] Verification sent to ${toEmail}`);
     console.log(`[Email Mock] Verification URL: ${verifyUrl}`);
   }
 
-  // Persist into NotificationOutbox
   try {
-    const eventKey = `verify-email-${crypto.randomUUID()}`;
+    const eventKey = `verify-${crypto.randomUUID()}`;
     await db.notificationOutbox.create({
       data: {
         eventKey,
         recipientUserId: userId ?? null,
         recipientEmailNormalized: toEmail.trim().toLowerCase(),
-        template: "VERIFY_EMAIL",
+        template: "EMAIL_VERIFICATION",
         payloadJson: {
           verifyUrl,
           locale,
-          notice: "Email verification proves control of an address, not legal identity.",
+          notice: "Email verification proves mailbox control, not legal identity.",
         },
         state: "SENT",
         sentAt: new Date(),
       },
     });
   } catch (err) {
-    // If DB outbox fails, don't crash email dispatch in dev/test
     console.error("[Email Outbox] Failed to write outbox record:", err);
   }
 }
 
 /**
  * Sends or enqueues an agreement invitation email.
- * Includes short-lived one-use redemption link.
  */
 export async function sendInvitationEmail({
   toEmail,
@@ -150,5 +162,89 @@ export async function sendInvitationEmail({
     });
   } catch (err) {
     console.error("[Email Outbox] Failed to write invitation outbox record:", err);
+  }
+}
+
+/**
+ * Sends or enqueues a version review notice email.
+ */
+export async function sendReviewNoticeEmail({
+  toEmail,
+  agreementTitle,
+  versionNumber,
+  locale = "ar",
+}: SendReviewNoticeParams): Promise<void> {
+  const subject =
+    locale === "ar"
+      ? `نسخة جديدة للمراجعة (نسخة ${versionNumber}): ${agreementTitle}`
+      : `New Version for Review (V${versionNumber}): ${agreementTitle}`;
+
+  devOutbox.push({
+    toEmail,
+    subject,
+    sentAt: new Date(),
+  });
+
+  try {
+    const eventKey = `review-${crypto.randomUUID()}`;
+    await db.notificationOutbox.create({
+      data: {
+        eventKey,
+        recipientEmailNormalized: toEmail.trim().toLowerCase(),
+        template: "VERSION_IN_REVIEW",
+        payloadJson: {
+          agreementTitle,
+          versionNumber,
+          locale,
+        },
+        state: "SENT",
+        sentAt: new Date(),
+      },
+    });
+  } catch (err) {
+    console.error("[Email Outbox] Failed to write review outbox record:", err);
+  }
+}
+
+/**
+ * Sends or enqueues a commitment assignment notice.
+ */
+export async function sendCommitmentNoticeEmail({
+  toEmail,
+  agreementTitle,
+  commitmentTitle,
+  dueAt,
+  locale = "ar",
+}: SendCommitmentNoticeParams): Promise<void> {
+  const subject =
+    locale === "ar"
+      ? `تكليف بالتزام جديد: ${commitmentTitle} (${agreementTitle})`
+      : `New Commitment Assigned: ${commitmentTitle} (${agreementTitle})`;
+
+  devOutbox.push({
+    toEmail,
+    subject,
+    sentAt: new Date(),
+  });
+
+  try {
+    const eventKey = `commitment-${crypto.randomUUID()}`;
+    await db.notificationOutbox.create({
+      data: {
+        eventKey,
+        recipientEmailNormalized: toEmail.trim().toLowerCase(),
+        template: "COMMITMENT_ASSIGNED",
+        payloadJson: {
+          agreementTitle,
+          commitmentTitle,
+          dueAt: dueAt ? dueAt.toISOString() : null,
+          locale,
+        },
+        state: "SENT",
+        sentAt: new Date(),
+      },
+    });
+  } catch (err) {
+    console.error("[Email Outbox] Failed to write commitment outbox record:", err);
   }
 }

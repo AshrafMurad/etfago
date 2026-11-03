@@ -16,6 +16,7 @@ import {
   DraftContent,
   DraftContentSchema,
 } from "../../lib/schemas/agreements";
+import { checkCommitmentsAfterAmendment } from "../commitments/service";
 import {
   SubmitForReviewInput,
   SubmitForReviewSchema,
@@ -527,6 +528,26 @@ export async function recordReviewDecision(
     if (isUnanimous) {
       // Supersede previously approved version if one exists
       if (agreement.currentApprovedVersionId) {
+        const oldVersion = await tx.agreementVersion.findUnique({
+          where: { id: agreement.currentApprovedVersionId },
+          select: { snapshotJson: true },
+        });
+
+        if (oldVersion && oldVersion.snapshotJson) {
+          try {
+            const oldContent = DraftContentSchema.parse(oldVersion.snapshotJson);
+            const newContent = DraftContentSchema.parse(version.snapshotJson);
+            await checkCommitmentsAfterAmendment(
+              tx,
+              validated.agreementId,
+              oldContent.terms,
+              newContent.terms
+            );
+          } catch (e) {
+            console.error("Failed to check commitments after amendment:", e);
+          }
+        }
+
         await tx.agreementVersion.update({
           where: { id: agreement.currentApprovedVersionId },
           data: {
