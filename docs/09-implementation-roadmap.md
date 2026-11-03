@@ -51,10 +51,23 @@ This is **not a one-day-only project**. Prioritize a dependable cross-user colla
 - Deploy single VPS with HTTPS; run release checklist.
 **Exit:** acceptance matrix in `10` passes; backup and data access policy verified; pilot-ready.
 
-## Later phases (validate demand first)
-- Templates by agreement purpose, better business workspace administration, due-date notifications with background worker, richer reporting, stronger identity verification and jurisdiction-specific legal partnerships if desired.
-- No legal digital signature feature without independent technical/legal scope.
-- No move to distributed storage unless there is a concrete scaling requirement and migration plan.
+## Phase 4 — Later phases (P2 Enhancements)
+### Sprint 8: starter templates by agreement purpose (F-21) [Implemented]
+- Curated, schema-validated starter templates covering Personal & Shared Responsibility, Freelance & Professional Services, Goods Supply & Procurement, and Mutual Confidentiality & NDA.
+- Localized in Arabic (RTL) and English (LTR) with structured operational clauses respecting V1 schema constraints (<= 50 terms, title <= 120, body <= 4000, optional money/dates).
+- Client-side and server-action instantiation with unique term IDs, draft customization, category filtering, accessible modal preview, and activity event logging (`templateId` in summaryJson).
+- Explicit trust disclaimer stating starter templates are operational guidelines and not legal counsel.
+**Exit:** Unit tests validating all templates and schemas; integration tests verifying database persistence, activity event logging, workspace isolation, and full progression through immutable version approval.
+
+### Sprint 9: due-date notifications & background reminders worker (F-22) [Planned]
+- Scheduled background worker checking upcoming commitment deadlines and pending version review reminders.
+- Idempotent event processing and notification outbox dispatch.
+
+### Sprint 10: advanced approval policies & quorum review (F-23) [Planned]
+- Configurable voting/quorum rules and multi-party review sequences.
+
+### Sprint 11: advanced business workspace administration & reporting (F-24) [Planned]
+- Workspace-level roles, member permissions, and agreement activity reporting.
 
 ## Sprint dependency graph
 ```mermaid

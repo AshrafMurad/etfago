@@ -8,6 +8,8 @@ import {
   ArchiveAgreementSchema,
   DraftContent,
 } from "../../lib/schemas/agreements";
+import { CreateFromTemplateSchema } from "../../lib/schemas/templates";
+import { instantiateTemplateTerms } from "../../lib/templates/registry";
 import {
   createAgreement,
   updateDraft,
@@ -49,6 +51,7 @@ export async function createAgreementAction(
     title: formData.get("title") as string,
     description: (formData.get("description") as string) || null,
     category: (formData.get("category") as string) || null,
+    templateId: (formData.get("templateId") as string) || null,
     initialTerms,
   };
 
@@ -185,3 +188,58 @@ export async function archiveAgreementAction(
     };
   }
 }
+
+/**
+ * Server action to create a new agreement initialized from a starter template.
+ */
+export async function createAgreementFromTemplateAction(
+  _prevState: AgreementActionState | null,
+  formData: FormData
+): Promise<AgreementActionState> {
+  const actor = await requireAuth();
+
+  const workspaceId = formData.get("workspaceId") as string;
+  const templateId = formData.get("templateId") as string;
+  const customTitle = (formData.get("customTitle") as string) || null;
+  const locale = (formData.get("locale") as string) || "ar";
+
+  const parsed = CreateFromTemplateSchema.safeParse({
+    workspaceId,
+    templateId,
+    customTitle,
+  });
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: "Invalid template parameters",
+      fieldErrors: parsed.error.flatten().fieldErrors,
+    };
+  }
+
+  try {
+    const instantiated = instantiateTemplateTerms(parsed.data.templateId, locale);
+
+    const agreement = await createAgreement(actor.id, {
+      workspaceId: parsed.data.workspaceId,
+      title: parsed.data.customTitle?.trim() || instantiated.title,
+      description: instantiated.description,
+      category: instantiated.category,
+      templateId: parsed.data.templateId,
+      initialTerms: instantiated.terms,
+    });
+
+    revalidatePath("/[locale]/agreements", "page");
+    return {
+      success: true,
+      agreementId: agreement.id,
+      message: "Agreement created from template successfully",
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Failed to create agreement from template",
+    };
+  }
+}
+

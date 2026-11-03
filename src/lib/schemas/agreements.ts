@@ -101,6 +101,13 @@ export const CreateAgreementSchema = z.object({
     .optional()
     .nullable()
     .transform((val) => (val && val.length > 0 ? val : null)),
+  templateId: z
+    .string()
+    .trim()
+    .max(64, "Template ID cannot exceed 64 characters")
+    .optional()
+    .nullable()
+    .transform((val) => (val && val.length > 0 ? val : null)),
   initialTerms: z
     .array(TermSchema)
     .max(50, "An agreement cannot exceed 50 terms")

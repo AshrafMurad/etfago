@@ -183,6 +183,7 @@ export async function createAgreement(
           title: agreement.title,
           category: agreement.category,
           termsCount: initialDraftContent.terms.length,
+          ...(validated.templateId ? { templateId: validated.templateId } : {}),
         },
       },
     });

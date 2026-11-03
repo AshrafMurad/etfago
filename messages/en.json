@@ -395,5 +395,28 @@
     "termsSection1Text": "Recording approval on Etfago is an operational workflow action confirming agreement between invited parties. It does not constitute a statutory electronic signature, digital certificate, or government-certified identification. Etfago does not provide legal advice.",
     "termsSection2Title": "Frozen Versions & Immutability",
     "termsSection2Text": "Once a version is submitted and unanimously approved, its snapshot and content hash are immutable. Subsequent edits require a new draft and explicit re-approval by all required parties."
+  },
+  "Templates": {
+    "starterTemplates": "Starter Agreement Templates",
+    "galleryTitle": "Start Fast with Curated Templates",
+    "gallerySubtitle": "Choose a tailored template to prefill structured terms, with complete flexibility to customize terms afterwards.",
+    "allCategories": "All Categories",
+    "personalCategory": "Personal & Shared",
+    "servicesCategory": "Services & Consulting",
+    "supplyCategory": "Supply & Goods",
+    "confidentialityCategory": "Confidentiality & NDA",
+    "preview": "Preview Terms",
+    "previewTitle": "Template Terms Preview",
+    "useTemplate": "Use This Template",
+    "suggestedRoles": "Suggested Roles",
+    "termsCount": "{count} suggested terms",
+    "disclaimer": "Starter templates are operational guidelines to organize agreements and do not constitute formal legal advice.",
+    "startBlank": "Custom Draft",
+    "chooseTemplate": "Starter Templates",
+    "templateAppliedNotice": "Starter template applied successfully",
+    "switchTemplate": "Switch Template",
+    "clearTemplate": "Reset",
+    "quickStartBanner": "Want to start quickly? Explore curated templates for services, procurement, and personal commitments",
+    "browseTemplates": "Browse Templates"
   }
 }

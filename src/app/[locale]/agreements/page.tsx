@@ -33,7 +33,7 @@ export default async function AgreementsPage({ params, searchParams }: Agreement
 
   const isArchived = archived === "true";
 
-  const [agreements, workspaces, tAgreements] = await Promise.all([
+  const [agreements, workspaces, tAgreements, tTemplates] = await Promise.all([
     listAgreements(user.id, {
       workspaceId,
       status: validStatus,
@@ -42,6 +42,7 @@ export default async function AgreementsPage({ params, searchParams }: Agreement
     }),
     listUserWorkspaces(user.id),
     getTranslations({ locale, namespace: "Agreements" }),
+    getTranslations({ locale, namespace: "Templates" }),
   ]);
 
   return (
@@ -57,12 +58,20 @@ export default async function AgreementsPage({ params, searchParams }: Agreement
           </p>
         </div>
 
-        <Link
-          href={`/${locale}/agreements/new`}
-          className="px-4 py-2.5 rounded-lg bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700 transition-colors shadow-xs"
-        >
-          + {tAgreements("createNew")}
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/${locale}/agreements/new`}
+            className="px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-semibold text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors shadow-2xs"
+          >
+            ✦ {tTemplates("browseTemplates")}
+          </Link>
+          <Link
+            href={`/${locale}/agreements/new`}
+            className="px-4 py-2.5 rounded-lg bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700 transition-colors shadow-xs"
+          >
+            + {tAgreements("createNew")}
+          </Link>
+        </div>
       </div>
 
       {/* Filter / Search Bar */}
@@ -123,12 +132,20 @@ export default async function AgreementsPage({ params, searchParams }: Agreement
           <p className="text-sm text-zinc-500 max-w-md mx-auto">
             {tAgreements("createFirst")}
           </p>
-          <Link
-            href={`/${locale}/agreements/new`}
-            className="inline-block px-4 py-2 text-sm font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
-          >
-            + {tAgreements("createNew")}
-          </Link>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href={`/${locale}/agreements/new`}
+              className="px-4 py-2 text-sm font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-xs"
+            >
+              ✦ {tTemplates("browseTemplates")}
+            </Link>
+            <Link
+              href={`/${locale}/agreements/new`}
+              className="px-4 py-2 text-sm font-semibold rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            >
+              + {tAgreements("createNew")}
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4">
