@@ -1,0 +1,89 @@
+{
+  "Common": {
+    "appName": "Etfago | اتفقنا",
+    "tagline": "Collaborative Agreement Workspace for Individuals & Organizations",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "loading": "Loading...",
+    "actions": "Actions",
+    "back": "Back",
+    "optional": "Optional",
+    "required": "Required",
+    "learnMore": "Learn More",
+    "switchLanguage": "العربية",
+    "disclaimer": "Recording approval on this platform is an operational workflow action and does not constitute a legally verified signature or certification of identity."
+  },
+  "Navigation": {
+    "home": "Home",
+    "agreements": "Agreements",
+    "newAgreement": "New Agreement",
+    "invitations": "Invitations",
+    "workspaces": "Workspaces",
+    "settings": "Settings",
+    "signOut": "Sign Out",
+    "signIn": "Sign In"
+  },
+  "Agreements": {
+    "title": "Agreements",
+    "subtitle": "Manage shared commitments, track amendments, and follow tasks",
+    "createNew": "Create New Agreement",
+    "noAgreements": "No agreements yet",
+    "createFirst": "Get started by creating your first agreement",
+    "currentAgreedVersion": "Current agreed version",
+    "pendingReviewVersion": "Version awaiting review",
+    "draft": "Draft",
+    "draftSubtitle": "Draft — not yet reviewed by parties",
+    "status": {
+      "DRAFT": "Draft",
+      "AGREED": "Agreed",
+      "ACTIVE": "Active",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled",
+      "ARCHIVED": "Archived"
+    },
+    "versionState": {
+      "IN_REVIEW": "In Review",
+      "APPROVED": "Approved",
+      "REJECTED": "Changes Requested",
+      "WITHDRAWN": "Withdrawn",
+      "SUPERSEDED": "Superseded"
+    },
+    "submitForReview": "Submit for review",
+    "proposeChange": "Propose change",
+    "requestChanges": "Request changes",
+    "recordApproval": "Record approval",
+    "awaitingApproval": "This version is awaiting approval",
+    "waitingOnReviewers": "Waiting on {count} reviewer(s)",
+    "approvalNotice": "I record my agreement to this version within the platform (this action is not a certified legal signature)"
+  },
+  "Terms": {
+    "title": "Terms",
+    "addTerm": "Add Term",
+    "termTitle": "Term Title",
+    "termBody": "Term Details",
+    "amount": "Amount (optional)",
+    "currency": "Currency (optional)",
+    "dueDate": "Due Date (optional)",
+    "assignedTo": "Assignee (optional)"
+  },
+  "Commitments": {
+    "title": "Commitments",
+    "outstanding": "Outstanding commitments",
+    "needsReview": "Needs review after amendment",
+    "status": {
+      "TODO": "To Do",
+      "IN_PROGRESS": "In Progress",
+      "DONE": "Done",
+      "CANCELLED": "Cancelled"
+    }
+  },
+  "Files": {
+    "title": "Private Attachments",
+    "upload": "Upload File",
+    "privateStorageNotice": "Files are stored securely on private server disk with no public URLs.",
+    "allowedFormats": "PDF, JPG, PNG, and WebP only (up to 10 MB per file)."
+  }
+}

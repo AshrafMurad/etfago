@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f8f9fc;
+  --foreground: #202a40;
+  --surface: #ffffff;
+  --surface-muted: #f1f4f9;
+  --border: #e2e8f0;
+  --border-muted: #cbd5e1;
+  --muted: #64748b;
+  --muted-foreground: #475569;
+  --primary: #243b70;
+  --primary-foreground: #ffffff;
+  --primary-hover: #1b2d56;
+  --success: #166534;
+  --success-bg: #f0fdf4;
+  --success-border: #bbf7d0;
+  --warning: #9a3412;
+  --warning-bg: #fffbeb;
+  --warning-border: #fef08a;
+  --danger: #991b1b;
+  --danger-bg: #fef2f2;
+  --danger-border: #fecaca;
+  --focus-ring: #243b70;
+  --radius: 0.75rem;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "IBM Plex Sans Arabic", "IBM Plex Sans", sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* RTL-safe focus ring */
+*:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Print layout optimizations per doc 08 */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .page-break {
+    page-break-before: always;
+  }
+}

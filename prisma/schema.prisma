@@ -1,0 +1,431 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// Identity & Workspace Tenancy
+// ==========================================
+
+enum WorkspaceKind {
+  PERSONAL
+  BUSINESS
+}
+
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+model User {
+  id              String            @id @default(uuid())
+  name            String?
+  emailNormalized String            @unique
+  emailVerifiedAt DateTime?
+  locale          String            @default("ar")
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  workspaces      WorkspaceMember[]
+  participants    AgreementParticipant[]
+  accounts        Account[]
+  sessions        Session[]
+}
+
+model Workspace {
+  id          String            @id @default(uuid())
+  kind        WorkspaceKind     @default(PERSONAL)
+  name        String
+  ownerUserId String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  archivedAt  DateTime?
+
+  members     WorkspaceMember[]
+  agreements  Agreement[]
+
+  @@index([ownerUserId])
+}
+
+model WorkspaceMember {
+  id          String        @id @default(uuid())
+  workspaceId String
+  userId      String
+  role        WorkspaceRole @default(MEMBER)
+  joinedAt    DateTime      @default(now())
+  removedAt   DateTime?
+
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+}
+
+// ==========================================
+// Auth.js (NextAuth) Integration Models
+// ==========================================
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ==========================================
+// Agreements & Participation
+// ==========================================
+
+enum AgreementLifecycleStatus {
+  DRAFT
+  AGREED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  ARCHIVED
+}
+
+enum PartyKind {
+  PERSON
+  ORGANIZATION
+}
+
+enum AgreementRole {
+  ORGANIZER
+  EDITOR
+  REVIEWER
+  OBSERVER
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+  EXPIRED
+}
+
+model Agreement {
+  id                       String                   @id @default(uuid())
+  workspaceId              String
+  organizerUserId          String
+  title                    String                   @db.VarChar(160)
+  description              String?                  @db.VarChar(4000)
+  category                 String?                  @db.VarChar(64)
+  lifecycleStatus          AgreementLifecycleStatus @default(DRAFT)
+  currentApprovedVersionId String?
+  pendingReviewVersionId   String?
+  rowRevision              Int                      @default(1)
+  createdAt                DateTime                 @default(now())
+  updatedAt                DateTime                 @updatedAt
+  archivedAt               DateTime?
+
+  workspace    Workspace              @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  participants AgreementParticipant[]
+  invitations  AgreementInvitation[]
+  draft        AgreementDraft?
+  versions     AgreementVersion[]
+  changeRequests ChangeRequest[]
+  comments     Comment[]
+  commitments  Commitment[]
+  attachments  Attachment[]
+  activity     ActivityEvent[]
+
+  @@index([workspaceId, updatedAt])
+  @@index([organizerUserId, updatedAt])
+}
+
+model AgreementParticipant {
+  id               String        @id @default(uuid())
+  agreementId      String
+  userId           String?
+  emailNormalized  String
+  partyDisplayName String        @db.VarChar(120)
+  partyKind        PartyKind     @default(PERSON)
+  agreementRole    AgreementRole @default(REVIEWER)
+  requiredByDefault Boolean      @default(true)
+  joinedAt         DateTime?
+  removedAt        DateTime?
+  createdAt        DateTime      @default(now())
+
+  agreement Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, agreementId])
+  @@index([agreementId, emailNormalized])
+}
+
+model AgreementInvitation {
+  id              String           @id @default(uuid())
+  agreementId     String
+  participantId   String
+  emailNormalized String
+  tokenHash       String           @unique
+  status          InvitationStatus @default(PENDING)
+  expiresAt       DateTime
+  consumedAt      DateTime?
+  invitedByUserId String
+  createdAt       DateTime         @default(now())
+
+  agreement Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+
+  @@index([agreementId, emailNormalized])
+}
+
+// ==========================================
+// Drafts & Immutable Frozen Versions
+// ==========================================
+
+enum VersionState {
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  WITHDRAWN
+  SUPERSEDED
+}
+
+enum ReviewDecisionType {
+  APPROVE
+  REQUEST_CHANGES
+}
+
+model AgreementDraft {
+  id               String   @id @default(uuid())
+  agreementId      String   @unique
+  basedOnVersionId String?
+  contentJson      Json
+  revision         Int      @default(1)
+  updatedByUserId  String
+  updatedAt        DateTime @updatedAt
+
+  agreement Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+}
+
+model AgreementVersion {
+  id               String       @id @default(uuid())
+  agreementId      String
+  versionNumber    Int
+  basedOnVersionId String?
+  snapshotJson     Json
+  contentHash      String       @db.VarChar(64)
+  state            VersionState @default(IN_REVIEW)
+  submittedByUserId String
+  submittedAt      DateTime     @default(now())
+  resolvedAt       DateTime?
+
+  agreement Agreement         @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  reviewers VersionReviewer[]
+
+  @@unique([agreementId, versionNumber])
+  @@index([agreementId, versionNumber(sort: Desc)])
+}
+
+model VersionReviewer {
+  id                String   @id @default(uuid())
+  versionId         String
+  participantId     String
+  userId            String
+  emailSnapshot     String
+  nameSnapshot      String
+  partyKindSnapshot String
+  roleSnapshot      String
+  required          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+
+  version  AgreementVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+  decision ReviewDecision?
+
+  @@unique([versionId, participantId])
+  @@index([versionId, required])
+}
+
+model ReviewDecision {
+  id                  String             @id @default(uuid())
+  versionReviewerId   String             @unique
+  versionId           String
+  actingUserId        String
+  decision            ReviewDecisionType
+  reason              String?            @db.VarChar(2000)
+  versionHashSnapshot String             @db.VarChar(64)
+  createdAt           DateTime           @default(now())
+
+  reviewer VersionReviewer @relation(fields: [versionReviewerId], references: [id], onDelete: Restrict)
+
+  @@index([versionId])
+}
+
+// ==========================================
+// Collaboration, Commitments & Operations
+// ==========================================
+
+enum ChangeOperation {
+  ADD
+  UPDATE
+  REMOVE
+}
+
+enum ChangeRequestStatus {
+  OPEN
+  ACCEPTED_IN_DRAFT
+  DECLINED
+  CANCELLED
+}
+
+enum CommitmentStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
+enum AttachmentState {
+  PENDING
+  READY
+  DELETED
+  FAILED
+}
+
+enum OutboxState {
+  PENDING
+  SENT
+  FAILED
+}
+
+model ChangeRequest {
+  id               String              @id @default(uuid())
+  agreementId      String
+  baseVersionId    String?
+  createdByUserId  String
+  termId           String              @db.VarChar(64)
+  operation        ChangeOperation
+  oldTermJson      Json?
+  newTermJson      Json?
+  reason           String?             @db.VarChar(2000)
+  status           ChangeRequestStatus @default(OPEN)
+  resolvedByUserId String?
+  resolvedAt       DateTime?
+  createdAt        DateTime            @default(now())
+
+  agreement Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+
+  @@index([agreementId, status])
+}
+
+model Comment {
+  id           String    @id @default(uuid())
+  agreementId  String
+  versionId    String?
+  termId       String?   @db.VarChar(64)
+  authorUserId String
+  body         String    @db.VarChar(2000)
+  createdAt    DateTime  @default(now())
+  editedAt     DateTime?
+  deletedAt    DateTime?
+
+  agreement Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+
+  @@index([agreementId, versionId])
+}
+
+model Commitment {
+  id                    String           @id @default(uuid())
+  agreementId           String
+  sourceVersionId       String?
+  sourceTermId          String?          @db.VarChar(64)
+  title                 String           @db.VarChar(160)
+  details               String?          @db.VarChar(4000)
+  assigneeParticipantId String?
+  dueAt                 DateTime?
+  status                CommitmentStatus @default(TODO)
+  needsReview           Boolean          @default(false)
+  createdByUserId       String
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+  rowRevision           Int              @default(1)
+
+  agreement Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+
+  @@index([agreementId, status])
+}
+
+model Attachment {
+  id               String          @id @default(uuid())
+  agreementId      String
+  uploadedByUserId String
+  versionId        String?
+  originalFilename String          @db.VarChar(255)
+  storageKey       String          @unique @db.VarChar(128)
+  mimeDetected     String          @db.VarChar(100)
+  sizeBytes        BigInt
+  sha256           String          @db.VarChar(64)
+  state            AttachmentState @default(PENDING)
+  createdAt        DateTime        @default(now())
+  deletedAt        DateTime?
+
+  agreement Agreement @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+
+  @@index([agreementId, state])
+}
+
+model ActivityEvent {
+  id          String   @id @default(uuid())
+  agreementId String
+  actorUserId String?
+  action      String   @db.VarChar(64)
+  versionId   String?
+  objectId    String?
+  summaryJson Json
+  createdAt   DateTime @default(now())
+
+  agreement Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+
+  @@index([agreementId, createdAt])
+}
+
+model NotificationOutbox {
+  id                      String      @id @default(uuid())
+  eventKey                String      @unique @db.VarChar(128)
+  recipientUserId         String?
+  recipientEmailNormalized String
+  template                String      @db.VarChar(64)
+  payloadJson             Json
+  state                   OutboxState @default(PENDING)
+  attempts                Int         @default(0)
+  nextAttemptAt           DateTime?
+  createdAt               DateTime    @default(now())
+  sentAt                  DateTime?
+
+  @@index([state, nextAttemptAt])
+}

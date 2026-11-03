@@ -1,0 +1,42 @@
+# dependencies
+/node_modules
+/.pnpm-store
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# local env files
+.env*.local
+.env
+
+# storage root for local dev attachments
+/storage/
+
+# database & temp
+*.db
+*.db-journal
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# ide
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# test & coverage
+/coverage
+/playwright-report
+/test-results

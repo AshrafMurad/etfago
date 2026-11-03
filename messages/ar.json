@@ -1,0 +1,89 @@
+{
+  "Common": {
+    "appName": "اتفقنا | Etfago",
+    "tagline": "مساحة عمل تشاركية للاتفاقات للأفراد والمؤسسات",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "close": "إغلاق",
+    "loading": "جاري التحميل...",
+    "actions": "الإجراءات",
+    "back": "رجوع",
+    "optional": "اختياري",
+    "required": "مطلوب",
+    "learnMore": "معرفة المزيد",
+    "switchLanguage": "English",
+    "disclaimer": "تسجيل الموافقة داخل المنصة هو إجراء عملي ولا يمثل توقيعًا قانونيًا موثقًا أو إثباتًا للهوية الرسمية."
+  },
+  "Navigation": {
+    "home": "الرئيسية",
+    "agreements": "الاتفاقات",
+    "newAgreement": "اتفاق جديد",
+    "invitations": "الدعوات",
+    "workspaces": "مساحات العمل",
+    "settings": "الإعدادات",
+    "signOut": "تسجيل الخروج",
+    "signIn": "تسجيل الدخول"
+  },
+  "Agreements": {
+    "title": "الاتفاقات",
+    "subtitle": "إدارة الاتفاقات المشتركة ومتابعة التعديلات والالتزامات",
+    "createNew": "إنشاء اتفاق جديد",
+    "noAgreements": "لا توجد اتفاقات بعد",
+    "createFirst": "ابدأ بإنشاء أول اتفاق لك",
+    "currentAgreedVersion": "النسخة التي وافق عليها الأطراف حاليًا",
+    "pendingReviewVersion": "نسخة قيد المراجعة",
+    "draft": "مسودة",
+    "draftSubtitle": "مسودة — لم يراجعها الأطراف بعد",
+    "status": {
+      "DRAFT": "مسودة",
+      "AGREED": "تمت الموافقة",
+      "ACTIVE": "نشط",
+      "COMPLETED": "مكتمل",
+      "CANCELLED": "ملغي",
+      "ARCHIVED": "مؤرشف"
+    },
+    "versionState": {
+      "IN_REVIEW": "قيد المراجعة",
+      "APPROVED": "تمت الموافقة",
+      "REJECTED": "تم طلب تعديلات",
+      "WITHDRAWN": "مسحوبة",
+      "SUPERSEDED": "تم استبدالها"
+    },
+    "submitForReview": "إرسال للمراجعة",
+    "proposeChange": "اقتراح تعديل",
+    "requestChanges": "طلب تعديلات",
+    "recordApproval": "تسجيل الموافقة",
+    "awaitingApproval": "هذه النسخة بانتظار الموافقة",
+    "waitingOnReviewers": "بانتظار موافقة {count} من الأطراف",
+    "approvalNotice": "أقرّ بالموافقة على هذه النسخة داخل المنصة (هذا الإجراء لا يعد توقيعًا قانونيًا موثقًا)"
+  },
+  "Terms": {
+    "title": "البنود",
+    "addTerm": "إضافة بند",
+    "termTitle": "عنوان البند",
+    "termBody": "تفاصيل البند",
+    "amount": "المبلغ (اختياري)",
+    "currency": "العملة (اختياري)",
+    "dueDate": "تاريخ الاستحقاق (اختياري)",
+    "assignedTo": "المسؤول (اختياري)"
+  },
+  "Commitments": {
+    "title": "الالتزامات",
+    "outstanding": "التزامات غير مكتملة",
+    "needsReview": "بحاجة للمراجعة بعد التعديل",
+    "status": {
+      "TODO": "قيد الانتظار",
+      "IN_PROGRESS": "قيد التنفيذ",
+      "DONE": "مكتمل",
+      "CANCELLED": "ملغي"
+    }
+  },
+  "Files": {
+    "title": "المرفقات الخاصة",
+    "upload": "رفع ملف",
+    "privateStorageNotice": "الملفات مخزنة بأمان على الخادم الخاص ولا تتوفر بروابط عامة.",
+    "allowedFormats": "صيغ PDF وصور JPG و PNG و WebP فقط (بحد أقصى 10 ميغابايت لكل ملف)."
+  }
+}

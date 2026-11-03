@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: etfago-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-etfago}
+      POSTGRES_USER: ${POSTGRES_USER:-etfago}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-etfago_dev_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - etfago_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-etfago} -d ${POSTGRES_DB:-etfago}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  etfago_pgdata:
+    name: etfago_pgdata
