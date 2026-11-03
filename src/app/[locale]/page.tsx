@@ -36,8 +36,14 @@ function HomeContent({ locale }: { locale: string }) {
 
           <div className="flex flex-wrap items-center gap-3">
             <Link
-              href={`/${locale}/workspaces`}
+              href={`/${locale}/agreements`}
               className="inline-flex items-center px-5 py-2.5 rounded-xl font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] shadow-sm hover:bg-[var(--primary-hover)] transition-colors"
+            >
+              {tNav("agreements")}
+            </Link>
+            <Link
+              href={`/${locale}/workspaces`}
+              className="inline-flex items-center px-5 py-2.5 rounded-xl font-semibold border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] hover:bg-[var(--surface-muted)] transition-colors"
             >
               {tNav("workspaces")}
             </Link>

@@ -17,6 +17,9 @@ This file exists so future contributors do not reinterpret the product mid-imple
 | DEC-010 | Time budget expanded beyond one day | Confirmed; prioritize real product and quality |
 | DEC-011 | Sprint 1 Identity & Tenancy: Auth.js custom adapter mapping `emailNormalized`/`emailVerifiedAt`, atomic personal workspace auto-provisioning on user creation, deny-by-default agreement permission functions | Confirmed & Implemented |
 | DEC-012 | Local Docker PostgreSQL port mapped to 5434 to eliminate collision with host port 5432 | Confirmed |
+| DEC-013 | Sprint 2 Structured Draft & Agreements: Canonical V1 Schema with structured terms (optional money/dates/assignees, max 50 terms, title <= 120, body <= 4000), atomic auto-creation of organizer AgreementParticipant, optimistic concurrency revision lock on draft saves, and atomic activity event logging on every agreement mutation | Confirmed & Implemented |
+| DEC-014 | Sprint 3 Invites & Reviewer Roster: 7-day single-use invitation tokens hashed via SHA-256 (raw token never stored), target-verified email matching on redemption, atomic participant-user linkage and activity event logging, resend token invalidation, and strict agreement-scoped participant authorization | Confirmed & Implemented |
+| DEC-015 | Sprint 4 Versioning & Approval Engine: RFC 8785 deterministic composite content hash (SHA-256 over canonical snapshot + participantId-sorted frozen reviewer roster), atomic row-locking on Agreement (`FOR UPDATE`), unanimous explicit approval requirement for promotion to AGREED, immediate termination on REQUEST_CHANGES without altering agreed base version, draft edit locking during pending review, and automatic review withdrawal on participant removal | Confirmed & Implemented |
 
 ## Proposed, implementation-adjustable defaults
 - Personal workspace for every account; business workspaces optional.

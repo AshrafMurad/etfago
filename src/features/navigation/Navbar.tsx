@@ -31,6 +31,12 @@ export async function Navbar({ locale }: NavbarProps) {
         {user && (
           <nav className="hidden sm:flex items-center gap-4 text-sm font-medium text-zinc-600 dark:text-zinc-400">
             <Link
+              href={`/${locale}/agreements`}
+              className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+            >
+              {tNav("agreements")}
+            </Link>
+            <Link
               href={`/${locale}/workspaces`}
               className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
             >

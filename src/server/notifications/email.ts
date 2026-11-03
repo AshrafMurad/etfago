@@ -8,6 +8,14 @@ export interface SendVerificationEmailParams {
   locale?: string;
 }
 
+export interface SendInvitationEmailParams {
+  toEmail: string;
+  agreementTitle: string;
+  inviterName: string;
+  token: string;
+  locale?: string;
+}
+
 export interface SentEmailRecord {
   toEmail: string;
   subject: string;
@@ -87,5 +95,60 @@ export async function sendVerificationEmail({
   } catch (err) {
     // If DB outbox fails, don't crash email dispatch in dev/test
     console.error("[Email Outbox] Failed to write outbox record:", err);
+  }
+}
+
+/**
+ * Sends or enqueues an agreement invitation email.
+ * Includes short-lived one-use redemption link.
+ */
+export async function sendInvitationEmail({
+  toEmail,
+  agreementTitle,
+  inviterName,
+  token,
+  locale = "ar",
+}: SendInvitationEmailParams): Promise<void> {
+  const appUrl = process.env.APP_URL || "http://localhost:3000";
+  const redeemUrl = `${appUrl}/${locale}/invitations/redeem?token=${encodeURIComponent(token)}`;
+
+  const subject =
+    locale === "ar"
+      ? `دعوة للمشاركة في اتفاق: ${agreementTitle}`
+      : `Invitation to collaborate on: ${agreementTitle}`;
+
+  devOutbox.push({
+    toEmail,
+    subject,
+    token,
+    url: redeemUrl,
+    sentAt: new Date(),
+  });
+
+  if (process.env.NODE_ENV !== "production") {
+    console.log(`[Email Mock] Invitation sent to ${toEmail}`);
+    console.log(`[Email Mock] Invitation URL: ${redeemUrl}`);
+  }
+
+  try {
+    const eventKey = `invite-${crypto.randomUUID()}`;
+    await db.notificationOutbox.create({
+      data: {
+        eventKey,
+        recipientEmailNormalized: toEmail.trim().toLowerCase(),
+        template: "INVITE_PARTICIPANT",
+        payloadJson: {
+          agreementTitle,
+          inviterName,
+          redeemUrl,
+          locale,
+          notice: "Invitation is single-use and bound to the invited verified email.",
+        },
+        state: "SENT",
+        sentAt: new Date(),
+      },
+    });
+  } catch (err) {
+    console.error("[Email Outbox] Failed to write invitation outbox record:", err);
   }
 }
