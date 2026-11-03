@@ -418,5 +418,27 @@
     "clearTemplate": "إعادة تعيين",
     "quickStartBanner": "هل تريد البدء سريعًا؟ استكشف نماذج الاتفاقات الجاهزة للخدمات والتوريد والتشارك الشخصي",
     "browseTemplates": "تصفح النماذج الجاهزة"
+  },
+  "Settings": {
+    "title": "إعدادات الحساب والإشعارات",
+    "subtitle": "إدارة تفضيلات الإشعارات البريدية وتذكيرات المواعيد",
+    "accountTitle": "معلومات الحساب",
+    "emailLabel": "البريد الإلكتروني",
+    "verifiedNotice": "بريد مؤكد وموثق داخل المنصة",
+    "unverifiedNotice": "بريد غير مؤكد",
+    "preferencesTitle": "تفضيلات التذكيرات والإشعارات البريدية",
+    "preferencesSubtitle": "تحكم في الرسائل التلقائية التي تصلك لمتابعة الاتفاقات والالتزامات",
+    "reviewRemindersTitle": "تذكيرات المراجعات المعلقة",
+    "reviewRemindersDesc": "إرسال تذكير بريدي دوري عند وجود نسخ اتفاقات قيد انتظار مراجعتك واعتمادك.",
+    "commitmentRemindersTitle": "تذكيرات مواعيد استحقاق الالتزامات",
+    "commitmentRemindersDesc": "إرسال تنبيهات بريدية عند اقتراب مواعيد الالتزامات المكلف بها أو عند تأخرها.",
+    "saveSuccess": "تم تحديث إعدادات الإشعارات بنجاح",
+    "saving": "جاري الحفظ...",
+    "save": "حفظ التفضيلات"
+  },
+  "Reminders": {
+    "dueSoonSubject": "تذكير بموعد استحقاق التزام: {commitment} ({agreement})",
+    "overdueSubject": "تنبيه: التزام متأخر عن موعده: {commitment} ({agreement})",
+    "reviewPendingSubject": "تذكير: نسخة معلقة بانتظار مراجعتك (نسخة {version}) - {agreement}"
   }
 }

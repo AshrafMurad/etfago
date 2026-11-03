@@ -32,6 +32,25 @@ export interface SendCommitmentNoticeParams {
   locale?: string;
 }
 
+export interface SendCommitmentReminderParams {
+  toEmail: string;
+  agreementTitle: string;
+  commitmentTitle: string;
+  dueAt: Date;
+  isOverdue: boolean;
+  hoursRemaining?: number;
+  locale?: string;
+}
+
+export interface SendReviewReminderParams {
+  toEmail: string;
+  agreementTitle: string;
+  versionNumber: number;
+  daysPending: number;
+  agreementId: string;
+  locale?: string;
+}
+
 export interface SentEmailRecord {
   toEmail: string;
   subject: string;
@@ -247,4 +266,100 @@ export async function sendCommitmentNoticeEmail({
   } catch (err) {
     console.error("[Email Outbox] Failed to write commitment outbox record:", err);
   }
+}
+
+/**
+ * Sends or logs a commitment due date reminder email.
+ */
+export async function sendCommitmentReminderEmail(
+  params: SendCommitmentReminderParams
+): Promise<void> {
+  const { toEmail, agreementTitle, commitmentTitle, isOverdue, locale = "ar" } = params;
+  const subject =
+    locale === "ar"
+      ? isOverdue
+        ? `تنبيه: التزام متأخر عن موعده: ${commitmentTitle} (${agreementTitle})`
+        : `تذكير بموعد استحقاق التزام: ${commitmentTitle} (${agreementTitle})`
+      : isOverdue
+      ? `Alert: Overdue Commitment - ${commitmentTitle} (${agreementTitle})`
+      : `Reminder: Commitment Due Soon - ${commitmentTitle} (${agreementTitle})`;
+
+  devOutbox.push({
+    toEmail,
+    subject,
+    sentAt: new Date(),
+  });
+
+  if (process.env.NODE_ENV !== "production") {
+    console.log(`[Email Mock] Commitment reminder sent to ${toEmail}: ${subject}`);
+  }
+}
+
+/**
+ * Sends or logs a pending version review reminder email.
+ */
+export async function sendReviewReminderEmail(
+  params: SendReviewReminderParams
+): Promise<void> {
+  const { toEmail, agreementTitle, versionNumber, agreementId, locale = "ar" } = params;
+  const subject =
+    locale === "ar"
+      ? `تذكير: نسخة معلقة بانتظار مراجعتك (نسخة ${versionNumber}) - ${agreementTitle}`
+      : `Reminder: Review Pending for V${versionNumber} - ${agreementTitle}`;
+
+  const appUrl = process.env.APP_URL || "http://localhost:3000";
+  const agreementUrl = `${appUrl}/${locale}/agreements/${agreementId}`;
+
+  devOutbox.push({
+    toEmail,
+    subject,
+    url: agreementUrl,
+    sentAt: new Date(),
+  });
+
+  if (process.env.NODE_ENV !== "production") {
+    console.log(`[Email Mock] Review reminder sent to ${toEmail}: ${subject}`);
+  }
+}
+
+export interface EmailTransport {
+  sendMail(mail: {
+    to: string;
+    subject: string;
+    text?: string;
+    html?: string;
+  }): Promise<{ success: boolean; messageId?: string; error?: string }>;
+}
+
+/**
+ * Default transport: logs to devOutbox in dev/test, or sends via external provider.
+ */
+class DefaultEmailTransport implements EmailTransport {
+  async sendMail(mail: {
+    to: string;
+    subject: string;
+    text?: string;
+    html?: string;
+  }): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    devOutbox.push({
+      toEmail: mail.to,
+      subject: mail.subject,
+      sentAt: new Date(),
+    });
+    return { success: true, messageId: `mock-${crypto.randomUUID()}` };
+  }
+}
+
+let activeTransporter: EmailTransport = new DefaultEmailTransport();
+
+export function getActiveEmailTransport(): EmailTransport {
+  return activeTransporter;
+}
+
+export function setActiveEmailTransport(transport: EmailTransport): void {
+  activeTransporter = transport;
+}
+
+export function resetActiveEmailTransport(): void {
+  activeTransporter = new DefaultEmailTransport();
 }

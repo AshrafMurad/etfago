@@ -42,6 +42,12 @@ export async function Navbar({ locale }: NavbarProps) {
             >
               {tNav("workspaces")}
             </Link>
+            <Link
+              href={`/${locale}/settings`}
+              className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+            >
+              {tNav("settings")}
+            </Link>
           </nav>
         )}
       </div>

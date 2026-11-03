@@ -59,9 +59,14 @@ This is **not a one-day-only project**. Prioritize a dependable cross-user colla
 - Explicit trust disclaimer stating starter templates are operational guidelines and not legal counsel.
 **Exit:** Unit tests validating all templates and schemas; integration tests verifying database persistence, activity event logging, workspace isolation, and full progression through immutable version approval.
 
-### Sprint 9: due-date notifications & background reminders worker (F-22) [Planned]
-- Scheduled background worker checking upcoming commitment deadlines and pending version review reminders.
-- Idempotent event processing and notification outbox dispatch.
+### Sprint 9: due-date notifications & background reminders worker (F-22) [Implemented]
+- Scheduled background worker checking upcoming commitment deadlines (upcoming lookahead / overdue lookback) and pending version review reminders for eligible verified reviewers.
+- Strict idempotency guarantees via deterministic calendar-bucketed event keys (`eventKey` with DB unique constraint) preventing duplicate reminder dispatch.
+- User notification preferences model (`NotificationPreference`) allowing users to toggle review reminders and commitment reminders, respecting user opt-outs during background scans.
+- Resilient notification outbox batch dispatcher with exponential retry backoff (`nextAttemptAt`), pluggable email transport, and terminal failure tracking.
+- Secure cron API endpoint (`/api/cron/reminders`) protected via `CRON_SECRET` Bearer auth and standalone operational CLI worker (`scripts/reminders-worker.ts`).
+- Localized user settings screen (`/[locale]/settings`) with bilingual RTL/LTR preferences form and account verification status.
+**Exit:** Comprehensive unit tests covering key determinism, schema validation, and exponential backoff; integration tests covering commitment detection, review reminder generation, idempotency, preference suppression, outbox worker state transitions, retry backoff, and authenticated API cron dispatch.
 
 ### Sprint 10: advanced approval policies & quorum review (F-23) [Planned]
 - Configurable voting/quorum rules and multi-party review sequences.

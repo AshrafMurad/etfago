@@ -35,6 +35,7 @@ model User {
   participants    AgreementParticipant[]
   accounts        Account[]
   sessions        Session[]
+  notificationPreference NotificationPreference?
 }
 
 model Workspace {
@@ -428,4 +429,15 @@ model NotificationOutbox {
   sentAt                  DateTime?
 
   @@index([state, nextAttemptAt])
+}
+
+model NotificationPreference {
+  id                  String   @id @default(uuid())
+  userId              String   @unique
+  reviewReminders     Boolean  @default(true)
+  commitmentReminders Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

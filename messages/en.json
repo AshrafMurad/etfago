@@ -418,5 +418,27 @@
     "clearTemplate": "Reset",
     "quickStartBanner": "Want to start quickly? Explore curated templates for services, procurement, and personal commitments",
     "browseTemplates": "Browse Templates"
+  },
+  "Settings": {
+    "title": "Account & Notification Settings",
+    "subtitle": "Manage your email reminder preferences and operational alerts",
+    "accountTitle": "Account Information",
+    "emailLabel": "Email Address",
+    "verifiedNotice": "Verified account email",
+    "unverifiedNotice": "Unverified email",
+    "preferencesTitle": "Email Reminders & Notification Preferences",
+    "preferencesSubtitle": "Control automated notifications for agreement reviews and upcoming deadlines",
+    "reviewRemindersTitle": "Pending Review Reminders",
+    "reviewRemindersDesc": "Receive automated reminder emails when agreement versions await your review and decision.",
+    "commitmentRemindersTitle": "Commitment Deadline Reminders",
+    "commitmentRemindersDesc": "Receive email alerts for upcoming due dates or overdue commitments assigned to you.",
+    "saveSuccess": "Notification preferences updated successfully",
+    "saving": "Saving...",
+    "save": "Save Preferences"
+  },
+  "Reminders": {
+    "dueSoonSubject": "Reminder: Commitment Due Soon - {commitment} ({agreement})",
+    "overdueSubject": "Alert: Overdue Commitment - {commitment} ({agreement})",
+    "reviewPendingSubject": "Reminder: Review Pending for V{version} - {agreement}"
   }
 }
