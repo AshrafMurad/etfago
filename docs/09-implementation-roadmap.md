@@ -68,8 +68,13 @@ This is **not a one-day-only project**. Prioritize a dependable cross-user colla
 - Localized user settings screen (`/[locale]/settings`) with bilingual RTL/LTR preferences form and account verification status.
 **Exit:** Comprehensive unit tests covering key determinism, schema validation, and exponential backoff; integration tests covering commitment detection, review reminder generation, idempotency, preference suppression, outbox worker state transitions, retry backoff, and authenticated API cron dispatch.
 
-### Sprint 10: advanced approval policies & quorum review (F-23) [Planned]
-- Configurable voting/quorum rules and multi-party review sequences.
+### Sprint 10: advanced approval policies & quorum review (F-23) [Implemented]
+- Configurable approval policies per version: `UNANIMOUS` (default), `MAJORITY` (>50% required approvals), and `QUORUM_THRESHOLD` (explicit threshold count).
+- Dynamic rejection logic for non-unanimous policies: changes requests do not abort review if quorum remains achievable; automatic rejection only when quorum becomes mathematically impossible.
+- Multi-party ordered review sequences (`isSequential = true`) with participant `stepOrder` enforcement, blocking downstream reviewers until all prior steps approve.
+- Cryptographic hash composite binding version snapshot, roster, approval policy, quorum threshold, and step order.
+- Modal UI with policy selection and sequential review toggle, with server-action integration.
+**Exit:** Unit tests validating policy and invitation schemas; integration tests verifying majority promotion, impossible quorum rejection, threshold satisfaction, sequential ordering conflict guards, and cryptographic hash sensitivity.
 
 ### Sprint 11: advanced business workspace administration & reporting (F-24) [Planned]
 - Workspace-level roles, member permissions, and agreement activity reporting.

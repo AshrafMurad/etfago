@@ -177,6 +177,7 @@ model AgreementParticipant {
   partyKind        PartyKind     @default(PERSON)
   agreementRole    AgreementRole @default(REVIEWER)
   requiredByDefault Boolean      @default(true)
+  stepOrder        Int           @default(1)
   joinedAt         DateTime?
   removedAt        DateTime?
   createdAt        DateTime      @default(now())
@@ -222,28 +223,40 @@ enum ReviewDecisionType {
   REQUEST_CHANGES
 }
 
+enum ApprovalPolicy {
+  UNANIMOUS
+  MAJORITY
+  QUORUM_THRESHOLD
+}
+
 model AgreementDraft {
-  id               String   @id @default(uuid())
-  agreementId      String   @unique
+  id               String         @id @default(uuid())
+  agreementId      String         @unique
   basedOnVersionId String?
   contentJson      Json
-  revision         Int      @default(1)
+  approvalPolicy   ApprovalPolicy @default(UNANIMOUS)
+  quorumThreshold  Int?
+  isSequential     Boolean        @default(false)
+  revision         Int            @default(1)
   updatedByUserId  String
-  updatedAt        DateTime @updatedAt
+  updatedAt        DateTime       @updatedAt
 
   agreement Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
 }
 
 model AgreementVersion {
-  id               String       @id @default(uuid())
+  id               String         @id @default(uuid())
   agreementId      String
   versionNumber    Int
   basedOnVersionId String?
   snapshotJson     Json
-  contentHash      String       @db.VarChar(64)
-  state            VersionState @default(IN_REVIEW)
+  contentHash      String         @db.VarChar(64)
+  state            VersionState   @default(IN_REVIEW)
+  approvalPolicy   ApprovalPolicy @default(UNANIMOUS)
+  quorumThreshold  Int?
+  isSequential     Boolean        @default(false)
   submittedByUserId String
-  submittedAt      DateTime     @default(now())
+  submittedAt      DateTime       @default(now())
   resolvedAt       DateTime?
 
   agreement Agreement         @relation(fields: [agreementId], references: [id], onDelete: Restrict)
@@ -263,6 +276,7 @@ model VersionReviewer {
   partyKindSnapshot String
   roleSnapshot      String
   required          Boolean  @default(true)
+  stepOrder         Int      @default(1)
   createdAt         DateTime @default(now())
 
   version  AgreementVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)

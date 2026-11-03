@@ -31,6 +31,7 @@ import {
   VersionState,
   ReviewDecisionType,
   AgreementLifecycleStatus,
+  ApprovalPolicy,
 } from "@prisma/client";
 
 export interface VersionReviewerSummary {
@@ -43,6 +44,7 @@ export interface VersionReviewerSummary {
   partyKindSnapshot: string;
   roleSnapshot: string;
   required: boolean;
+  stepOrder: number;
   decision: {
     id: string;
     decision: ReviewDecisionType;
@@ -59,6 +61,9 @@ export interface AgreementVersionDetail {
   snapshot: DraftContent;
   contentHash: string;
   state: VersionState;
+  approvalPolicy: ApprovalPolicy;
+  quorumThreshold: number | null;
+  isSequential: boolean;
   submittedByUserId: string;
   submittedAt: Date;
   resolvedAt: Date | null;
@@ -70,6 +75,9 @@ export interface ReviewDecisionResult {
   decision: ReviewDecisionType;
   versionState: VersionState;
   isUnanimouslyApproved: boolean;
+  approvedCount: number;
+  requiredCount: number;
+  isApproved: boolean;
 }
 
 /**
@@ -195,6 +203,19 @@ export async function submitDraftForReview(
     const basedOnVersionId =
       agreement.currentApprovedVersionId ?? draft.basedOnVersionId ?? null;
 
+    const approvalPolicy: ApprovalPolicy = validated.approvalPolicy ?? "UNANIMOUS";
+    const quorumThreshold = validated.quorumThreshold ?? null;
+    const isSequential = validated.isSequential ?? false;
+
+    if (approvalPolicy === "QUORUM_THRESHOLD") {
+      const requiredCount = requiredParticipants.length;
+      if (!quorumThreshold || quorumThreshold < 1 || quorumThreshold > requiredCount) {
+        throw new ConflictError(
+          `Quorum threshold must be between 1 and the total required reviewers count (${requiredCount}).`
+        );
+      }
+    }
+
     // 5. Freeze reviewer roster for snapshot
     const reviewersRoster = participants
       .filter((p) => p.userId !== null)
@@ -206,11 +227,15 @@ export async function submitDraftForReview(
         partyKindSnapshot: p.partyKind,
         roleSnapshot: p.agreementRole,
         required: p.requiredByDefault,
+        stepOrder: p.stepOrder ?? 1,
       }));
 
     // 6. Compute deterministic canonical content hash (composite of content + frozen reviewers)
     const canonicalComposite: VersionCanonicalComposite = {
       schemaVersion: 1,
+      approvalPolicy,
+      quorumThreshold,
+      isSequential,
       content: parsedDraftContent,
       reviewers: reviewersRoster,
     };
@@ -225,6 +250,9 @@ export async function submitDraftForReview(
         snapshotJson: parsedDraftContent,
         contentHash,
         state: "IN_REVIEW",
+        approvalPolicy,
+        quorumThreshold,
+        isSequential,
         submittedByUserId: actorUserId,
       },
     });
@@ -242,6 +270,7 @@ export async function submitDraftForReview(
           partyKindSnapshot: r.partyKindSnapshot,
           roleSnapshot: r.roleSnapshot,
           required: r.required,
+          stepOrder: r.stepOrder,
         },
       });
 
@@ -255,6 +284,7 @@ export async function submitDraftForReview(
         partyKindSnapshot: reviewerRow.partyKindSnapshot,
         roleSnapshot: reviewerRow.roleSnapshot,
         required: reviewerRow.required,
+        stepOrder: reviewerRow.stepOrder,
         decision: null,
       });
     }
@@ -278,6 +308,9 @@ export async function submitDraftForReview(
           versionNumber: nextVersionNumber,
           versionId: version.id,
           contentHash,
+          approvalPolicy,
+          quorumThreshold,
+          isSequential,
           termsCount: parsedDraftContent.terms.length,
           reviewersCount: reviewersRoster.length,
           requiredReviewersCount: reviewersRoster.filter((r) => r.required).length,
@@ -293,6 +326,9 @@ export async function submitDraftForReview(
       snapshot: parsedDraftContent,
       contentHash: version.contentHash,
       state: version.state,
+      approvalPolicy: version.approvalPolicy,
+      quorumThreshold: version.quorumThreshold,
+      isSequential: version.isSequential,
       submittedByUserId: version.submittedByUserId,
       submittedAt: version.submittedAt,
       resolvedAt: version.resolvedAt,
@@ -423,15 +459,40 @@ export async function recordReviewDecision(
       );
     }
 
+    // 4b. Sequential review sequence check
+    if (version.isSequential && reviewer.stepOrder > 1) {
+      const priorStepReviewers = version.reviewers.filter(
+        (r) => r.required && r.stepOrder < reviewer.stepOrder
+      );
+      const allPriorStepsApproved = priorStepReviewers.every(
+        (r) => r.decision?.decision === "APPROVE"
+      );
+
+      if (!allPriorStepsApproved) {
+        throw new ConflictError(
+          `Prior review steps must approve before step ${reviewer.stepOrder} can record a decision.`
+        );
+      }
+    }
+
     // 5. Check if decision already recorded
     if (reviewer.decision) {
       if (reviewer.decision.decision === validated.decision) {
-        // Idempotent retry: return existing decision state without duplicate row or event
+        const allReq = await tx.versionReviewer.findMany({
+          where: { versionId: version.id, required: true },
+          include: { decision: true },
+        });
+        const approvedCount = allReq.filter((r) => r.decision?.decision === "APPROVE").length;
+        const requiredCount = allReq.length;
+        const isUnanimous = approvedCount === requiredCount;
         return {
           status: "RECORDED",
           decision: reviewer.decision.decision,
           versionState: version.state,
-          isUnanimouslyApproved: false,
+          isUnanimouslyApproved: isUnanimous,
+          approvedCount,
+          requiredCount,
+          isApproved: version.state === "APPROVED",
         };
       }
       throw new ConflictError(
@@ -471,46 +532,7 @@ export async function recordReviewDecision(
       },
     });
 
-    // 8. Handle REQUEST_CHANGES: terminates review immediately
-    if (validated.decision === "REQUEST_CHANGES") {
-      await tx.agreementVersion.update({
-        where: { id: version.id },
-        data: {
-          state: "REJECTED",
-          resolvedAt: new Date(),
-        },
-      });
-
-      await tx.agreement.update({
-        where: { id: validated.agreementId },
-        data: {
-          pendingReviewVersionId: null,
-        },
-      });
-
-      await tx.activityEvent.create({
-        data: {
-          agreementId: validated.agreementId,
-          actorUserId,
-          versionId: version.id,
-          action: "VERSION_REJECTED",
-          summaryJson: {
-            versionNumber: version.versionNumber,
-            rejectedBy: reviewer.nameSnapshot,
-            reason: validated.reason ?? null,
-          },
-        },
-      });
-
-      return {
-        status: "REJECTED",
-        decision: "REQUEST_CHANGES",
-        versionState: "REJECTED",
-        isUnanimouslyApproved: false,
-      };
-    }
-
-    // 9. Handle APPROVE: Check if ALL required reviewers have now approved
+    // 8. Fetch updated reviewers status to evaluate approval policy
     const allRequiredReviewers = await tx.versionReviewer.findMany({
       where: {
         versionId: version.id,
@@ -521,11 +543,86 @@ export async function recordReviewDecision(
       },
     });
 
-    const isUnanimous = allRequiredReviewers.every(
+    const approvedCount = allRequiredReviewers.filter(
       (r) => r.decision?.decision === "APPROVE"
-    );
+    ).length;
+    const changesRequestedCount = allRequiredReviewers.filter(
+      (r) => r.decision?.decision === "REQUEST_CHANGES"
+    ).length;
+    const requiredCount = allRequiredReviewers.length;
+    const remainingCount = requiredCount - approvedCount - changesRequestedCount;
 
-    if (isUnanimous) {
+    let targetThreshold = requiredCount; // UNANIMOUS default
+    if (version.approvalPolicy === "MAJORITY") {
+      targetThreshold = Math.floor(requiredCount / 2) + 1;
+    } else if (version.approvalPolicy === "QUORUM_THRESHOLD") {
+      targetThreshold = version.quorumThreshold ?? requiredCount;
+    }
+
+    const isThresholdMet = approvedCount >= targetThreshold;
+    const isQuorumImpossible = approvedCount + remainingCount < targetThreshold;
+
+    // Handle REQUEST_CHANGES
+    if (validated.decision === "REQUEST_CHANGES") {
+      if (version.approvalPolicy === "UNANIMOUS" || isQuorumImpossible) {
+        await tx.agreementVersion.update({
+          where: { id: version.id },
+          data: {
+            state: "REJECTED",
+            resolvedAt: new Date(),
+          },
+        });
+
+        await tx.agreement.update({
+          where: { id: validated.agreementId },
+          data: {
+            pendingReviewVersionId: null,
+          },
+        });
+
+        await tx.activityEvent.create({
+          data: {
+            agreementId: validated.agreementId,
+            actorUserId,
+            versionId: version.id,
+            action: "VERSION_REJECTED",
+            summaryJson: {
+              versionNumber: version.versionNumber,
+              rejectedBy: reviewer.nameSnapshot,
+              reason: validated.reason ?? null,
+              approvalPolicy: version.approvalPolicy,
+              approvedCount,
+              changesRequestedCount,
+              requiredCount,
+            },
+          },
+        });
+
+        return {
+          status: "REJECTED",
+          decision: "REQUEST_CHANGES",
+          versionState: "REJECTED",
+          isUnanimouslyApproved: false,
+          approvedCount,
+          requiredCount,
+          isApproved: false,
+        };
+      }
+
+      // In MAJORITY or QUORUM_THRESHOLD, if quorum is still possible, review remains open
+      return {
+        status: "RECORDED",
+        decision: "REQUEST_CHANGES",
+        versionState: "IN_REVIEW",
+        isUnanimouslyApproved: false,
+        approvedCount,
+        requiredCount,
+        isApproved: false,
+      };
+    }
+
+    // Handle APPROVE
+    if (isThresholdMet) {
       // Supersede previously approved version if one exists
       if (agreement.currentApprovedVersionId) {
         const oldVersion = await tx.agreementVersion.findUnique({
@@ -578,7 +675,8 @@ export async function recordReviewDecision(
         },
       });
 
-      // ActivityEvent for promotion to current agreed version
+      const isUnanimous = approvedCount === requiredCount;
+
       await tx.activityEvent.create({
         data: {
           agreementId: validated.agreementId,
@@ -587,8 +685,13 @@ export async function recordReviewDecision(
           action: "VERSION_PROMOTED_TO_AGREED",
           summaryJson: {
             versionNumber: version.versionNumber,
-            contentHash: version.contentHash,
-            approvedReviewersCount: allRequiredReviewers.length,
+            promotedVersionId: version.id,
+            previousApprovedVersionId: agreement.currentApprovedVersionId,
+            approvalPolicy: version.approvalPolicy,
+            quorumThreshold: version.quorumThreshold,
+            approvedCount,
+            requiredCount,
+            isUnanimous,
           },
         },
       });
@@ -597,9 +700,23 @@ export async function recordReviewDecision(
         status: "APPROVED",
         decision: "APPROVE",
         versionState: "APPROVED",
-        isUnanimouslyApproved: true,
+        isUnanimouslyApproved: isUnanimous,
+        approvedCount,
+        requiredCount,
+        isApproved: true,
       };
     }
+
+    // Threshold not met yet, review continues
+    return {
+      status: "RECORDED",
+      decision: "APPROVE",
+      versionState: "IN_REVIEW",
+      isUnanimouslyApproved: false,
+      approvedCount,
+      requiredCount,
+      isApproved: false,
+    };
 
     // Some required reviewers are still pending
     return {
@@ -689,6 +806,9 @@ export async function withdrawPendingReview(
       snapshot: parsedSnapshot,
       contentHash: version.contentHash,
       state: version.state,
+      approvalPolicy: version.approvalPolicy,
+      quorumThreshold: version.quorumThreshold,
+      isSequential: version.isSequential,
       submittedByUserId: version.submittedByUserId,
       submittedAt: version.submittedAt,
       resolvedAt: version.resolvedAt,
@@ -702,6 +822,7 @@ export async function withdrawPendingReview(
         partyKindSnapshot: r.partyKindSnapshot,
         roleSnapshot: r.roleSnapshot,
         required: r.required,
+        stepOrder: r.stepOrder,
         decision: r.decision
           ? {
               id: r.decision.id,
@@ -897,6 +1018,9 @@ export async function getVersionDetail(
     snapshot: parsedSnapshot,
     contentHash: version.contentHash,
     state: version.state,
+    approvalPolicy: version.approvalPolicy,
+    quorumThreshold: version.quorumThreshold,
+    isSequential: version.isSequential,
     submittedByUserId: version.submittedByUserId,
     submittedAt: version.submittedAt,
     resolvedAt: version.resolvedAt,
@@ -910,6 +1034,7 @@ export async function getVersionDetail(
       partyKindSnapshot: r.partyKindSnapshot,
       roleSnapshot: r.roleSnapshot,
       required: r.required,
+      stepOrder: r.stepOrder,
       decision: r.decision
         ? {
             id: r.decision.id,

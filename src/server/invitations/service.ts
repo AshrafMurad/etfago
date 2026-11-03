@@ -127,6 +127,7 @@ export async function inviteParticipant(
         partyKind: validated.partyKind,
         agreementRole: validated.agreementRole,
         requiredByDefault: validated.requiredByDefault,
+        stepOrder: validated.stepOrder ?? 1,
         userId: null,
         joinedAt: null,
       },
@@ -373,7 +374,7 @@ export async function updateParticipantRole(
   actorUserId: string,
   agreementId: string,
   participantId: string,
-  input: { agreementRole: "EDITOR" | "REVIEWER" | "OBSERVER"; requiredByDefault: boolean }
+  input: { agreementRole: "EDITOR" | "REVIEWER" | "OBSERVER"; requiredByDefault: boolean; stepOrder?: number }
 ): Promise<ParticipantDetail> {
   await assertCanInvite(actorUserId, agreementId);
 
@@ -399,6 +400,7 @@ export async function updateParticipantRole(
       data: {
         agreementRole: input.agreementRole,
         requiredByDefault: input.requiredByDefault,
+        stepOrder: input.stepOrder ?? participant.stepOrder,
       },
     });
 

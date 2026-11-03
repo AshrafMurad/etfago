@@ -25,6 +25,7 @@ export const InviteParticipantSchema = z.object({
   partyKind: PartyKindSchema.default("PERSON"),
   agreementRole: z.enum(["EDITOR", "REVIEWER", "OBSERVER"]).default("REVIEWER"),
   requiredByDefault: z.boolean().default(true),
+  stepOrder: z.number().int().min(1).default(1),
 });
 
 export type InviteParticipantInput = z.input<typeof InviteParticipantSchema>;
@@ -58,6 +59,7 @@ export const UpdateParticipantRoleSchema = z.object({
   participantId: z.string().uuid("Invalid participant ID"),
   agreementRole: z.enum(["EDITOR", "REVIEWER", "OBSERVER"]),
   requiredByDefault: z.boolean(),
+  stepOrder: z.number().int().min(1).optional(),
 });
 
 export type UpdateParticipantRoleInput = z.infer<typeof UpdateParticipantRoleSchema>;

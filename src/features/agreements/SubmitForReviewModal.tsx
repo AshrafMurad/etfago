@@ -42,6 +42,10 @@ export function SubmitForReviewModal({
   const [isPending, startTransition] = useTransition();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const [approvalPolicy, setApprovalPolicy] = useState<"UNANIMOUS" | "MAJORITY" | "QUORUM_THRESHOLD">("UNANIMOUS");
+  const [quorumThreshold, setQuorumThreshold] = useState<number>(2);
+  const [isSequential, setIsSequential] = useState(false);
+
   // Check quorum: At least two distinct joined users with requiredByDefault
   const joinedRequiredParticipants = participants.filter(
     (p) => p.userId !== null && p.requiredByDefault
@@ -57,6 +61,11 @@ export function SubmitForReviewModal({
       const formData = new FormData();
       formData.set("agreementId", agreementId);
       formData.set("expectedDraftRevision", String(draftRevision));
+      formData.set("approvalPolicy", approvalPolicy);
+      if (approvalPolicy === "QUORUM_THRESHOLD") {
+        formData.set("quorumThreshold", String(quorumThreshold));
+      }
+      formData.set("isSequential", isSequential ? "true" : "false");
 
       const res = await submitForReviewAction(null, formData);
       if (!res.success) {
@@ -136,6 +145,83 @@ export function SubmitForReviewModal({
                         </span>
                       </div>
                     ))}
+                  </div>
+                </div>
+
+                {/* Approval Policy & Quorum Settings (Sprint 10) */}
+                <div className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 space-y-2.5 text-xs">
+                  <div className="font-semibold text-zinc-800 dark:text-zinc-200">
+                    سياسة الاعتماد والنصاب (Approval Policy):
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setApprovalPolicy("UNANIMOUS")}
+                      className={`p-2 rounded-md border text-center font-medium transition-colors cursor-pointer ${
+                        approvalPolicy === "UNANIMOUS"
+                          ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300"
+                          : "border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                      }`}
+                    >
+                      إجماع الأطراف
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setApprovalPolicy("MAJORITY")}
+                      className={`p-2 rounded-md border text-center font-medium transition-colors cursor-pointer ${
+                        approvalPolicy === "MAJORITY"
+                          ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300"
+                          : "border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                      }`}
+                    >
+                      أغلبية المراجعين
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setApprovalPolicy("QUORUM_THRESHOLD")}
+                      className={`p-2 rounded-md border text-center font-medium transition-colors cursor-pointer ${
+                        approvalPolicy === "QUORUM_THRESHOLD"
+                          ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300"
+                          : "border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                      }`}
+                    >
+                      نصاب محدد
+                    </button>
+                  </div>
+
+                  {approvalPolicy === "QUORUM_THRESHOLD" && (
+                    <div className="flex items-center gap-2 pt-1">
+                      <span className="text-zinc-600 dark:text-zinc-400">
+                        عدد الأصوات المطلوبة للاعتماد:
+                      </span>
+                      <input
+                        type="number"
+                        min={1}
+                        max={joinedRequiredParticipants.length}
+                        value={quorumThreshold}
+                        onChange={(e) => setQuorumThreshold(parseInt(e.target.value, 10) || 1)}
+                        className="w-16 px-2 py-1 rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-xs font-mono text-center"
+                      />
+                      <span className="text-zinc-400 text-[11px]">
+                        (من أصل {joinedRequiredParticipants.length} مراجعين)
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2 pt-1">
+                    <input
+                      id="isSequential"
+                      type="checkbox"
+                      checked={isSequential}
+                      onChange={(e) => setIsSequential(e.target.checked)}
+                      className="w-4 h-4 rounded text-emerald-600 accent-emerald-600 cursor-pointer"
+                    />
+                    <label
+                      htmlFor="isSequential"
+                      className="text-zinc-700 dark:text-zinc-300 cursor-pointer select-none"
+                    >
+                      مراجعة تسلسلية متتابعة حسب مراحل المراجعين (Sequential Review)
+                    </label>
                   </div>
                 </div>
 

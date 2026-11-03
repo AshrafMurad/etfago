@@ -71,6 +71,9 @@ export function computeSha256Hex(content: string): string {
  */
 export interface VersionCanonicalComposite {
   schemaVersion: number;
+  approvalPolicy?: string;
+  quorumThreshold?: number | null;
+  isSequential?: boolean;
   content: {
     schemaVersion: number;
     title: string;
@@ -93,6 +96,7 @@ export interface VersionCanonicalComposite {
     partyKindSnapshot: string;
     roleSnapshot: string;
     required: boolean;
+    stepOrder?: number;
   }>;
 }
 
@@ -109,8 +113,20 @@ export function computeVersionContentHash(composite: VersionCanonicalComposite):
 
   const normalizedComposite: VersionCanonicalComposite = {
     schemaVersion: composite.schemaVersion,
+    approvalPolicy: composite.approvalPolicy ?? "UNANIMOUS",
+    quorumThreshold: composite.quorumThreshold ?? null,
+    isSequential: composite.isSequential ?? false,
     content: composite.content,
-    reviewers: sortedReviewers,
+    reviewers: sortedReviewers.map((r) => ({
+      participantId: r.participantId,
+      userId: r.userId,
+      emailSnapshot: r.emailSnapshot,
+      nameSnapshot: r.nameSnapshot,
+      partyKindSnapshot: r.partyKindSnapshot,
+      roleSnapshot: r.roleSnapshot,
+      required: r.required,
+      stepOrder: r.stepOrder ?? 1,
+    })),
   };
 
   const canonicalString = canonicalStringify(normalizedComposite);

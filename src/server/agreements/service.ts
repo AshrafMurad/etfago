@@ -74,6 +74,7 @@ export interface AgreementDetail {
     partyKind: "PERSON" | "ORGANIZATION";
     agreementRole: "ORGANIZER" | "EDITOR" | "REVIEWER" | "OBSERVER";
     requiredByDefault: boolean;
+    stepOrder: number;
     joinedAt: Date | null;
   }>;
   recentActivity: Array<{
@@ -244,6 +245,7 @@ export async function getAgreementDetail(
           partyKind: true,
           agreementRole: true,
           requiredByDefault: true,
+          stepOrder: true,
           joinedAt: true,
         },
         orderBy: { createdAt: "asc" },

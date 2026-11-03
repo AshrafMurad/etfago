@@ -1,16 +1,41 @@
 import { z } from "zod";
 
+export const ApprovalPolicySchema = z.enum(["UNANIMOUS", "MAJORITY", "QUORUM_THRESHOLD"]);
+export type ApprovalPolicy = z.infer<typeof ApprovalPolicySchema>;
+
 /**
  * Submit Draft for Review Input Schema
  * Requires matching expected draft revision to prevent race conditions.
  */
-export const SubmitForReviewSchema = z.object({
-  agreementId: z.string().uuid("Invalid agreement ID"),
-  expectedDraftRevision: z
-    .number()
-    .int("Expected revision must be an integer")
-    .min(1, "Expected revision must be at least 1"),
-});
+export const SubmitForReviewSchema = z
+  .object({
+    agreementId: z.string().uuid("Invalid agreement ID"),
+    expectedDraftRevision: z
+      .number()
+      .int("Expected revision must be an integer")
+      .min(1, "Expected revision must be at least 1"),
+    approvalPolicy: ApprovalPolicySchema.default("UNANIMOUS"),
+    quorumThreshold: z
+      .number()
+      .int("Quorum threshold must be an integer")
+      .min(1, "Quorum threshold must be at least 1")
+      .optional()
+      .nullable()
+      .default(null),
+    isSequential: z.boolean().default(false),
+  })
+  .refine(
+    (data) => {
+      if (data.approvalPolicy === "QUORUM_THRESHOLD") {
+        return typeof data.quorumThreshold === "number" && data.quorumThreshold >= 1;
+      }
+      return true;
+    },
+    {
+      message: "Quorum threshold count is required when approval policy is QUORUM_THRESHOLD",
+      path: ["quorumThreshold"],
+    }
+  );
 
 export type SubmitForReviewInput = z.input<typeof SubmitForReviewSchema>;
 export type SubmitForReviewOutput = z.output<typeof SubmitForReviewSchema>;

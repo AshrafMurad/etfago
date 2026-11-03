@@ -39,6 +39,12 @@ export async function submitForReviewAction(
       (formData.get("expectedDraftRevision") as string) || "1",
       10
     ),
+    approvalPolicy: (formData.get("approvalPolicy") as string) || "UNANIMOUS",
+    quorumThreshold: formData.get("quorumThreshold")
+      ? parseInt(formData.get("quorumThreshold") as string, 10)
+      : null,
+    isSequential:
+      formData.get("isSequential") === "true" || formData.get("isSequential") === "on",
   };
 
   const parsed = SubmitForReviewSchema.safeParse(rawData);

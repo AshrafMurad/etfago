@@ -42,6 +42,7 @@ export async function inviteParticipantAction(
     partyKind: (formData.get("partyKind") as "PERSON" | "ORGANIZATION") || "PERSON",
     agreementRole: (formData.get("agreementRole") as "EDITOR" | "REVIEWER" | "OBSERVER") || "REVIEWER",
     requiredByDefault: formData.get("requiredByDefault") !== "false",
+    stepOrder: formData.get("stepOrder") ? parseInt(formData.get("stepOrder") as string, 10) : 1,
   };
 
   const parsed = InviteParticipantSchema.safeParse(rawData);
@@ -141,6 +142,7 @@ export async function updateParticipantRoleAction(params: {
   participantId: string;
   agreementRole: "EDITOR" | "REVIEWER" | "OBSERVER";
   requiredByDefault: boolean;
+  stepOrder?: number;
 }): Promise<InvitationActionState> {
   const actor = await requireAuth();
 
