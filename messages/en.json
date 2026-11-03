@@ -23,6 +23,8 @@
     "invitations": "Invitations",
     "workspaces": "Workspaces",
     "settings": "Settings",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
     "signOut": "Sign Out",
     "signIn": "Sign In"
   },
@@ -371,5 +373,27 @@
     },
     "before": "Before",
     "after": "After"
+  },
+  "Errors": {
+    "notFoundTitle": "Page Not Found",
+    "notFoundSubtitle": "The page or agreement you requested could not be found or you do not have permission to view it.",
+    "backHome": "Back to Home",
+    "errorTitle": "Something went wrong",
+    "errorSubtitle": "An unexpected error occurred while processing your request.",
+    "tryAgain": "Try Again"
+  },
+  "Legal": {
+    "privacyTitle": "Privacy Policy & Data Retention",
+    "privacySubtitle": "How Etfago protects your collaborative agreement records and private server attachments",
+    "privacySection1Title": "Private Persistent Server Storage",
+    "privacySection1Text": "Files and agreement documents uploaded to Etfago are stored strictly on private persistent server volumes. We never use public buckets, CDN static mirrors, or third-party cloud object storage for your private attachments. Every file access re-checks server-level authorization.",
+    "privacySection2Title": "Data Retention & History",
+    "privacySection2Text": "Agreement revisions and audit logs are maintained for operational consistency between invited parties. Archived agreements remain visible to existing participants but cannot be mutated.",
+    "termsTitle": "Terms of Service & Operational Disclaimer",
+    "termsSubtitle": "Operational collaboration workspace rules and legal trust boundaries",
+    "termsSection1Title": "Operational Approvals vs Legal Signatures",
+    "termsSection1Text": "Recording approval on Etfago is an operational workflow action confirming agreement between invited parties. It does not constitute a statutory electronic signature, digital certificate, or government-certified identification. Etfago does not provide legal advice.",
+    "termsSection2Title": "Frozen Versions & Immutability",
+    "termsSection2Text": "Once a version is submitted and unanimously approved, its snapshot and content hash are immutable. Subsequent edits require a new draft and explicit re-approval by all required parties."
   }
 }

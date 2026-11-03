@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { Navbar } from "@/features/navigation/Navbar";
+import { Footer } from "@/features/navigation/Footer";
 import "../globals.css";
 
 export const metadata: Metadata = {
@@ -38,6 +39,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages} locale={locale}>
           <Navbar locale={locale} />
           <main className="flex-1">{children}</main>
+          <Footer locale={locale} />
         </NextIntlClientProvider>
       </body>
     </html>
