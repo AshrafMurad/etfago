@@ -76,8 +76,20 @@ This is **not a one-day-only project**. Prioritize a dependable cross-user colla
 - Modal UI with policy selection and sequential review toggle, with server-action integration.
 **Exit:** Unit tests validating policy and invitation schemas; integration tests verifying majority promotion, impossible quorum rejection, threshold satisfaction, sequential ordering conflict guards, and cryptographic hash sensitivity.
 
-### Sprint 11: advanced business workspace administration & reporting (F-24) [Planned]
-- Workspace-level roles, member permissions, and agreement activity reporting.
+### Sprint 11: advanced business workspace administration & reporting (F-24) [Implemented]
+- Workspace administration and role-based access control:
+  - Role hierarchy: `OWNER` (full settings, transfer, archive), `ADMIN` (membership, rename, metadata), `MEMBER` (collaborative agreement creation).
+  - Owner protections: prevents demoting or removing the sole workspace owner; enforces atomic ownership transfer workflow (`transferWorkspaceOwnership`) promoting the new owner to `OWNER` and demoting the prior owner to `ADMIN`.
+  - Workspace lifecycle: rename support for Owners and Admins; soft-archive and restore for Owners of Business workspaces; safeguards blocking the archiving of personal workspaces.
+- Operational reporting and health metrics engine (`getWorkspaceOperationalReport`):
+  - Agreements overview: total agreements in workspace, breakdown by lifecycle status (`DRAFT`, `AGREED`, `ACTIVE`, `COMPLETED`, `CANCELLED`, `ARCHIVED`), and pending review counter.
+  - Commitments health: total operational commitments, status breakdown (`TODO`, `IN_PROGRESS`, `DONE`, `CANCELLED`), overdue tasks detector, `needsReview` alert tracking, and percentage completion rate.
+  - Workspace activity feed: audit trail capturing recent agreement and review events in the workspace.
+  - Structured data export: streaming CSV export with UTF-8 BOM encoding for seamless Excel Arabic & English parsing (`/api/workspaces/[id]/export?format=csv`) and raw JSON export (`/api/workspaces/[id]/export?format=json`).
+- Accessible bilingual dashboard (`/[locale]/workspaces/[id]`):
+  - Tabbed workspace navigation across Agreements, Operational Reports, Members & Roles, and Settings.
+  - Direct agreement creation pre-linked to workspace (`/agreements/new?workspaceId=...`).
+**Exit:** Unit tests validating admin, report query, and transfer schemas; integration tests verifying role permissions, owner demotion prevention, atomic ownership transfer, archiving rules, metrics accuracy, and UTF-8 BOM CSV/JSON export serialization; clean build and zero lint errors.
 
 ## Sprint dependency graph
 ```mermaid

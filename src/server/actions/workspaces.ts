@@ -5,12 +5,18 @@ import {
   CreateWorkspaceSchema,
   AddWorkspaceMemberSchema,
   UpdateWorkspaceMemberRoleSchema,
+  UpdateWorkspaceSchema,
+  ArchiveWorkspaceSchema,
+  TransferWorkspaceOwnershipSchema,
 } from "../../lib/schemas/workspaces";
 import {
   createBusinessWorkspace,
   addWorkspaceMember,
   updateWorkspaceMemberRole,
   removeWorkspaceMember,
+  updateWorkspace,
+  archiveWorkspace,
+  transferWorkspaceOwnership,
 } from "../workspaces/service";
 import { revalidatePath } from "next/cache";
 
@@ -151,3 +157,105 @@ export async function removeWorkspaceMemberAction(
     };
   }
 }
+
+export async function updateWorkspaceAction(
+  _prevState: WorkspaceActionState | null,
+  formData: FormData
+): Promise<WorkspaceActionState> {
+  const actor = await requireAuth();
+
+  const workspaceId = formData.get("workspaceId") as string;
+  const name = formData.get("name") as string;
+
+  const parsed = UpdateWorkspaceSchema.safeParse({ name });
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: "Invalid workspace name",
+      fieldErrors: parsed.error.flatten().fieldErrors,
+    };
+  }
+
+  try {
+    await updateWorkspace(actor.id, workspaceId, { name: parsed.data.name });
+    revalidatePath(`/[locale]/workspaces/${workspaceId}`, "page");
+    revalidatePath("/[locale]/workspaces", "page");
+    return {
+      success: true,
+      message: "Workspace updated successfully",
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Failed to update workspace",
+    };
+  }
+}
+
+export async function archiveWorkspaceAction(
+  _prevState: WorkspaceActionState | null,
+  formData: FormData
+): Promise<WorkspaceActionState> {
+  const actor = await requireAuth();
+
+  const workspaceId = formData.get("workspaceId") as string;
+  const archive = formData.get("archive") !== "false";
+
+  const parsed = ArchiveWorkspaceSchema.safeParse({ archive });
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: "Invalid archive parameters",
+    };
+  }
+
+  try {
+    await archiveWorkspace(actor.id, workspaceId, parsed.data.archive);
+    revalidatePath(`/[locale]/workspaces/${workspaceId}`, "page");
+    revalidatePath("/[locale]/workspaces", "page");
+    return {
+      success: true,
+      message: parsed.data.archive ? "Workspace archived" : "Workspace restored",
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Failed to update workspace archive state",
+    };
+  }
+}
+
+export async function transferWorkspaceOwnershipAction(
+  _prevState: WorkspaceActionState | null,
+  formData: FormData
+): Promise<WorkspaceActionState> {
+  const actor = await requireAuth();
+
+  const workspaceId = formData.get("workspaceId") as string;
+  const newOwnerUserId = formData.get("newOwnerUserId") as string;
+
+  const parsed = TransferWorkspaceOwnershipSchema.safeParse({ newOwnerUserId });
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: "Invalid target user",
+      fieldErrors: parsed.error.flatten().fieldErrors,
+    };
+  }
+
+  try {
+    await transferWorkspaceOwnership(actor.id, workspaceId, parsed.data.newOwnerUserId);
+    revalidatePath(`/[locale]/workspaces/${workspaceId}`, "page");
+    revalidatePath("/[locale]/workspaces", "page");
+    return {
+      success: true,
+      message: "Workspace ownership transferred successfully",
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Failed to transfer workspace ownership",
+    };
+  }
+}
+

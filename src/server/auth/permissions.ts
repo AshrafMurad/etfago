@@ -376,4 +376,100 @@ export async function assertCanUpdateCommitmentStatus(
   }
 }
 
+/**
+ * Workspace Permissions
+ */
+
+/**
+ * Checks whether an actor can view a workspace.
+ * True if actor is an active member (removedAt === null).
+ */
+export async function canViewWorkspace(
+  actorUserId: string,
+  workspaceId: string
+): Promise<boolean> {
+  if (!actorUserId || !workspaceId) return false;
+
+  const membership = await db.workspaceMember.findFirst({
+    where: {
+      workspaceId,
+      userId: actorUserId,
+      removedAt: null,
+    },
+    select: { id: true },
+  });
+
+  return !!membership;
+}
+
+export async function assertCanViewWorkspace(
+  actorUserId: string,
+  workspaceId: string
+): Promise<void> {
+  const allowed = await canViewWorkspace(actorUserId, workspaceId);
+  if (!allowed) {
+    throw new NotFoundError("Workspace not found");
+  }
+}
+
+/**
+ * Checks whether an actor is an ADMIN or OWNER of a workspace.
+ */
+export async function canAdminWorkspace(
+  actorUserId: string,
+  workspaceId: string
+): Promise<boolean> {
+  if (!actorUserId || !workspaceId) return false;
+
+  const membership = await db.workspaceMember.findFirst({
+    where: {
+      workspaceId,
+      userId: actorUserId,
+      removedAt: null,
+      role: { in: ["OWNER", "ADMIN"] },
+    },
+    select: { id: true },
+  });
+
+  return !!membership;
+}
+
+export async function assertCanAdminWorkspace(
+  actorUserId: string,
+  workspaceId: string
+): Promise<void> {
+  const allowed = await canAdminWorkspace(actorUserId, workspaceId);
+  if (!allowed) {
+    throw new ForbiddenError("You are not authorized to administer this workspace");
+  }
+}
+
+/**
+ * Checks whether an actor is the OWNER of a workspace.
+ */
+export async function canTransferOrArchiveWorkspace(
+  actorUserId: string,
+  workspaceId: string
+): Promise<boolean> {
+  if (!actorUserId || !workspaceId) return false;
+
+  const workspace = await db.workspace.findUnique({
+    where: { id: workspaceId },
+    select: { ownerUserId: true },
+  });
+
+  return workspace?.ownerUserId === actorUserId;
+}
+
+export async function assertCanTransferOrArchiveWorkspace(
+  actorUserId: string,
+  workspaceId: string
+): Promise<void> {
+  const allowed = await canTransferOrArchiveWorkspace(actorUserId, workspaceId);
+  if (!allowed) {
+    throw new ForbiddenError("Only the workspace owner can perform this action");
+  }
+}
+
+
 

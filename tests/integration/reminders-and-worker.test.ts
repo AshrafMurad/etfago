@@ -180,7 +180,8 @@ describe("Sprint 9 Integration: Due-Date Notifications & Background Reminders Wo
   it("2. generates idempotent pending review reminders for reviewers awaiting decision", async () => {
     // Review was submitted at beforeAll. Set pendingThresholdHours = 0 to trigger reminder.
     // Both Organizer and Reviewer are required participants with pending decisions.
-    const now = new Date("2026-11-03T16:00:00Z");
+    const now = new Date(Date.now() + 60 * 1000);
+    const todayBucket = now.toISOString().slice(0, 10);
 
     const scan1 = await generatePendingReviewReminders({
       agreementId,
@@ -189,7 +190,7 @@ describe("Sprint 9 Integration: Due-Date Notifications & Background Reminders Wo
     });
     expect(scan1.created).toBe(2);
 
-    const expectedKey = `review-reminder-${versionId}-${reviewerParticipantId}-2026-11-03`;
+    const expectedKey = `review-reminder-${versionId}-${reviewerParticipantId}-${todayBucket}`;
     const outboxReview = await db.notificationOutbox.findUnique({
       where: { eventKey: expectedKey },
     });

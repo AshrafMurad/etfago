@@ -8,7 +8,7 @@ import { CreateAgreementForm } from "../../../../features/agreements/CreateAgree
 
 interface NewAgreementPageProps {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ template?: string }>;
+  searchParams: Promise<{ template?: string; workspaceId?: string }>;
 }
 
 export default async function NewAgreementPage({
@@ -16,7 +16,7 @@ export default async function NewAgreementPage({
   searchParams,
 }: NewAgreementPageProps) {
   const { locale } = await params;
-  const { template: initialTemplateId } = await searchParams;
+  const { template: initialTemplateId, workspaceId: initialWorkspaceId } = await searchParams;
   const user = await getCurrentUser();
 
   if (!user) {
@@ -112,6 +112,7 @@ export default async function NewAgreementPage({
         }))}
         starterTemplates={starterTemplates}
         initialTemplateId={initialTemplateId || null}
+        initialWorkspaceId={initialWorkspaceId || null}
         translations={formTranslations}
         templateLabels={templateLabels}
       />

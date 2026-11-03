@@ -492,7 +492,7 @@ export async function recordReviewDecision(
           isUnanimouslyApproved: isUnanimous,
           approvedCount,
           requiredCount,
-          isApproved: version.state === "APPROVED",
+          isApproved: false,
         };
       }
       throw new ConflictError(
@@ -716,14 +716,6 @@ export async function recordReviewDecision(
       approvedCount,
       requiredCount,
       isApproved: false,
-    };
-
-    // Some required reviewers are still pending
-    return {
-      status: "RECORDED",
-      decision: "APPROVE",
-      versionState: "IN_REVIEW",
-      isUnanimouslyApproved: false,
     };
   });
 }
@@ -955,6 +947,9 @@ export async function listAgreementVersions(
       snapshot: parsedSnapshot,
       contentHash: v.contentHash,
       state: v.state,
+      approvalPolicy: v.approvalPolicy,
+      quorumThreshold: v.quorumThreshold,
+      isSequential: v.isSequential,
       submittedByUserId: v.submittedByUserId,
       submittedAt: v.submittedAt,
       resolvedAt: v.resolvedAt,
@@ -968,6 +963,7 @@ export async function listAgreementVersions(
         partyKindSnapshot: r.partyKindSnapshot,
         roleSnapshot: r.roleSnapshot,
         required: r.required,
+        stepOrder: r.stepOrder,
         decision: r.decision
           ? {
               id: r.decision.id,

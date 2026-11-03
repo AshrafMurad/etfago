@@ -19,6 +19,7 @@ interface CreateAgreementFormProps {
   workspaces: WorkspaceOption[];
   starterTemplates?: LocalizedStarterTemplate[];
   initialTemplateId?: string | null;
+  initialWorkspaceId?: string | null;
   translations: {
     titleLabel: string;
     titlePlaceholder: string;
@@ -82,6 +83,7 @@ export function CreateAgreementForm({
   workspaces,
   starterTemplates = [],
   initialTemplateId = null,
+  initialWorkspaceId = null,
   translations: t,
   templateLabels,
 }: CreateAgreementFormProps) {
@@ -89,7 +91,11 @@ export function CreateAgreementForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [workspaceId, setWorkspaceId] = useState(workspaces[0]?.id || "");
+  const [workspaceId, setWorkspaceId] = useState(
+    initialWorkspaceId && workspaces.some((w) => w.id === initialWorkspaceId)
+      ? initialWorkspaceId
+      : workspaces[0]?.id || ""
+  );
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
