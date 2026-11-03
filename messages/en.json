@@ -85,5 +85,38 @@
     "upload": "Upload File",
     "privateStorageNotice": "Files are stored securely on private server disk with no public URLs.",
     "allowedFormats": "PDF, JPG, PNG, and WebP only (up to 10 MB per file)."
+  },
+  "Auth": {
+    "signInTitle": "Sign in or Create Account",
+    "signInSubtitle": "Enter your email to sign in or create an account",
+    "emailLabel": "Email address",
+    "nameLabel": "Full Name (Optional)",
+    "sendLink": "Continue",
+    "verificationNotice": "A verification link has been sent to your email address.",
+    "verifiedSuccess": "Your email address has been successfully verified!",
+    "unverifiedBadge": "Unverified email",
+    "verifiedBadge": "Verified email",
+    "legalNote": "Email verification proves control of an address, not legal identity or corporate authority."
+  },
+  "Workspaces": {
+    "title": "Workspaces",
+    "subtitle": "Manage personal and business workspaces and team members",
+    "personal": "Personal Workspace",
+    "business": "Business Workspace",
+    "createNew": "Create New Business Workspace",
+    "workspaceName": "Workspace Name",
+    "members": "Members",
+    "addMember": "Add Member",
+    "role": "Role",
+    "roles": {
+      "OWNER": "Owner",
+      "ADMIN": "Admin",
+      "MEMBER": "Member"
+    },
+    "removeMember": "Remove Member",
+    "noWorkspaces": "No workspaces found",
+    "memberAdded": "Member added successfully",
+    "memberRemoved": "Member removed successfully",
+    "roleUpdated": "Member role updated successfully"
   }
 }

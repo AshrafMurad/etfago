@@ -15,6 +15,8 @@ This file exists so future contributors do not reinterpret the product mid-imple
 | DEC-008 | Verified-email account approval on a specific version, not legal signature | Required trust boundary |
 | DEC-009 | Single persistent VPS instance initially | Necessitated by private local file storage model |
 | DEC-010 | Time budget expanded beyond one day | Confirmed; prioritize real product and quality |
+| DEC-011 | Sprint 1 Identity & Tenancy: Auth.js custom adapter mapping `emailNormalized`/`emailVerifiedAt`, atomic personal workspace auto-provisioning on user creation, deny-by-default agreement permission functions | Confirmed & Implemented |
+| DEC-012 | Local Docker PostgreSQL port mapped to 5434 to eliminate collision with host port 5432 | Confirmed |
 
 ## Proposed, implementation-adjustable defaults
 - Personal workspace for every account; business workspaces optional.

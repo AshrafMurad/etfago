@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-etfago}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-etfago_dev_password}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5434}:5432"
     volumes:
       - etfago_pgdata:/var/lib/postgresql/data
     healthcheck:

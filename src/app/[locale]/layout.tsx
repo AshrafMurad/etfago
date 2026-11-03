@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { Navbar } from "@/features/navigation/Navbar";
 import "../globals.css";
 
 export const metadata: Metadata = {
@@ -35,7 +36,8 @@ export default async function LocaleLayout({
     <html lang={locale} dir={dir}>
       <body className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)] antialiased">
         <NextIntlClientProvider messages={messages} locale={locale}>
-          {children}
+          <Navbar locale={locale} />
+          <main className="flex-1">{children}</main>
         </NextIntlClientProvider>
       </body>
     </html>

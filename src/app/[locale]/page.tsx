@@ -18,43 +18,8 @@ function HomeContent({ locale }: { locale: string }) {
   const tNav = useTranslations("Navigation");
   const tAgreements = useTranslations("Agreements");
 
-  const otherLocale = locale === "ar" ? "en" : "ar";
-  const otherLocaleName = locale === "ar" ? "English" : "العربية";
-
   return (
     <div className="flex-1 flex flex-col">
-      {/* Navigation header */}
-      <header className="border-b border-[var(--border)] bg-[var(--surface)] px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] flex items-center justify-center font-bold text-lg shadow-sm">
-            ات
-          </div>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight text-[var(--primary)]">
-              {tCommon("appName")}
-            </h1>
-            <p className="text-xs text-[var(--muted)]">
-              {tCommon("tagline")}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <Link
-            href={`/${otherLocale}`}
-            className="text-sm font-medium px-3 py-1.5 rounded-md border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-muted)] transition-colors"
-          >
-            {otherLocaleName}
-          </Link>
-          <Link
-            href={`/${locale}/auth/sign-in`}
-            className="text-sm font-semibold px-4 py-2 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 transition-opacity"
-          >
-            {tNav("signIn")}
-          </Link>
-        </div>
-      </header>
-
       {/* Main hero */}
       <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-12 flex flex-col gap-8">
         <section className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 shadow-sm">
@@ -71,16 +36,16 @@ function HomeContent({ locale }: { locale: string }) {
 
           <div className="flex flex-wrap items-center gap-3">
             <Link
-              href={`/${locale}/app/agreements`}
+              href={`/${locale}/workspaces`}
               className="inline-flex items-center px-5 py-2.5 rounded-xl font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] shadow-sm hover:bg-[var(--primary-hover)] transition-colors"
             >
-              {tAgreements("createNew")}
+              {tNav("workspaces")}
             </Link>
             <Link
-              href={`/${locale}/app`}
+              href={`/${locale}/auth/signin`}
               className="inline-flex items-center px-5 py-2.5 rounded-xl font-semibold border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] hover:bg-[var(--surface-muted)] transition-colors"
             >
-              {tNav("home")}
+              {tNav("signIn")}
             </Link>
           </div>
         </section>
