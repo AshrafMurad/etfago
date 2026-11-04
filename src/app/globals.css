@@ -365,6 +365,15 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   background: var(--dp-color-ink-muted);
 }
 
+/* Hide scrollbar utility for clean touch tab strips */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Mobile navigation drawer animations */
 @keyframes drawerSlideInRtl {
   from {

@@ -65,95 +65,101 @@ export function AgreementMetadataEditor({
     }
   };
 
-  if (!isOpen) {
-    return (
+  return (
+    <>
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="sketch-btn sketch-btn-outline text-xs px-3 py-1.5"
+        className="sketch-btn sketch-btn-outline text-xs px-3 py-1.5 flex items-center gap-1.5"
       >
-        ✎ {t.rename}
+        <span>✎</span>
+        <span>{t.rename}</span>
       </button>
-    );
-  }
 
-  return (
-    <div className="sketch-card p-5 space-y-4 mb-4 relative">
-      <div className="flex items-center justify-between border-b border-[var(--dp-color-line)] pb-2">
-        <h3 className="text-sm font-bold font-marker text-[var(--dp-color-ink)]">{t.rename}</h3>
-        <button
-          type="button"
-          onClick={() => setIsOpen(false)}
-          className="text-xs text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-accent)] p-1 cursor-pointer font-marker"
-        >
-          ✕
-        </button>
-      </div>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
+          <div className="bg-[var(--dp-color-ground)] border-2 border-[var(--dp-color-ink)] rounded-[12px_4px_18px_6px] max-w-lg w-full p-6 shadow-[6px_6px_0px_var(--dp-color-ink)] space-y-4 max-h-[90vh] overflow-y-auto relative">
+            <div className="sketch-tape sketch-tape-top" />
+            <div className="flex items-center justify-between border-b border-[var(--dp-color-line)] pb-3">
+              <h3 className="text-base font-bold font-marker text-[var(--dp-color-ink)]">
+                ✎ {t.rename}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="text-xs text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-accent)] p-1 cursor-pointer font-marker"
+              >
+                ✕
+              </button>
+            </div>
 
-      {error && (
-        <div className="p-3 rounded-[6px_3px_7px_4px] bg-[#fbeee9] text-xs text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)] font-reading">
-          {error}
+            {error && (
+              <div className="p-3 rounded-[6px_3px_7px_4px] bg-[#fbeee9] text-xs text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)] font-reading">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSave} className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-bold font-marker text-[var(--dp-color-ink)] mb-1">
+                  {t.titleLabel} *
+                </label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  maxLength={160}
+                  required
+                  className="w-full px-3.5 py-2 text-sm text-[var(--dp-color-ink)] font-marker focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold font-marker text-[var(--dp-color-ink)] mb-1">
+                  {t.categoryLabel} <span className="text-[var(--dp-color-ink-muted)] font-normal font-reading">({t.optional})</span>
+                </label>
+                <input
+                  type="text"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  maxLength={64}
+                  className="w-full px-3.5 py-2 text-sm text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold font-marker text-[var(--dp-color-ink)] mb-1">
+                  {t.descriptionLabel} <span className="text-[var(--dp-color-ink-muted)] font-normal font-reading">({t.optional})</span>
+                </label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  maxLength={4000}
+                  rows={3}
+                  className="w-full px-3.5 py-2 text-xs text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[var(--dp-color-line)]">
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="sketch-btn sketch-btn-outline text-xs px-3.5 py-1.5 font-marker"
+                >
+                  {t.cancel}
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSaving}
+                  className="sketch-btn sketch-btn-primary text-xs px-4 py-1.5 font-marker disabled:opacity-50"
+                >
+                  {isSaving ? t.loading : t.save}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
-
-      <form onSubmit={handleSave} className="space-y-3">
-        <div>
-          <label className="block text-xs font-bold font-marker text-[var(--dp-color-ink)] mb-1">
-            {t.titleLabel} *
-          </label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            maxLength={160}
-            required
-            className="w-full px-3 py-2 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-scrap)] text-sm text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-bold font-marker text-[var(--dp-color-ink)] mb-1">
-            {t.categoryLabel} <span className="text-[var(--dp-color-ink-muted)] font-normal">({t.optional})</span>
-          </label>
-          <input
-            type="text"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            maxLength={64}
-            className="w-full px-3 py-2 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-scrap)] text-sm text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-bold font-marker text-[var(--dp-color-ink)] mb-1">
-            {t.descriptionLabel} <span className="text-[var(--dp-color-ink-muted)] font-normal">({t.optional})</span>
-          </label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            maxLength={4000}
-            rows={2}
-            className="w-full px-3 py-2 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-scrap)] text-xs text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
-          />
-        </div>
-
-        <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--dp-color-line)]">
-          <button
-            type="button"
-            onClick={() => setIsOpen(false)}
-            className="sketch-btn sketch-btn-outline text-xs px-3 py-1.5"
-          >
-            {t.cancel}
-          </button>
-          <button
-            type="submit"
-            disabled={isSaving}
-            className="sketch-btn sketch-btn-primary text-xs px-4 py-1.5 disabled:opacity-50"
-          >
-            {isSaving ? t.loading : t.save}
-          </button>
-        </div>
-      </form>
-    </div>
+    </>
   );
 }

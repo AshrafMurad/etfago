@@ -415,6 +415,21 @@ export default async function AgreementDetailPage({
     download: tFiles("download"),
     delete: tFiles("delete"),
     confirmDelete: tFiles("confirmDelete"),
+    dropzoneTitle: tFiles("dropzoneTitle"),
+    dropzoneActive: tFiles("dropzoneActive"),
+    browseFiles: tFiles("browseFiles"),
+    dropzoneHint: tFiles("dropzoneHint"),
+    privateStorageBadge: tFiles("privateStorageBadge"),
+    uploadProgress: tFiles.raw("uploadProgress"),
+    fileTooLarge: tFiles.raw("fileTooLarge"),
+    unsupportedType: tFiles.raw("unsupportedType"),
+    uploadFailed: tFiles.raw("uploadFailed"),
+    uploadSuccess: tFiles("uploadSuccess"),
+    emptyStateSubtitle: tFiles("emptyStateSubtitle"),
+    userFallback: tFiles("userFallback"),
+    archivedReadOnly: tFiles("archivedReadOnly"),
+    downloadTooltip: tFiles("downloadTooltip"),
+    deleteTooltip: tFiles("deleteTooltip"),
   };
 
   const activeTerms =
@@ -483,199 +498,201 @@ export default async function AgreementDetailPage({
       )}
 
       {/* Agreement Header */}
-      <div className="sketch-card p-6 space-y-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="space-y-1.5">
-            <div className="flex flex-wrap items-center gap-2">
-              <span
-                className={`text-xs px-2.5 py-0.5 rounded-[5px_2px_7px_3px] font-semibold font-reading ${
-                  agreement.lifecycleStatus === "DRAFT"
-                    ? "sketch-highlight border border-[var(--dp-color-ink)]/20"
-                    : agreement.lifecycleStatus === "AGREED"
-                    ? "bg-[#eaf3ea] text-[var(--dp-color-ink)] border border-[#96b79d]"
-                    : "bg-[var(--dp-color-ground)] text-[var(--dp-color-ink-muted)] border border-[var(--dp-color-line)]"
-                }`}
-              >
-                {tAgreements(`status.${agreement.lifecycleStatus}`)}
-              </span>
+      <div className="sketch-card p-5 sm:p-6 space-y-4">
+        {/* Badges row */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span
+            className={`text-xs px-2.5 py-0.5 rounded-[5px_2px_7px_3px] font-semibold font-reading ${
+              agreement.lifecycleStatus === "DRAFT"
+                ? "sketch-highlight border border-[var(--dp-color-ink)]/20"
+                : agreement.lifecycleStatus === "AGREED"
+                ? "bg-[#eaf3ea] text-[var(--dp-color-ink)] border border-[#96b79d]"
+                : "bg-[var(--dp-color-ground)] text-[var(--dp-color-ink-muted)] border border-[var(--dp-color-line)]"
+            }`}
+          >
+            {tAgreements(`status.${agreement.lifecycleStatus}`)}
+          </span>
 
-              <span className="text-xs px-2 py-0.5 rounded-[5px_2px_7px_3px] bg-[var(--dp-color-ground)] border border-[var(--dp-color-line)] text-[var(--dp-color-ink-muted)] font-reading">
-                {agreement.workspace.name}
-              </span>
+          <span className="text-xs px-2 py-0.5 rounded-[5px_2px_7px_3px] bg-[var(--dp-color-ground)] border border-[var(--dp-color-line)] text-[var(--dp-color-ink-muted)] font-reading">
+            {agreement.workspace.name}
+          </span>
 
-              {agreement.category && (
-                <span className="text-xs px-2 py-0.5 rounded-[5px_2px_7px_3px] bg-[var(--dp-color-ground)]/60 text-[var(--dp-color-ink-muted)] border border-dashed border-[var(--dp-color-line)] font-reading">
-                  {agreement.category}
-                </span>
-              )}
-            </div>
+          {agreement.category && (
+            <span className="text-xs px-2 py-0.5 rounded-[5px_2px_7px_3px] bg-[var(--dp-color-ground)]/60 text-[var(--dp-color-ink-muted)] border border-dashed border-[var(--dp-color-line)] font-reading">
+              {agreement.category}
+            </span>
+          )}
+        </div>
 
-            <h1 className="text-2xl sm:text-3xl font-bold font-marker text-[var(--dp-color-ink)]">
-              {agreement.title}
-            </h1>
+        {/* Title & Description - Full Width */}
+        <div className="space-y-1.5">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-marker text-[var(--dp-color-ink)] break-words leading-tight">
+            {agreement.title}
+          </h1>
 
-            {agreement.description && (
-              <p className="text-base font-reading text-[var(--dp-color-ink-muted)]">
-                {agreement.description}
-              </p>
-            )}
-          </div>
+          {agreement.description && (
+            <p className="text-sm sm:text-base font-reading text-[var(--dp-color-ink-muted)] leading-relaxed max-w-3xl">
+              {agreement.description}
+            </p>
+          )}
+        </div>
 
-          {/* Action buttons */}
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
-            <Link
-              href={`/${locale}/agreements/${agreement.id}/export`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="sketch-btn sketch-btn-outline px-3 py-1.5 text-xs font-marker"
-            >
-              <span>🖨️</span>
-              <span>{tAgreements("exportSummary")}</span>
-            </Link>
+        {/* Action buttons Toolbar - Dedicated responsive row */}
+        <div className="pt-3 border-t border-[var(--dp-color-line)]/60 flex flex-wrap items-center gap-2 sm:gap-2.5">
+          <Link
+            href={`/${locale}/agreements/${agreement.id}/export`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="sketch-btn sketch-btn-outline px-3 py-1.5 text-xs font-marker flex items-center gap-1.5"
+          >
+            <span>🖨️</span>
+            <span>{tAgreements("exportSummary")}</span>
+          </Link>
 
-            {agreement.lifecycleStatus !== "ARCHIVED" && activeTerms.length > 0 && (
-              <ProposeChangeModal
+          {agreement.lifecycleStatus !== "ARCHIVED" && activeTerms.length > 0 && (
+            <ProposeChangeModal
+              agreementId={agreement.id}
+              baseVersionId={agreement.currentApprovedVersionId}
+              terms={activeTerms}
+              translations={proposeModalTranslations}
+            />
+          )}
+
+          {agreement.isOrganizer &&
+            !pendingReview &&
+            agreement.lifecycleStatus !== "ARCHIVED" &&
+            agreement.draft && (
+              <SubmitForReviewModal
                 agreementId={agreement.id}
-                baseVersionId={agreement.currentApprovedVersionId}
-                terms={activeTerms}
-                translations={proposeModalTranslations}
+                draftRevision={agreement.draft.revision}
+                termsCount={agreement.draft.content.terms.length}
+                participants={agreement.participants}
+                translations={submitModalTranslations}
               />
             )}
 
-            {agreement.isOrganizer &&
-              !pendingReview &&
-              agreement.lifecycleStatus !== "ARCHIVED" &&
-              agreement.draft && (
-                <SubmitForReviewModal
-                  agreementId={agreement.id}
-                  draftRevision={agreement.draft.revision}
-                  termsCount={agreement.draft.content.terms.length}
-                  participants={agreement.participants}
-                  translations={submitModalTranslations}
-                />
-              )}
+          {agreement.canEdit && (
+            <AgreementMetadataEditor
+              agreementId={agreement.id}
+              initialTitle={agreement.title}
+              initialDescription={agreement.description}
+              initialCategory={agreement.category}
+              translations={metadataEditorTranslations}
+            />
+          )}
 
-            {agreement.canEdit && (
-              <AgreementMetadataEditor
-                agreementId={agreement.id}
-                initialTitle={agreement.title}
-                initialDescription={agreement.description}
-                initialCategory={agreement.category}
-                translations={metadataEditorTranslations}
-              />
-            )}
-
-            {agreement.isOrganizer && (
-              <AgreementArchiveButton
-                agreementId={agreement.id}
-                isArchived={agreement.lifecycleStatus === "ARCHIVED"}
-                translations={archiveButtonTranslations}
-              />
-            )}
-          </div>
+          {agreement.isOrganizer && (
+            <AgreementArchiveButton
+              agreementId={agreement.id}
+              isArchived={agreement.lifecycleStatus === "ARCHIVED"}
+              translations={archiveButtonTranslations}
+            />
+          )}
         </div>
       </div>
 
       {/* Tabs Bar */}
-      <div className="flex border-b-[1.5px] border-[var(--dp-color-line)] gap-2 text-sm font-reading overflow-x-auto pb-1">
-        <Link
-          href={`/${locale}/agreements/${agreement.id}?tab=terms`}
-          className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap transition-all font-semibold ${
-            tab === "terms"
-              ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
-              : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
-          }`}
-        >
-          {tAgreements("tabs.terms")} ({agreement.draft?.content.terms.length || 0})
-        </Link>
+      <div className="relative border-b-[1.5px] border-[var(--dp-color-line)] pt-1 pb-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 text-sm font-reading overflow-x-auto no-scrollbar scroll-smooth py-1 px-0.5">
+          <Link
+            href={`/${locale}/agreements/${agreement.id}?tab=terms`}
+            className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap shrink-0 transition-all font-semibold ${
+              tab === "terms"
+                ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
+                : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
+            }`}
+          >
+            {tAgreements("tabs.terms")} ({agreement.draft?.content.terms.length || 0})
+          </Link>
 
-        <Link
-          href={`/${locale}/agreements/${agreement.id}?tab=commitments`}
-          className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap transition-all font-semibold ${
-            tab === "commitments"
-              ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
-              : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
-          }`}
-        >
-          {tAgreements("tabs.commitments")} ({commitments.length})
-        </Link>
+          <Link
+            href={`/${locale}/agreements/${agreement.id}?tab=commitments`}
+            className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap shrink-0 transition-all font-semibold ${
+              tab === "commitments"
+                ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
+                : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
+            }`}
+          >
+            {tAgreements("tabs.commitments")} ({commitments.length})
+          </Link>
 
-        <Link
-          href={`/${locale}/agreements/${agreement.id}?tab=files`}
-          className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap transition-all font-semibold ${
-            tab === "files"
-              ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
-              : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
-          }`}
-        >
-          {tAgreements("tabs.files")} ({attachments.length})
-        </Link>
+          <Link
+            href={`/${locale}/agreements/${agreement.id}?tab=files`}
+            className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap shrink-0 transition-all font-semibold ${
+              tab === "files"
+                ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
+                : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
+            }`}
+          >
+            {tAgreements("tabs.files")} ({attachments.length})
+          </Link>
 
-        <Link
-          href={`/${locale}/agreements/${agreement.id}?tab=proposals`}
-          className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap transition-all font-semibold ${
-            tab === "proposals"
-              ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
-              : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
-          }`}
-        >
-          {tAgreements("tabs.proposals")} ({proposals.length})
-        </Link>
+          <Link
+            href={`/${locale}/agreements/${agreement.id}?tab=proposals`}
+            className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap shrink-0 transition-all font-semibold ${
+              tab === "proposals"
+                ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
+                : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
+            }`}
+          >
+            {tAgreements("tabs.proposals")} ({proposals.length})
+          </Link>
 
-        <Link
-          href={`/${locale}/agreements/${agreement.id}?tab=diff`}
-          className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap transition-all font-semibold ${
-            tab === "diff"
-              ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
-              : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
-          }`}
-        >
-          {tAgreements("tabs.diff")}
-        </Link>
+          <Link
+            href={`/${locale}/agreements/${agreement.id}?tab=diff`}
+            className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap shrink-0 transition-all font-semibold ${
+              tab === "diff"
+                ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
+                : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
+            }`}
+          >
+            {tAgreements("tabs.diff")}
+          </Link>
 
-        <Link
-          href={`/${locale}/agreements/${agreement.id}?tab=discussion`}
-          className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap transition-all font-semibold ${
-            tab === "discussion"
-              ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
-              : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
-          }`}
-        >
-          {tAgreements("tabs.discussion")} ({comments.length})
-        </Link>
+          <Link
+            href={`/${locale}/agreements/${agreement.id}?tab=discussion`}
+            className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap shrink-0 transition-all font-semibold ${
+              tab === "discussion"
+                ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
+                : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
+            }`}
+          >
+            {tAgreements("tabs.discussion")} ({comments.length})
+          </Link>
 
-        <Link
-          href={`/${locale}/agreements/${agreement.id}?tab=participants`}
-          className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap transition-all font-semibold ${
-            tab === "participants"
-              ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
-              : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
-          }`}
-        >
-          {tAgreements("tabs.participants")} ({agreement.participants.length})
-        </Link>
+          <Link
+            href={`/${locale}/agreements/${agreement.id}?tab=participants`}
+            className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap shrink-0 transition-all font-semibold ${
+              tab === "participants"
+                ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
+                : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
+            }`}
+          >
+            {tAgreements("tabs.participants")} ({agreement.participants.length})
+          </Link>
 
-        <Link
-          href={`/${locale}/agreements/${agreement.id}?tab=versions`}
-          className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap transition-all font-semibold ${
-            tab === "versions"
-              ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
-              : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
-          }`}
-        >
-          {tAgreements("tabs.versions")} ({versions.length})
-        </Link>
+          <Link
+            href={`/${locale}/agreements/${agreement.id}?tab=versions`}
+            className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap shrink-0 transition-all font-semibold ${
+              tab === "versions"
+                ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
+                : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
+            }`}
+          >
+            {tAgreements("tabs.versions")} ({versions.length})
+          </Link>
 
-        <Link
-          href={`/${locale}/agreements/${agreement.id}?tab=activity`}
-          className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap transition-all font-semibold ${
-            tab === "activity"
-              ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
-              : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
-          }`}
-        >
-          {tAgreements("tabs.activity")} ({agreement.recentActivity.length})
-        </Link>
+          <Link
+            href={`/${locale}/agreements/${agreement.id}?tab=activity`}
+            className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap shrink-0 transition-all font-semibold ${
+              tab === "activity"
+                ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
+                : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
+            }`}
+          >
+            {tAgreements("tabs.activity")} ({agreement.recentActivity.length})
+          </Link>
+        </div>
       </div>
 
       {/* Tab Contents */}
@@ -740,6 +757,8 @@ export default async function AgreementDetailPage({
             attachments={attachments}
             currentUserId={user.id}
             isOrganizer={agreement.isOrganizer}
+            canUpload={agreement.lifecycleStatus !== "ARCHIVED"}
+            isArchived={agreement.lifecycleStatus === "ARCHIVED"}
             translations={attachmentsTranslations}
           />
         )}

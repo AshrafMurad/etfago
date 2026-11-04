@@ -192,7 +192,7 @@ export function AgreementParticipantsCard({
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2 text-xs text-[var(--dp-color-ink-muted)] font-mono" dir="ltr">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[var(--dp-color-ink-muted)] font-mono break-all" dir="ltr">
                     <span>{p.emailNormalized}</span>
                     <span className="text-[var(--dp-color-line)]">•</span>
                     <span className="font-sans text-[11px] text-[var(--dp-color-ink-muted)]">
@@ -212,7 +212,7 @@ export function AgreementParticipantsCard({
 
               {/* Action buttons (for organizer on non-organizer rows) */}
               {isOrganizer && !isParticipantOrganizer && (
-                <div className="flex items-center gap-2 self-end md:self-center shrink-0">
+                <div className="flex flex-wrap items-center gap-2 self-start md:self-center shrink-0 mt-2 md:mt-0">
                   {!isJoined && (
                     <button
                       type="button"

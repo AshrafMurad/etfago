@@ -194,7 +194,7 @@ export function ChangeProposalsList({
             >
               {/* Header */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-[var(--dp-color-line)] pb-3">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <span
                     className={`px-2 py-0.5 rounded-[4px_2px_5px_3px] text-[11px] font-bold font-marker ${
                       proposal.status === "OPEN"

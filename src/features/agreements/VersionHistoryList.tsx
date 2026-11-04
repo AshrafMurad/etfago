@@ -127,7 +127,7 @@ export function VersionHistoryList({
             >
               {/* Version Header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                   <span className="text-sm font-extrabold font-marker px-2.5 py-1 rounded-[5px_2px_7px_3px] bg-[var(--dp-color-ink)] text-[var(--dp-color-scrap)] shadow-[1px_1px_0px_var(--dp-color-ink)]">
                     v{ver.versionNumber}
                   </span>
@@ -137,7 +137,7 @@ export function VersionHistoryList({
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <button
                     type="button"
                     onClick={() =>
@@ -164,7 +164,7 @@ export function VersionHistoryList({
 
               {/* Hash & Reviewers Info */}
               <div className="pt-2 border-t border-dashed border-[var(--dp-color-line)] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-[var(--dp-color-ink-muted)]">
-                <div className="flex items-center gap-1.5 font-mono text-[11px]">
+                <div className="flex flex-wrap items-center gap-1.5 font-mono text-[11px] break-all">
                   <span className="font-reading text-xs">{translations.hashLabel}:</span>
                   <span className="bg-[var(--dp-color-ground)] px-1.5 py-0.5 rounded border border-[var(--dp-color-line)] text-[var(--dp-color-ink)] select-all font-semibold">
                     {ver.contentHash.slice(0, 16)}...
@@ -178,7 +178,7 @@ export function VersionHistoryList({
                   </button>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <span className="text-xs font-reading font-bold">المراجعون:</span>
                   <div className="flex flex-wrap items-center gap-1">
                     {ver.reviewers.map((r) => {

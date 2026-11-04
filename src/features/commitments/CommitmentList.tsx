@@ -215,16 +215,16 @@ export function CommitmentList({
               )}
 
               {/* Header */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+                <div className="flex flex-wrap items-center gap-2 min-w-0 flex-1">
                   {getStatusBadge(commitment.status)}
-                  <h4 className="font-marker font-bold text-sm text-[var(--dp-color-ink)]">
+                  <h4 className="font-marker font-bold text-sm text-[var(--dp-color-ink)] break-words">
                     {commitment.title}
                   </h4>
                 </div>
 
                 {/* Status Dropdown */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
                   <div className="w-36">
                     <SketchSelect
                       size="sm"

@@ -358,19 +358,23 @@ export async function listAttachments(
   });
 
   const uploaderMap = new Map(
-    uploaders.map((u) => [u.id, u.name || u.emailNormalized])
+    uploaders.map((u) => [u.id, u.name || u.emailNormalized || "User"])
   );
 
-  return attachments.map((a) => ({
-    id: a.id,
-    agreementId: a.agreementId,
-    uploadedByUserId: a.uploadedByUserId,
-    uploaderName: uploaderMap.get(a.uploadedByUserId) || "User",
-    versionId: a.versionId,
-    originalFilename: a.originalFilename,
-    mimeDetected: a.mimeDetected,
-    sizeBytes: Number(a.sizeBytes),
-    sha256: a.sha256,
-    createdAt: a.createdAt,
-  }));
+  return attachments.map((a) => {
+    const rawName = uploaderMap.get(a.uploadedByUserId);
+    const safeName = rawName && rawName !== "undefined" && rawName !== "null" ? rawName : "User";
+    return {
+      id: a.id,
+      agreementId: a.agreementId,
+      uploadedByUserId: a.uploadedByUserId,
+      uploaderName: safeName,
+      versionId: a.versionId,
+      originalFilename: a.originalFilename,
+      mimeDetected: a.mimeDetected,
+      sizeBytes: Number(a.sizeBytes),
+      sha256: a.sha256,
+      createdAt: a.createdAt,
+    };
+  });
 }
