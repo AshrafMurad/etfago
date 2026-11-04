@@ -38,6 +38,7 @@ export function WorkspaceSettingsView({
   members,
 }: WorkspaceSettingsViewProps) {
   const t = useTranslations("Workspaces.settings");
+  const tWorkspaces = useTranslations("Workspaces");
   const common = useTranslations("Common");
 
   const [renameState, renameAction, isRenaming] = useActionState(updateWorkspaceAction, null);
@@ -71,7 +72,7 @@ export function WorkspaceSettingsView({
 
         {renameState?.success && (
           <div className="p-3 text-xs bg-[#eaf3ea] text-[var(--dp-color-ink)] rounded-[6px_3px_7px_4px] border border-[#96b79d] font-reading">
-            {renameState.message}
+            {t("renameSuccess")}
           </div>
         )}
 
@@ -117,13 +118,13 @@ export function WorkspaceSettingsView({
 
           {transferState?.success && (
             <div className="p-3 text-xs bg-[#eaf3ea] text-[var(--dp-color-ink)] rounded-[6px_3px_7px_4px] border border-[#96b79d] font-reading">
-              {transferState.message}
+              {t("transferSuccess")}
             </div>
           )}
 
           {eligibleNewOwners.length === 0 ? (
             <div className="text-xs text-[var(--dp-color-ink-muted)] p-3 bg-[var(--dp-color-ground)] rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] font-reading">
-              No other active members in this workspace to transfer ownership to. Add team members first.
+              {t("noEligibleMembers")}
             </div>
           ) : (
             <form
@@ -144,7 +145,7 @@ export function WorkspaceSettingsView({
                 <option value="">{t("selectNewOwner")}</option>
                 {eligibleNewOwners.map((m) => (
                   <option key={m.user.id} value={m.user.id}>
-                    {m.user.name || m.user.emailNormalized} ({m.role})
+                    {m.user.name || m.user.emailNormalized} ({tWorkspaces(`roles.${m.role}`)})
                   </option>
                 ))}
               </select>
@@ -183,7 +184,7 @@ export function WorkspaceSettingsView({
 
           {archiveState?.success && (
             <div className="p-3 text-xs bg-[#eaf3ea] text-[var(--dp-color-ink)] rounded-[6px_3px_7px_4px] border border-[#96b79d] font-reading">
-              {archiveState.message}
+              {isArchived ? t("restoreSuccess") : t("archiveSuccess")}
             </div>
           )}
 
