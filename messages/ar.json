@@ -533,5 +533,33 @@
     "dueSoonSubject": "تذكير بموعد استحقاق التزام: {commitment} ({agreement})",
     "overdueSubject": "تنبيه: التزام متأخر عن موعده: {commitment} ({agreement})",
     "reviewPendingSubject": "تذكير: نسخة معلقة بانتظار مراجعتك (نسخة {version}) - {agreement}"
+  },
+  "Validation": {
+    "required": "هذا الحقل مطلوب",
+    "emailRequired": "يرجى إدخال البريد الإلكتروني",
+    "emailInvalid": "يرجى إدخال بريد إلكتروني صحيح (مثال: user@example.com)",
+    "titleRequired": "عنوان الاتفاق مطلوب",
+    "titleMin": "يجب ألا يقل العنوان عن حرفين",
+    "titleMax": "يجب ألا يتجاوز العنوان 160 حرفًا",
+    "workspaceRequired": "يرجى اختيار مساحة العمل",
+    "workspaceNameRequired": "اسم مساحة العمل مطلوب",
+    "workspaceNameMin": "يجب ألا يقل اسم مساحة العمل عن حرفين",
+    "workspaceNameMax": "يجب ألا يتجاوز اسم مساحة العمل 100 حرف",
+    "partyNameRequired": "اسم الطرف المشارك مطلوب",
+    "partyNameMax": "يجب ألا يتجاوز اسم الطرف 120 حرفًا",
+    "termTitleRequired": "عنوان البند مطلوب",
+    "termTitleMax": "يجب ألا يتجاوز عنوان البند 120 حرفًا",
+    "termBodyRequired": "تفاصيل البند مطلوبة",
+    "termBodyMax": "يجب ألا تتجاوز تفاصيل البند 4000 حرف",
+    "commitmentTitleRequired": "عنوان الالتزام مطلوب",
+    "reasonRequired": "يرجى توضيح سبب طلب التعديل",
+    "withdrawReasonRequired": "سبب سحب المراجعة مطلوب",
+    "declineReasonRequired": "سبب رفض الاقتراح مطلوب",
+    "commentRequired": "يرجى كتابة نص التعليق",
+    "amountInvalid": "يرجى إدخال مبلغ مالي صحيح (أرقام فقط)",
+    "currencyInvalid": "رمز عملة غير صالح (مثال: SAR)",
+    "dateInvalid": "صيغة التاريخ غير صالحة",
+    "quorumThresholdInvalid": "عدد الأصوات المطلوب غير صالح",
+    "formHasErrors": "يرجى مراجعة الحقول وتصحيح الأخطاء الموضحة أدناه"
   }
 }

@@ -2,6 +2,7 @@
 
 import React, { useState, useTransition } from "react";
 import { submitForReviewAction } from "../../server/actions/versions";
+import { FieldErrorMessage, FormAlert } from "../ui";
 
 interface ParticipantInfo {
   id: string;
@@ -41,6 +42,7 @@ export function SubmitForReviewModal({
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [quorumError, setQuorumError] = useState<string | null>(null);
 
   const [approvalPolicy, setApprovalPolicy] = useState<"UNANIMOUS" | "MAJORITY" | "QUORUM_THRESHOLD">("UNANIMOUS");
   const [quorumThreshold, setQuorumThreshold] = useState<number>(2);
@@ -56,6 +58,14 @@ export function SubmitForReviewModal({
     e.preventDefault();
     if (!isQuorumMet) return;
 
+    if (approvalPolicy === "QUORUM_THRESHOLD") {
+      if (!quorumThreshold || quorumThreshold < 1 || quorumThreshold > joinedRequiredParticipants.length) {
+        setQuorumError(`يجب أن يكون عدد الأصوات بين 1 و ${joinedRequiredParticipants.length}`);
+        return;
+      }
+    }
+
+    setQuorumError(null);
     setErrorMessage(null);
     startTransition(async () => {
       const formData = new FormData();
@@ -100,8 +110,8 @@ export function SubmitForReviewModal({
             </div>
 
             {errorMessage && (
-              <div className="p-3 text-xs rounded-[6px_3px_8px_4px] bg-[#fbeee9] border border-[var(--dp-color-accent)] text-[var(--dp-color-accent)] font-reading">
-                {errorMessage}
+              <div className="mb-2">
+                <FormAlert type="error" message={errorMessage} />
               </div>
             )}
 
@@ -191,21 +201,30 @@ export function SubmitForReviewModal({
                   </div>
 
                   {approvalPolicy === "QUORUM_THRESHOLD" && (
-                    <div className="flex items-center gap-2 pt-1 font-reading">
-                      <span className="text-[var(--dp-color-ink)]">
-                        عدد الأصوات المطلوبة للاعتماد:
-                      </span>
-                      <input
-                        type="number"
-                        min={1}
-                        max={joinedRequiredParticipants.length}
-                        value={quorumThreshold}
-                        onChange={(e) => setQuorumThreshold(parseInt(e.target.value, 10) || 1)}
-                        className="w-16 px-2 py-1 rounded-[5px_2px_6px_3px] border border-[var(--dp-color-line)] bg-[var(--dp-color-scrap)] text-xs font-mono text-center"
-                      />
-                      <span className="text-[var(--dp-color-ink-muted)] text-[11px]">
-                        (من أصل {joinedRequiredParticipants.length} مراجعين)
-                      </span>
+                    <div className="pt-1 font-reading">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[var(--dp-color-ink)]">
+                          عدد الأصوات المطلوبة للاعتماد:
+                        </span>
+                        <input
+                          type="number"
+                          min={1}
+                          max={joinedRequiredParticipants.length}
+                          value={quorumThreshold}
+                          onChange={(e) => {
+                            setQuorumThreshold(parseInt(e.target.value, 10) || 1);
+                            if (quorumError) setQuorumError(null);
+                          }}
+                          aria-invalid={Boolean(quorumError)}
+                          className={`w-16 px-2 py-1 rounded-[5px_2px_6px_3px] border ${
+                            quorumError ? "sketch-input-error" : "border-[var(--dp-color-line)]"
+                          } bg-[var(--dp-color-scrap)] text-xs font-mono text-center`}
+                        />
+                        <span className="text-[var(--dp-color-ink-muted)] text-[11px]">
+                          (من أصل {joinedRequiredParticipants.length} مراجعين)
+                        </span>
+                      </div>
+                      <FieldErrorMessage error={quorumError} />
                     </div>
                   )}
 

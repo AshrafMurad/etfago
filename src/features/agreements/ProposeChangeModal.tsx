@@ -6,6 +6,7 @@ import { createChangeRequestAction } from "../../server/actions/proposals";
 import { ChangeOperation } from "../../lib/schemas/proposals";
 import { SketchSelect } from "../ui/SketchSelect";
 import { SketchDatePicker } from "../ui/SketchDatePicker";
+import { FieldErrorMessage, FormAlert } from "../ui";
 
 interface ProposeChangeModalProps {
   agreementId: string;
@@ -59,9 +60,11 @@ export function ProposeChangeModal({
 
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ title?: string; body?: string }>({});
 
   const handleTermChange = (termId: string) => {
     setSelectedTermId(termId);
+    setFieldErrors({});
     const found = terms.find((t) => t.id === termId);
     if (found) {
       setTitle(found.title);
@@ -73,6 +76,7 @@ export function ProposeChangeModal({
   };
 
   const handleOpen = () => {
+    setFieldErrors({});
     if (terms.length === 0) {
       setOperation("ADD");
       setTitle("");
@@ -92,6 +96,23 @@ export function ProposeChangeModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    const errors: { title?: string; body?: string } = {};
+    if (operation !== "REMOVE") {
+      if (!title.trim()) {
+        errors.title = `${translations.termTitleLabel} مطلوب`;
+      }
+      if (!body.trim()) {
+        errors.body = `${translations.termBodyLabel} مطلوب`;
+      }
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
+    setFieldErrors({});
 
     const termIdToUse =
       operation === "ADD"
@@ -177,12 +198,12 @@ export function ProposeChangeModal({
             </div>
 
             {error && (
-              <div className="p-3 text-xs rounded-[6px_3px_7px_4px] bg-[#fbeee9] text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)] font-reading">
-                {error}
+              <div className="mb-2">
+                <FormAlert type="error" message={error} />
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+            <form onSubmit={handleSubmit} noValidate className="space-y-4 text-xs">
               {/* Operation Selection */}
               <div className="space-y-1.5">
                 <label className="font-bold font-marker text-[var(--dp-color-ink)]">
@@ -196,6 +217,7 @@ export function ProposeChangeModal({
                         type="button"
                         onClick={() => {
                           setOperation(op);
+                          setFieldErrors({});
                           if (op === "ADD") {
                             setTitle("");
                             setBody("");
@@ -250,29 +272,49 @@ export function ProposeChangeModal({
               {operation !== "REMOVE" && (
                 <div className="space-y-3 p-3 rounded-[8px_4px_10px_5px] bg-[var(--dp-color-scrap)] border border-[var(--dp-color-line)]">
                   <div className="space-y-1">
-                    <label className="font-bold font-marker text-[var(--dp-color-ink)]">
+                    <label htmlFor="propose-term-title" className="font-bold font-marker text-[var(--dp-color-ink)]">
                       {translations.termTitleLabel} *
                     </label>
                     <input
+                      id="propose-term-title"
                       type="text"
-                      required
                       value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className="w-full px-3 py-2 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
+                      onChange={(e) => {
+                        setTitle(e.target.value);
+                        if (fieldErrors.title) {
+                          setFieldErrors((prev) => ({ ...prev, title: undefined }));
+                        }
+                      }}
+                      aria-invalid={Boolean(fieldErrors.title)}
+                      aria-describedby={fieldErrors.title ? "propose-term-title-error" : undefined}
+                      className={`w-full px-3 py-2 rounded-[6px_3px_7px_4px] border ${
+                        fieldErrors.title ? "sketch-input-error" : "border-[var(--dp-color-line)]"
+                      } bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]`}
                     />
+                    <FieldErrorMessage id="propose-term-title-error" error={fieldErrors.title} />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="font-bold font-marker text-[var(--dp-color-ink)]">
+                    <label htmlFor="propose-term-body" className="font-bold font-marker text-[var(--dp-color-ink)]">
                       {translations.termBodyLabel} *
                     </label>
                     <textarea
-                      required
+                      id="propose-term-body"
                       rows={3}
                       value={body}
-                      onChange={(e) => setBody(e.target.value)}
-                      className="w-full px-3 py-2 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
+                      onChange={(e) => {
+                        setBody(e.target.value);
+                        if (fieldErrors.body) {
+                          setFieldErrors((prev) => ({ ...prev, body: undefined }));
+                        }
+                      }}
+                      aria-invalid={Boolean(fieldErrors.body)}
+                      aria-describedby={fieldErrors.body ? "propose-term-body-error" : undefined}
+                      className={`w-full px-3 py-2 rounded-[6px_3px_7px_4px] border ${
+                        fieldErrors.body ? "sketch-input-error" : "border-[var(--dp-color-line)]"
+                      } bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]`}
                     />
+                    <FieldErrorMessage id="propose-term-body-error" error={fieldErrors.body} />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">

@@ -21,6 +21,7 @@ export interface SketchSelectProps {
   onChange?: (value: string) => void;
   disabled?: boolean;
   required?: boolean;
+  hasError?: boolean;
   className?: string;
   triggerClassName?: string;
   menuClassName?: string;
@@ -41,6 +42,7 @@ export function SketchSelect({
   onChange,
   disabled = false,
   required = false,
+  hasError = false,
   className = "",
   triggerClassName = "",
   menuClassName = "",
@@ -219,7 +221,6 @@ export function SketchSelect({
           type="hidden"
           name={name}
           value={selectedValue}
-          required={required}
         />
       )}
 
@@ -231,8 +232,14 @@ export function SketchSelect({
         onClick={() => setIsOpen((prev) => !prev)}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
+        aria-invalid={hasError ? "true" : undefined}
+        data-invalid={hasError ? "true" : undefined}
         aria-label={ariaLabel || selectedOption?.label || effectivePlaceholder}
-        className={`w-full flex items-center justify-between gap-2.5 bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] border-[1.5px] border-[var(--dp-color-line)] rounded-[var(--dp-radius-control)] font-reading shadow-[1.5px_2px_0px_rgba(179,172,157,0.5)] transition-all cursor-pointer hover:border-[var(--dp-color-ink)] hover:shadow-[2px_2px_0px_var(--dp-color-ink)] focus:outline-dashed focus:outline-[var(--dp-color-annotation)] focus:outline-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${sizeClasses} ${triggerClassName}`}
+        className={`w-full flex items-center justify-between gap-2.5 bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] border-[1.5px] ${
+          hasError
+            ? "sketch-input-error"
+            : "border-[var(--dp-color-line)] shadow-[1.5px_2px_0px_rgba(179,172,157,0.5)] hover:border-[var(--dp-color-ink)] hover:shadow-[2px_2px_0px_var(--dp-color-ink)]"
+        } rounded-[var(--dp-radius-control)] font-reading transition-all cursor-pointer focus:outline-dashed focus:outline-[var(--dp-color-annotation)] focus:outline-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${sizeClasses} ${triggerClassName}`}
       >
         <div className="flex items-center gap-2 truncate flex-1">
           {selectedOption?.icon && (

@@ -330,6 +330,49 @@ select:focus,
   box-shadow: 1.5px 1.5px 0px var(--dp-color-annotation);
 }
 
+/* Custom Sketch Form Validation UI (Replaces browser default popups) */
+input[aria-invalid="true"],
+textarea[aria-invalid="true"],
+select[aria-invalid="true"],
+.sketch-input-error,
+[data-invalid="true"] {
+  border-color: var(--dp-color-accent) !important;
+  background-color: #fdf5f4 !important;
+  box-shadow: 1.5px 1.5px 0px var(--dp-color-accent) !important;
+}
+
+input[aria-invalid="true"]:focus-visible,
+textarea[aria-invalid="true"]:focus-visible,
+select[aria-invalid="true"]:focus-visible,
+.sketch-input-error:focus-visible,
+[data-invalid="true"]:focus-visible {
+  outline: 2px dashed var(--dp-color-accent) !important;
+  outline-offset: 2px !important;
+}
+
+/* Suppress browser native constraint red glow / box-shadows */
+input:invalid,
+textarea:invalid,
+select:invalid {
+  box-shadow: none;
+}
+
+@keyframes sketch-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  20%, 60% {
+    transform: translateX(-3px);
+  }
+  40%, 80% {
+    transform: translateX(3px);
+  }
+}
+
+.animate-sketch-shake {
+  animation: sketch-shake 0.35s ease-in-out;
+}
+
 /* Dedicated Date Input & Calendar indicator styling for Sketch identity */
 input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;

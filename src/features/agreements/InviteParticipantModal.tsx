@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { inviteParticipantAction } from "../../server/actions/invitations";
 import { SketchSelect } from "../ui/SketchSelect";
+import { FieldErrorMessage, FormAlert } from "../ui";
+import { validateEmail } from "../../lib/validation";
 
 interface InviteParticipantModalProps {
   agreementId: string;
@@ -40,6 +42,7 @@ export function InviteParticipantModal({
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; partyDisplayName?: string }>({});
 
   const [email, setEmail] = useState("");
   const [partyDisplayName, setPartyDisplayName] = useState("");
@@ -51,8 +54,27 @@ export function InviteParticipantModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !partyDisplayName.trim()) return;
 
+    const errors: { email?: string; partyDisplayName?: string } = {};
+
+    const emailErr = validateEmail(email);
+    if (emailErr) {
+      errors.email = emailErr;
+    }
+
+    const trimmedName = partyDisplayName.trim();
+    if (!trimmedName) {
+      errors.partyDisplayName = `${t.partyDisplayName} مطلوب`;
+    } else if (trimmedName.length > 120) {
+      errors.partyDisplayName = "يجب ألا يتجاوز الاسم 120 حرفًا";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
+    setFieldErrors({});
     setIsSubmitting(true);
     setError(null);
 
@@ -69,6 +91,7 @@ export function InviteParticipantModal({
       if (res.success) {
         setEmail("");
         setPartyDisplayName("");
+        setFieldErrors({});
         onClose();
         router.refresh();
       } else {
@@ -99,39 +122,66 @@ export function InviteParticipantModal({
         </div>
 
         {error && (
-          <div className="p-3 rounded-[6px_3px_8px_4px] bg-[#fbeee9] text-xs text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)] font-reading">
-            {error}
+          <div className="mb-2">
+            <FormAlert type="error" message={error} />
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="space-y-4">
           <div>
-            <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1">
-              {t.emailLabel} *
+            <label
+              htmlFor="invite-email"
+              className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1"
+            >
+              {t.emailLabel} <span className="text-[var(--dp-color-accent)] font-bold">*</span>
             </label>
             <input
+              id="invite-email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (fieldErrors.email) {
+                  setFieldErrors((prev) => ({ ...prev, email: undefined }));
+                }
+              }}
               placeholder={t.emailPlaceholder}
-              required
-              className="w-full px-3.5 py-2 text-sm font-reading"
+              aria-invalid={Boolean(fieldErrors.email)}
+              aria-describedby={fieldErrors.email ? "invite-email-error" : undefined}
+              className={`w-full px-3.5 py-2 text-sm font-reading ${
+                fieldErrors.email ? "sketch-input-error" : ""
+              }`}
+              dir="ltr"
             />
+            <FieldErrorMessage id="invite-email-error" error={fieldErrors.email} />
           </div>
 
           <div>
-            <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1">
-              {t.partyDisplayName} *
+            <label
+              htmlFor="invite-name"
+              className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1"
+            >
+              {t.partyDisplayName} <span className="text-[var(--dp-color-accent)] font-bold">*</span>
             </label>
             <input
+              id="invite-name"
               type="text"
               value={partyDisplayName}
-              onChange={(e) => setPartyDisplayName(e.target.value)}
+              onChange={(e) => {
+                setPartyDisplayName(e.target.value);
+                if (fieldErrors.partyDisplayName) {
+                  setFieldErrors((prev) => ({ ...prev, partyDisplayName: undefined }));
+                }
+              }}
               placeholder={t.partyDisplayNamePlaceholder}
               maxLength={120}
-              required
-              className="w-full px-3.5 py-2 text-sm font-reading"
+              aria-invalid={Boolean(fieldErrors.partyDisplayName)}
+              aria-describedby={fieldErrors.partyDisplayName ? "invite-name-error" : undefined}
+              className={`w-full px-3.5 py-2 text-sm font-reading ${
+                fieldErrors.partyDisplayName ? "sketch-input-error" : ""
+              }`}
             />
+            <FieldErrorMessage id="invite-name-error" error={fieldErrors.partyDisplayName} />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

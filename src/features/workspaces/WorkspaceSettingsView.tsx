@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState, useActionState } from "react";
 import { useTranslations } from "next-intl";
 import {
   updateWorkspaceAction,
@@ -8,6 +8,7 @@ import {
   transferWorkspaceOwnershipAction,
 } from "../../server/actions/workspaces";
 import { SketchSelect } from "../ui/SketchSelect";
+import { FieldErrorMessage, FormAlert } from "../ui";
 import { Settings, ShieldAlert, ArrowRightLeft } from "lucide-react";
 
 interface Member {
@@ -49,7 +50,45 @@ export function WorkspaceSettingsView({
   );
   const [archiveState, archiveAction, isArchiving] = useActionState(archiveWorkspaceAction, null);
 
+  const [name, setName] = useState(workspaceName);
+  const [nameError, setNameError] = useState<string | null>(null);
+
+  const [newOwnerUserId, setNewOwnerUserId] = useState("");
+  const [transferError, setTransferError] = useState<string | null>(null);
+
   const eligibleNewOwners = members.filter((m) => m.role !== "OWNER");
+
+  function handleRenameSubmit(e: React.FormEvent<HTMLFormElement>) {
+    const trimmed = name.trim();
+    if (!trimmed) {
+      e.preventDefault();
+      setNameError(t("renameTitle") + " مطلوب");
+      return;
+    }
+    if (trimmed.length < 2) {
+      e.preventDefault();
+      setNameError("يجب ألا يقل الاسم عن حرفين");
+      return;
+    }
+    if (trimmed.length > 100) {
+      e.preventDefault();
+      setNameError("يجب ألا يتجاوز الاسم 100 حرف");
+      return;
+    }
+    setNameError(null);
+  }
+
+  function handleTransferSubmit(e: React.FormEvent<HTMLFormElement>) {
+    if (!newOwnerUserId) {
+      e.preventDefault();
+      setTransferError(t("selectNewOwner"));
+      return;
+    }
+    setTransferError(null);
+    if (!confirm(t("transferConfirm"))) {
+      e.preventDefault();
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -66,35 +105,51 @@ export function WorkspaceSettingsView({
         </div>
 
         {renameState?.error && (
-          <div className="p-3 text-xs bg-[#fbeee9] text-[var(--dp-color-accent)] rounded-[6px_3px_7px_4px] border border-[var(--dp-color-accent)] font-reading">
-            {renameState.error}
+          <div className="mb-2">
+            <FormAlert type="error" message={renameState.error} />
           </div>
         )}
 
         {renameState?.success && (
-          <div className="p-3 text-xs bg-[#eaf3ea] text-[var(--dp-color-ink)] rounded-[6px_3px_7px_4px] border border-[#96b79d] font-reading">
-            {t("renameSuccess")}
+          <div className="mb-2">
+            <FormAlert type="success" message={t("renameSuccess")} />
           </div>
         )}
 
-        <form action={renameAction} className="flex flex-col sm:flex-row gap-3 max-w-lg">
+        <form
+          action={renameAction}
+          onSubmit={handleRenameSubmit}
+          noValidate
+          className="space-y-2 max-w-lg"
+        >
           <input type="hidden" name="workspaceId" value={workspaceId} />
-          <input
-            type="text"
-            name="name"
-            defaultValue={workspaceName}
-            required
-            minLength={2}
-            maxLength={100}
-            className="flex-1 px-3 py-2 text-sm border border-[var(--dp-color-line)] rounded-[6px_3px_7px_4px] bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
-          />
-          <button
-            type="submit"
-            disabled={isRenaming}
-            className="sketch-btn sketch-btn-primary text-xs px-4 py-2 disabled:opacity-50 whitespace-nowrap"
-          >
-            {isRenaming ? common("loading") : t("saveName")}
-          </button>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex-1">
+              <input
+                type="text"
+                name="name"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (nameError) setNameError(null);
+                }}
+                maxLength={100}
+                aria-invalid={Boolean(nameError)}
+                aria-describedby={nameError ? "workspace-rename-error" : undefined}
+                className={`w-full px-3 py-2 text-sm border rounded-[6px_3px_7px_4px] bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)] ${
+                  nameError ? "sketch-input-error" : "border-[var(--dp-color-line)]"
+                }`}
+              />
+              <FieldErrorMessage id="workspace-rename-error" error={nameError} />
+            </div>
+            <button
+              type="submit"
+              disabled={isRenaming}
+              className="sketch-btn sketch-btn-primary text-xs px-4 py-2 disabled:opacity-50 whitespace-nowrap self-start"
+            >
+              {isRenaming ? common("loading") : t("saveName")}
+            </button>
+          </div>
         </form>
       </div>
 
@@ -112,14 +167,14 @@ export function WorkspaceSettingsView({
           </div>
 
           {transferState?.error && (
-            <div className="p-3 text-xs bg-[#fbeee9] text-[var(--dp-color-accent)] rounded-[6px_3px_7px_4px] border border-[var(--dp-color-accent)] font-reading">
-              {transferState.error}
+            <div className="mb-2">
+              <FormAlert type="error" message={transferState.error} />
             </div>
           )}
 
           {transferState?.success && (
-            <div className="p-3 text-xs bg-[#eaf3ea] text-[var(--dp-color-ink)] rounded-[6px_3px_7px_4px] border border-[#96b79d] font-reading">
-              {t("transferSuccess")}
+            <div className="mb-2">
+              <FormAlert type="success" message={t("transferSuccess")} />
             </div>
           )}
 
@@ -130,36 +185,41 @@ export function WorkspaceSettingsView({
           ) : (
             <form
               action={transferAction}
-              onSubmit={(e) => {
-                if (!confirm(t("transferConfirm"))) {
-                  e.preventDefault();
-                }
-              }}
-              className="flex flex-col sm:flex-row gap-3 max-w-lg"
+              onSubmit={handleTransferSubmit}
+              noValidate
+              className="space-y-2 max-w-lg"
             >
               <input type="hidden" name="workspaceId" value={workspaceId} />
-              <div className="flex-1 min-w-[220px]">
-                <SketchSelect
-                  name="newOwnerUserId"
-                  required
-                  placeholder={t("selectNewOwner")}
-                  options={[
-                    { value: "", label: t("selectNewOwner"), disabled: true },
-                    ...eligibleNewOwners.map((m) => ({
-                      value: m.user.id,
-                      label: `${m.user.name || m.user.emailNormalized} (${tWorkspaces(`roles.${m.role}`)})`,
-                      description: m.user.emailNormalized,
-                    })),
-                  ]}
-                />
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex-1 min-w-[220px]">
+                  <SketchSelect
+                    name="newOwnerUserId"
+                    value={newOwnerUserId}
+                    onChange={(val) => {
+                      setNewOwnerUserId(val);
+                      if (transferError) setTransferError(null);
+                    }}
+                    hasError={Boolean(transferError)}
+                    placeholder={t("selectNewOwner")}
+                    options={[
+                      { value: "", label: t("selectNewOwner"), disabled: true },
+                      ...eligibleNewOwners.map((m) => ({
+                        value: m.user.id,
+                        label: `${m.user.name || m.user.emailNormalized} (${tWorkspaces(`roles.${m.role}`)})`,
+                        description: m.user.emailNormalized,
+                      })),
+                    ]}
+                  />
+                  <FieldErrorMessage error={transferError} />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isTransferring}
+                  className="sketch-btn text-xs px-4 py-2 bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border border-[var(--dp-color-ink)] font-marker font-bold disabled:opacity-50 whitespace-nowrap self-start"
+                >
+                  {isTransferring ? common("loading") : t("transferButton")}
+                </button>
               </div>
-              <button
-                type="submit"
-                disabled={isTransferring}
-                className="sketch-btn text-xs px-4 py-2 bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border border-[var(--dp-color-ink)] font-marker font-bold disabled:opacity-50 whitespace-nowrap"
-              >
-                {isTransferring ? common("loading") : t("transferButton")}
-              </button>
             </form>
           )}
         </div>

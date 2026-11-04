@@ -91,7 +91,7 @@ export function AgreementFilterBar({
 
   return (
     <div className="sketch-card p-4 flex flex-col md:flex-row items-center justify-between gap-3">
-      <form onSubmit={handleSearchSubmit} className="flex flex-1 flex-wrap items-center gap-3 w-full">
+      <form onSubmit={handleSearchSubmit} noValidate className="flex flex-1 flex-wrap items-center gap-3 w-full">
         {/* Workspace Dropdown Filter */}
         <div className="min-w-[200px] flex-1 sm:flex-initial">
           <SketchSelect

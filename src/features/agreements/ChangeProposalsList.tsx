@@ -345,7 +345,7 @@ export function ChangeProposalsList({
               {translations.confirmDeclineTitle}
             </h3>
 
-            <form onSubmit={handleDeclineSubmit} className="space-y-3">
+            <form onSubmit={handleDeclineSubmit} noValidate className="space-y-3">
               <textarea
                 rows={3}
                 value={declineReason}

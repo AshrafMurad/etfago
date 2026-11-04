@@ -29,4 +29,11 @@ describe("Translations & ICU Formatting", () => {
     const enFormatted = en.Templates.termsCount.replace("{count}", "5");
     expect(enFormatted).toBe("5 suggested terms");
   });
+
+  it("has key parity for Validation namespace between Arabic and English", () => {
+    const arValidationKeys = Object.keys(ar.Validation).sort();
+    const enValidationKeys = Object.keys(en.Validation).sort();
+    expect(arValidationKeys).toEqual(enValidationKeys);
+    expect(arValidationKeys.length).toBeGreaterThanOrEqual(15);
+  });
 });

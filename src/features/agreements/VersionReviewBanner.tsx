@@ -8,6 +8,7 @@ import {
   recordReviewDecisionAction,
   withdrawReviewAction,
 } from "../../server/actions/versions";
+import { FieldErrorMessage, FormAlert } from "../ui";
 
 interface VersionReviewBannerProps {
   agreementId: string;
@@ -53,6 +54,7 @@ export function VersionReviewBanner({
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
   const [requestReason, setRequestReason] = useState("");
+  const [reasonError, setReasonError] = useState<string | null>(null);
   const [withdrawReason, setWithdrawReason] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copiedHash, setCopiedHash] = useState(false);
@@ -94,8 +96,17 @@ export function VersionReviewBanner({
 
   const handleRequestChanges = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!requestReason.trim()) return;
+    const trimmed = requestReason.trim();
+    if (!trimmed) {
+      setReasonError(`${translations.requestChangesReasonLabel} مطلوب`);
+      return;
+    }
+    if (trimmed.length < 3) {
+      setReasonError("يرجى كتابة سبب طلب التعديل (3 أحرف على الأقل)");
+      return;
+    }
 
+    setReasonError(null);
     setErrorMessage(null);
     startTransition(async () => {
       const formData = new FormData();
@@ -103,7 +114,7 @@ export function VersionReviewBanner({
       formData.set("versionId", version.id);
       formData.set("decision", "REQUEST_CHANGES");
       formData.set("expectedVersionHash", version.contentHash);
-      formData.set("reason", requestReason.trim());
+      formData.set("reason", trimmed);
 
       const res = await recordReviewDecisionAction(null, formData);
       if (!res.success) {
@@ -312,19 +323,25 @@ export function VersionReviewBanner({
               {translations.requestChangesDesc}
             </p>
 
-            <form onSubmit={handleRequestChanges} className="space-y-4">
+            <form onSubmit={handleRequestChanges} noValidate className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs font-bold font-reading text-[var(--dp-color-ink)]">
-                  {translations.requestChangesReasonLabel}
+                <label htmlFor="request-changes-reason" className="text-xs font-bold font-reading text-[var(--dp-color-ink)]">
+                  {translations.requestChangesReasonLabel} <span className="text-[var(--dp-color-accent)] font-bold">*</span>
                 </label>
                 <textarea
-                  required
+                  id="request-changes-reason"
                   rows={4}
                   value={requestReason}
-                  onChange={(e) => setRequestReason(e.target.value)}
+                  onChange={(e) => {
+                    setRequestReason(e.target.value);
+                    if (reasonError) setReasonError(null);
+                  }}
                   placeholder={translations.requestChangesReasonPlaceholder}
-                  className="w-full text-xs p-2.5"
+                  aria-invalid={Boolean(reasonError)}
+                  aria-describedby={reasonError ? "request-changes-reason-error" : undefined}
+                  className={`w-full text-xs p-2.5 ${reasonError ? "sketch-input-error" : ""}`}
                 />
+                <FieldErrorMessage id="request-changes-reason-error" error={reasonError} />
               </div>
 
               <div className="flex justify-end gap-2 pt-2">
@@ -338,7 +355,7 @@ export function VersionReviewBanner({
                 </button>
                 <button
                   type="submit"
-                  disabled={isPending || !requestReason.trim()}
+                  disabled={isPending}
                   className="sketch-btn px-4 py-2 text-xs font-marker bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border-[var(--dp-color-ink)] shadow-[2px_2px_0px_var(--dp-color-ink)]"
                 >
                   {isPending ? translations.loading : translations.requestChanges}
@@ -361,7 +378,7 @@ export function VersionReviewBanner({
               {translations.withdrawConfirm}
             </p>
 
-            <form onSubmit={handleWithdraw} className="space-y-4">
+            <form onSubmit={handleWithdraw} noValidate className="space-y-4">
               <div className="space-y-1">
                 <input
                   type="text"

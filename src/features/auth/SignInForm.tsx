@@ -5,6 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
+import { FieldErrorMessage, FormAlert } from "../ui";
+import { validateEmail } from "../../lib/validation";
 
 interface SignInFormProps {
   locale: string;
@@ -18,6 +20,7 @@ export function SignInForm({ locale, defaultEmail = "", verified = false }: Sign
 
   const [email, setEmail] = useState(defaultEmail);
   const [name, setName] = useState("");
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(
     verified ? t("verifiedSuccess") : null
@@ -26,16 +29,21 @@ export function SignInForm({ locale, defaultEmail = "", verified = false }: Sign
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email) return;
+    const err = validateEmail(email, locale);
+    if (err) {
+      setEmailError(err);
+      return;
+    }
 
+    setEmailError(null);
     setLoading(true);
     setError(null);
     setMessage(null);
 
     try {
       const res = await signIn("credentials", {
-        email,
-        name: name || undefined,
+        email: email.trim(),
+        name: name.trim() || undefined,
         redirect: false,
         callbackUrl: `/${locale}/workspaces`,
       });
@@ -53,6 +61,17 @@ export function SignInForm({ locale, defaultEmail = "", verified = false }: Sign
       setLoading(false);
     }
   }
+
+  const handleEmailChange = (val: string) => {
+    setEmail(val);
+    if (emailError) {
+      setEmailError(validateEmail(val, locale));
+    }
+  };
+
+  const handleEmailBlur = () => {
+    setEmailError(validateEmail(email, locale));
+  };
 
   return (
     <div className="sketch-card w-full max-w-md mx-auto p-6 sm:p-8 relative">
@@ -78,49 +97,62 @@ export function SignInForm({ locale, defaultEmail = "", verified = false }: Sign
       </div>
 
       {message && (
-        <div className="mb-4 p-3 bg-[#eaf3ea] border border-[#96b79d] text-[var(--dp-color-ink)] rounded-[6px_3px_8px_4px] text-xs font-reading">
-          {message}
+        <div className="mb-4">
+          <FormAlert type="success" message={message} />
         </div>
       )}
 
       {error && (
-        <div className="mb-4 p-3 bg-[#fbeee9] border border-[var(--dp-color-accent)] text-[var(--dp-color-accent)] rounded-[6px_3px_8px_4px] text-xs font-reading">
-          {error}
+        <div className="mb-4">
+          <FormAlert type="error" message={error} />
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} noValidate className="space-y-4">
         <div>
-          <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1">
-            {t("emailLabel")}
+          <label
+            htmlFor="signin-email"
+            className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1"
+          >
+            {t("emailLabel")} <span className="text-[var(--dp-color-accent)] font-bold">*</span>
           </label>
           <input
+            id="signin-email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
+            onChange={(e) => handleEmailChange(e.target.value)}
+            onBlur={handleEmailBlur}
             placeholder="user@example.com"
-            className="w-full px-3 py-2 text-sm font-reading"
+            aria-invalid={Boolean(emailError)}
+            aria-describedby={emailError ? "signin-email-error" : undefined}
+            className={`w-full px-3 py-2 text-sm font-reading ${
+              emailError ? "sketch-input-error" : ""
+            }`}
             dir="ltr"
           />
+          <FieldErrorMessage id="signin-email-error" error={emailError} />
         </div>
 
         <div>
-          <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1">
-            {t("nameLabel")}
+          <label
+            htmlFor="signin-name"
+            className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1"
+          >
+            {t("nameLabel")} <span className="text-[var(--dp-color-ink-muted)] font-normal text-[11px]">({common("optional")})</span>
           </label>
           <input
+            id="signin-name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="الاسم الكريم"
+            placeholder={locale === "ar" ? "الاسم الكريم" : "Your full name"}
             className="w-full px-3 py-2 text-sm font-reading"
           />
         </div>
 
         <button
           type="submit"
-          disabled={loading || !email}
+          disabled={loading}
           className="sketch-btn sketch-btn-primary w-full py-3 px-4 font-marker text-base disabled:opacity-50"
         >
           {loading ? common("loading") : t("sendLink")}

@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { updateDraftAction } from "../../server/actions/agreements";
 import { DraftContent, StructuredTerm } from "../../lib/schemas/agreements";
 import { SketchDatePicker } from "../ui/SketchDatePicker";
+import { FieldErrorMessage, FormAlert } from "../ui";
+import { validateAmount, validateCurrency } from "../../lib/validation";
 
 interface DraftEditorProps {
   agreementId: string;
@@ -52,6 +54,7 @@ export function DraftEditor({
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isConflict, setIsConflict] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, { title?: string; amount?: string; currency?: string }>>({});
 
   const terms = content.terms || [];
 
@@ -91,10 +94,27 @@ export function DraftEditor({
     });
     setIsDirty(true);
     setSaveSuccess(false);
+
+    const termId = updatedTerms[index]?.id;
+    if (termId && fieldErrors[termId]) {
+      setFieldErrors((prev) => {
+        const current = prev[termId];
+        if (!current) return prev;
+        return { ...prev, [termId]: { ...current, [field]: undefined } };
+      });
+    }
   };
 
   const handleRemoveTerm = (index: number) => {
     if (!canEdit) return;
+    const termId = terms[index]?.id;
+    if (termId && fieldErrors[termId]) {
+      setFieldErrors((prev) => {
+        const copy = { ...prev };
+        delete copy[termId];
+        return copy;
+      });
+    }
     setContent({
       ...content,
       terms: terms.filter((_, i) => i !== index),
@@ -124,6 +144,39 @@ export function DraftEditor({
   const handleSave = async () => {
     if (!canEdit || isSaving) return;
 
+    // Validate terms
+    const errors: Record<string, { title?: string; amount?: string; currency?: string }> = {};
+    terms.forEach((term) => {
+      const errs: { title?: string; amount?: string; currency?: string } = {};
+      const trimmedTitle = term.title.trim();
+      if (!trimmedTitle) {
+        errs.title = "عنوان البند مطلوب";
+      } else if (trimmedTitle.length > 120) {
+        errs.title = "يجب ألا يتجاوز عنوان البند 120 حرفًا";
+      }
+
+      if (term.amount?.trim()) {
+        const amtErr = validateAmount(term.amount);
+        if (amtErr) errs.amount = amtErr;
+      }
+
+      if (term.currency?.trim()) {
+        const curErr = validateCurrency(term.currency);
+        if (curErr) errs.currency = curErr;
+      }
+
+      if (Object.keys(errs).length > 0) {
+        errors[term.id] = errs;
+      }
+    });
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setErrorMessage("يرجى مراجعة بنود المسودة وتصحيح الأخطاء الموضحة أدناه");
+      return;
+    }
+
+    setFieldErrors({});
     setIsSaving(true);
     setErrorMessage(null);
     setIsConflict(false);
@@ -301,8 +354,12 @@ export function DraftEditor({
                     onChange={(e) => handleUpdateTerm(index, "title", e.target.value)}
                     placeholder={t.termTitlePlaceholder}
                     maxLength={120}
-                    className="w-full px-3.5 py-2 text-base font-bold font-marker"
+                    aria-invalid={Boolean(fieldErrors[term.id]?.title)}
+                    className={`w-full px-3.5 py-2 text-base font-bold font-marker ${
+                      fieldErrors[term.id]?.title ? "sketch-input-error" : ""
+                    }`}
                   />
+                  <FieldErrorMessage error={fieldErrors[term.id]?.title} />
                 </div>
               ) : (
                 <h3 className="text-lg font-bold font-marker text-[var(--dp-color-ink)]">
@@ -344,8 +401,12 @@ export function DraftEditor({
                         onChange={(e) => handleUpdateTerm(index, "amount", e.target.value)}
                         placeholder="5000"
                         maxLength={32}
-                        className="w-full px-2.5 py-1.5 text-xs"
+                        aria-invalid={Boolean(fieldErrors[term.id]?.amount)}
+                        className={`w-full px-2.5 py-1.5 text-xs ${
+                          fieldErrors[term.id]?.amount ? "sketch-input-error" : ""
+                        }`}
                       />
+                      <FieldErrorMessage error={fieldErrors[term.id]?.amount} />
                     </div>
                     <div>
                       <label className="block text-xs font-reading text-[var(--dp-color-ink-muted)] mb-1">
@@ -357,8 +418,12 @@ export function DraftEditor({
                         onChange={(e) => handleUpdateTerm(index, "currency", e.target.value)}
                         placeholder="SAR"
                         maxLength={10}
-                        className="w-full px-2.5 py-1.5 text-xs uppercase"
+                        aria-invalid={Boolean(fieldErrors[term.id]?.currency)}
+                        className={`w-full px-2.5 py-1.5 text-xs uppercase ${
+                          fieldErrors[term.id]?.currency ? "sketch-input-error" : ""
+                        }`}
                       />
+                      <FieldErrorMessage error={fieldErrors[term.id]?.currency} />
                     </div>
                     <div>
                       <label className="block text-xs font-reading text-[var(--dp-color-ink-muted)] mb-1">

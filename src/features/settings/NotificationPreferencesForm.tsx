@@ -45,7 +45,7 @@ export function NotificationPreferencesForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} noValidate className="space-y-6">
       {feedback && (
         <div
           className={`p-4 rounded-[6px_3px_7px_4px] text-xs font-reading border ${

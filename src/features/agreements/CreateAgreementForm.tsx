@@ -8,6 +8,8 @@ import { LocalizedStarterTemplate } from "../../lib/schemas/templates";
 import { StarterTemplatesGallery } from "../templates/StarterTemplatesGallery";
 import { SketchSelect } from "../ui/SketchSelect";
 import { SketchDatePicker } from "../ui/SketchDatePicker";
+import { FieldErrorMessage, FormAlert } from "../ui";
+import { validateAmount, validateCurrency } from "../../lib/validation";
 import { Sparkles, FileText, RotateCcw, CheckCircle2 } from "lucide-react";
 
 interface WorkspaceOption {
@@ -92,6 +94,11 @@ export function CreateAgreementForm({
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{
+    workspaceId?: string;
+    title?: string;
+    terms?: Record<string, { title?: string; amount?: string; currency?: string }>;
+  }>({});
 
   const [workspaceId, setWorkspaceId] = useState(
     initialWorkspaceId && workspaces.some((w) => w.id === initialWorkspaceId)
@@ -172,23 +179,108 @@ export function CreateAgreementForm({
     const updated = [...terms];
     updated[index] = { ...updated[index], [field]: value };
     setTerms(updated);
+
+    // Clear field-specific error when user modifies
+    const termId = updated[index]?.id;
+    if (termId && fieldErrors.terms?.[termId]) {
+      setFieldErrors((prev) => {
+        const currentTermErrors = prev.terms?.[termId];
+        if (!currentTermErrors) return prev;
+        const newTermErrors = { ...currentTermErrors, [field]: undefined };
+        return {
+          ...prev,
+          terms: { ...prev.terms, [termId]: newTermErrors },
+        };
+      });
+    }
   };
 
   const handleRemoveTerm = (index: number) => {
+    const termId = terms[index]?.id;
+    if (termId && fieldErrors.terms?.[termId]) {
+      setFieldErrors((prev) => {
+        const nextTerms = { ...prev.terms };
+        delete nextTerms[termId];
+        return { ...prev, terms: nextTerms };
+      });
+    }
     setTerms(terms.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) {
-      setError(t.required);
-      return;
-    }
+
+    const errors: {
+      workspaceId?: string;
+      title?: string;
+      terms?: Record<string, { title?: string; amount?: string; currency?: string }>;
+    } = {};
+
     if (!workspaceId) {
-      setError(locale === "ar" ? "يرجى اختيار مساحة العمل" : "Please select a workspace");
+      errors.workspaceId =
+        locale === "ar" ? "يرجى اختيار مساحة العمل" : "Please select a workspace";
+    }
+
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
+      errors.title =
+        locale === "ar" ? "عنوان الاتفاق مطلوب" : "Agreement title is required";
+    } else if (trimmedTitle.length < 2) {
+      errors.title =
+        locale === "ar" ? "يجب ألا يقل العنوان عن حرفين" : "Title must be at least 2 characters";
+    } else if (trimmedTitle.length > 160) {
+      errors.title =
+        locale === "ar" ? "يجب ألا يتجاوز العنوان 160 حرفًا" : "Title cannot exceed 160 characters";
+    }
+
+    const termsErrors: Record<string, { title?: string; amount?: string; currency?: string }> = {};
+    terms.forEach((term) => {
+      const termTitle = term.title.trim();
+      const errs: { title?: string; amount?: string; currency?: string } = {};
+
+      const hasContent = Boolean(
+        termTitle ||
+        term.body?.trim() ||
+        term.amount?.trim() ||
+        term.currency?.trim() ||
+        term.dueDate?.trim()
+      );
+
+      // If user typed into this term or if it's the only term, title is required
+      if (hasContent && !termTitle) {
+        errs.title = locale === "ar" ? "عنوان البند مطلوب" : "Term title is required";
+      }
+
+      if (term.amount?.trim()) {
+        const amtErr = validateAmount(term.amount, locale);
+        if (amtErr) errs.amount = amtErr;
+      }
+
+      if (term.currency?.trim()) {
+        const curErr = validateCurrency(term.currency, locale);
+        if (curErr) errs.currency = curErr;
+      }
+
+      if (Object.keys(errs).length > 0) {
+        termsErrors[term.id] = errs;
+      }
+    });
+
+    if (Object.keys(termsErrors).length > 0) {
+      errors.terms = termsErrors;
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setError(
+        locale === "ar"
+          ? "يرجى مراجعة الحقول وتصحيح الأخطاء الموضحة أدناه"
+          : "Please review the form and fix the errors below"
+      );
       return;
     }
 
+    setFieldErrors({});
     setIsSubmitting(true);
     setError(null);
 
@@ -314,10 +406,10 @@ export function CreateAgreementForm({
 
       {/* Agreement Draft Form View */}
       {activeTab === "form" && (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} noValidate className="space-y-6">
           {error && (
-            <div className="p-3.5 rounded-[6px_3px_8px_4px] bg-[#fbeee9] border border-[var(--dp-color-accent)] text-xs font-reading text-[var(--dp-color-accent)]">
-              {error}
+            <div className="mb-2">
+              <FormAlert type="error" message={error} />
             </div>
           )}
 
@@ -355,12 +447,21 @@ export function CreateAgreementForm({
           <div className="sketch-card p-6 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1.5">
+                <label
+                  htmlFor="agreement-workspace"
+                  className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1.5"
+                >
                   {t.workspaceSelect} <span className="text-[var(--dp-color-accent)]">*</span>
                 </label>
                 <SketchSelect
                   value={workspaceId}
-                  onChange={(val) => setWorkspaceId(val)}
+                  onChange={(val) => {
+                    setWorkspaceId(val);
+                    if (fieldErrors.workspaceId) {
+                      setFieldErrors((prev) => ({ ...prev, workspaceId: undefined }));
+                    }
+                  }}
+                  hasError={Boolean(fieldErrors.workspaceId)}
                   options={workspaces.map((ws) => ({
                     value: ws.id,
                     label: ws.name,
@@ -377,6 +478,7 @@ export function CreateAgreementForm({
                     ),
                   }))}
                 />
+                <FieldErrorMessage id="agreement-workspace-error" error={fieldErrors.workspaceId} />
               </div>
 
               <div>
@@ -435,18 +537,31 @@ export function CreateAgreementForm({
 
             {/* Title */}
             <div>
-              <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1.5">
+              <label
+                htmlFor="agreement-title"
+                className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1.5"
+              >
                 {t.titleLabel} <span className="text-[var(--dp-color-accent)]">*</span>
               </label>
               <input
+                id="agreement-title"
                 type="text"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  if (fieldErrors.title) {
+                    setFieldErrors((prev) => ({ ...prev, title: undefined }));
+                  }
+                }}
                 placeholder={t.titlePlaceholder}
                 maxLength={160}
-                required
-                className="w-full px-3.5 py-2 text-base font-bold font-marker"
+                aria-invalid={Boolean(fieldErrors.title)}
+                aria-describedby={fieldErrors.title ? "agreement-title-error" : undefined}
+                className={`w-full px-3.5 py-2 text-base font-bold font-marker ${
+                  fieldErrors.title ? "sketch-input-error" : ""
+                }`}
               />
+              <FieldErrorMessage id="agreement-title-error" error={fieldErrors.title} />
             </div>
 
             {/* Description */}
@@ -513,9 +628,12 @@ export function CreateAgreementForm({
                       onChange={(e) => handleUpdateTerm(index, "title", e.target.value)}
                       placeholder={t.termTitlePlaceholder}
                       maxLength={120}
-                      required
-                      className="w-full px-3.5 py-2 text-base font-bold font-marker"
+                      aria-invalid={Boolean(fieldErrors.terms?.[term.id]?.title)}
+                      className={`w-full px-3.5 py-2 text-base font-bold font-marker ${
+                        fieldErrors.terms?.[term.id]?.title ? "sketch-input-error" : ""
+                      }`}
                     />
+                    <FieldErrorMessage error={fieldErrors.terms?.[term.id]?.title} />
                   </div>
 
                   <div>
@@ -543,8 +661,12 @@ export function CreateAgreementForm({
                         onChange={(e) => handleUpdateTerm(index, "amount", e.target.value)}
                         placeholder="1000"
                         maxLength={32}
-                        className="w-full px-3 py-1.5 text-xs"
+                        aria-invalid={Boolean(fieldErrors.terms?.[term.id]?.amount)}
+                        className={`w-full px-3 py-1.5 text-xs ${
+                          fieldErrors.terms?.[term.id]?.amount ? "sketch-input-error" : ""
+                        }`}
                       />
+                      <FieldErrorMessage error={fieldErrors.terms?.[term.id]?.amount} />
                     </div>
 
                     <div>
@@ -557,8 +679,12 @@ export function CreateAgreementForm({
                         onChange={(e) => handleUpdateTerm(index, "currency", e.target.value.toUpperCase())}
                         placeholder="SAR"
                         maxLength={10}
-                        className="w-full px-3 py-1.5 text-xs uppercase"
+                        aria-invalid={Boolean(fieldErrors.terms?.[term.id]?.currency)}
+                        className={`w-full px-3 py-1.5 text-xs uppercase ${
+                          fieldErrors.terms?.[term.id]?.currency ? "sketch-input-error" : ""
+                        }`}
                       />
+                      <FieldErrorMessage error={fieldErrors.terms?.[term.id]?.currency} />
                     </div>
 
                     <div>

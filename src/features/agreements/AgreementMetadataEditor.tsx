@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateAgreementMetadataAction } from "../../server/actions/agreements";
+import { FieldErrorMessage, FormAlert } from "../ui";
 
 interface AgreementMetadataEditorProps {
   agreementId: string;
@@ -32,6 +33,7 @@ export function AgreementMetadataEditor({
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [titleError, setTitleError] = useState<string | null>(null);
 
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription || "");
@@ -39,14 +41,27 @@ export function AgreementMetadataEditor({
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    const trimmed = title.trim();
+    if (!trimmed) {
+      setTitleError(`${t.titleLabel} مطلوب`);
+      return;
+    }
+    if (trimmed.length < 2) {
+      setTitleError("يجب ألا يقل العنوان عن حرفين");
+      return;
+    }
+    if (trimmed.length > 160) {
+      setTitleError("يجب ألا يتجاوز العنوان 160 حرفًا");
+      return;
+    }
 
+    setTitleError(null);
     setIsSaving(true);
     setError(null);
 
     const formData = new FormData();
     formData.append("agreementId", agreementId);
-    formData.append("title", title.trim());
+    formData.append("title", trimmed);
     formData.append("description", description.trim());
     formData.append("category", category.trim());
 
@@ -94,24 +109,32 @@ export function AgreementMetadataEditor({
             </div>
 
             {error && (
-              <div className="p-3 rounded-[6px_3px_7px_4px] bg-[#fbeee9] text-xs text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)] font-reading">
-                {error}
+              <div className="mb-2">
+                <FormAlert type="error" message={error} />
               </div>
             )}
 
-            <form onSubmit={handleSave} className="space-y-3.5">
+            <form onSubmit={handleSave} noValidate className="space-y-3.5">
               <div>
-                <label className="block text-xs font-bold font-marker text-[var(--dp-color-ink)] mb-1">
+                <label htmlFor="meta-title" className="block text-xs font-bold font-marker text-[var(--dp-color-ink)] mb-1">
                   {t.titleLabel} *
                 </label>
                 <input
+                  id="meta-title"
                   type="text"
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                    if (titleError) setTitleError(null);
+                  }}
                   maxLength={160}
-                  required
-                  className="w-full px-3.5 py-2 text-sm text-[var(--dp-color-ink)] font-marker focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
+                  aria-invalid={Boolean(titleError)}
+                  aria-describedby={titleError ? "meta-title-error" : undefined}
+                  className={`w-full px-3.5 py-2 text-sm text-[var(--dp-color-ink)] font-marker ${
+                    titleError ? "sketch-input-error" : ""
+                  } focus:outline-dashed focus:outline-[var(--dp-color-annotation)]`}
                 />
+                <FieldErrorMessage id="meta-title-error" error={titleError} />
               </div>
 
               <div>

@@ -7,6 +7,7 @@ import {
   updateCommentAction,
   deleteCommentAction,
 } from "../../server/actions/comments";
+import { FieldErrorMessage, FormAlert } from "../ui";
 
 interface CommentThreadProps {
   agreementId: string;
@@ -41,6 +42,7 @@ export function CommentThread({
   translations,
 }: CommentThreadProps) {
   const [newCommentBody, setNewCommentBody] = useState("");
+  const [commentError, setCommentError] = useState<string | null>(null);
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editBody, setEditBody] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -48,14 +50,19 @@ export function CommentThread({
 
   const handlePostComment = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCommentBody.trim()) return;
+    const trimmed = newCommentBody.trim();
+    if (!trimmed) {
+      setCommentError(translations.postCommentPlaceholder);
+      return;
+    }
 
+    setCommentError(null);
     setError(null);
     const formData = new FormData();
     formData.append("agreementId", agreementId);
     if (versionId) formData.append("versionId", versionId);
     if (termId) formData.append("termId", termId);
-    formData.append("body", newCommentBody.trim());
+    formData.append("body", trimmed);
 
     startTransition(async () => {
       const res = await createCommentAction(null, formData);
@@ -234,19 +241,29 @@ export function CommentThread({
       </div>
 
       {/* New Comment Form */}
-      <form onSubmit={handlePostComment} className="space-y-2 pt-2">
-        <textarea
-          rows={2}
-          value={newCommentBody}
-          onChange={(e) => setNewCommentBody(e.target.value)}
-          placeholder={translations.postCommentPlaceholder}
-          className="w-full text-sm p-3 font-reading"
-        />
+      <form onSubmit={handlePostComment} noValidate className="space-y-2 pt-2">
+        <div>
+          <textarea
+            rows={2}
+            value={newCommentBody}
+            onChange={(e) => {
+              setNewCommentBody(e.target.value);
+              if (commentError) setCommentError(null);
+            }}
+            placeholder={translations.postCommentPlaceholder}
+            aria-invalid={Boolean(commentError)}
+            aria-describedby={commentError ? "comment-body-error" : undefined}
+            className={`w-full text-sm p-3 font-reading ${
+              commentError ? "sketch-input-error" : ""
+            }`}
+          />
+          <FieldErrorMessage id="comment-body-error" error={commentError} />
+        </div>
 
         <div className="flex items-center justify-end">
           <button
             type="submit"
-            disabled={isPending || !newCommentBody.trim()}
+            disabled={isPending}
             className="sketch-btn sketch-btn-primary px-4 py-2 text-xs font-marker disabled:opacity-50"
           >
             {isPending ? translations.loading : translations.postCommentButton}

@@ -5,6 +5,7 @@ import { createCommitmentAction } from "../../server/actions/commitments";
 import { StructuredTerm } from "../../lib/schemas/agreements";
 import { SketchSelect } from "../ui/SketchSelect";
 import { SketchDatePicker } from "../ui/SketchDatePicker";
+import { FieldErrorMessage, FormAlert } from "../ui";
 
 interface CreateCommitmentModalProps {
   agreementId: string;
@@ -43,6 +44,7 @@ export function CreateCommitmentModal({
 }: CreateCommitmentModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState("");
+  const [titleError, setTitleError] = useState<string | null>(null);
   const [details, setDetails] = useState("");
   const [assigneeId, setAssigneeId] = useState("");
   const [dueDate, setDueDate] = useState("");
@@ -52,8 +54,17 @@ export function CreateCommitmentModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
+      setTitleError(translations.titleLabel + " مطلوب");
+      return;
+    }
+    if (trimmedTitle.length > 160) {
+      setTitleError("يجب ألا يتجاوز العنوان 160 حرفًا");
+      return;
+    }
 
+    setTitleError(null);
     setError(null);
     const formData = new FormData();
     formData.append("agreementId", agreementId);
@@ -63,7 +74,7 @@ export function CreateCommitmentModal({
     if (linkedTermId) {
       formData.append("sourceTermId", linkedTermId);
     }
-    formData.append("title", title.trim());
+    formData.append("title", trimmedTitle);
     if (details.trim()) {
       formData.append("details", details.trim());
     }
@@ -78,6 +89,7 @@ export function CreateCommitmentModal({
       const res = await createCommitmentAction(null, formData);
       if (res.success) {
         setTitle("");
+        setTitleError(null);
         setDetails("");
         setAssigneeId("");
         setDueDate("");
@@ -123,24 +135,32 @@ export function CreateCommitmentModal({
             </div>
 
             {error && (
-              <div className="p-3 text-xs rounded-[6px_3px_7px_4px] bg-[#fbeee9] text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)] font-reading">
-                {error}
+              <div className="mb-2">
+                <FormAlert type="error" message={error} />
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-3.5 text-xs">
+            <form onSubmit={handleSubmit} noValidate className="space-y-3.5 text-xs">
               <div className="space-y-1">
-                <label className="font-bold font-marker text-[var(--dp-color-ink)]">
+                <label htmlFor="commitment-title" className="font-bold font-marker text-[var(--dp-color-ink)]">
                   {translations.titleLabel} *
                 </label>
                 <input
+                  id="commitment-title"
                   type="text"
-                  required
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                    if (titleError) setTitleError(null);
+                  }}
                   placeholder={translations.titlePlaceholder}
-                  className="w-full px-3 py-2 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
+                  aria-invalid={Boolean(titleError)}
+                  aria-describedby={titleError ? "commitment-title-error" : undefined}
+                  className={`w-full px-3 py-2 rounded-[6px_3px_7px_4px] border ${
+                    titleError ? "sketch-input-error" : "border-[var(--dp-color-line)]"
+                  } bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]`}
                 />
+                <FieldErrorMessage id="commitment-title-error" error={titleError} />
               </div>
 
               <div className="space-y-1">

@@ -533,5 +533,33 @@
     "dueSoonSubject": "Reminder: Commitment Due Soon - {commitment} ({agreement})",
     "overdueSubject": "Alert: Overdue Commitment - {commitment} ({agreement})",
     "reviewPendingSubject": "Reminder: Review Pending for V{version} - {agreement}"
+  },
+  "Validation": {
+    "required": "This field is required",
+    "emailRequired": "Please enter your email address",
+    "emailInvalid": "Please enter a valid email address (e.g. user@example.com)",
+    "titleRequired": "Agreement title is required",
+    "titleMin": "Title must be at least 2 characters",
+    "titleMax": "Title cannot exceed 160 characters",
+    "workspaceRequired": "Please select a workspace",
+    "workspaceNameRequired": "Workspace name is required",
+    "workspaceNameMin": "Workspace name must be at least 2 characters",
+    "workspaceNameMax": "Workspace name cannot exceed 100 characters",
+    "partyNameRequired": "Party name is required",
+    "partyNameMax": "Party name cannot exceed 120 characters",
+    "termTitleRequired": "Term title is required",
+    "termTitleMax": "Term title cannot exceed 120 characters",
+    "termBodyRequired": "Term details are required",
+    "termBodyMax": "Term details cannot exceed 4000 characters",
+    "commitmentTitleRequired": "Commitment title is required",
+    "reasonRequired": "Please provide a reason for the change request",
+    "withdrawReasonRequired": "Withdrawal reason is required",
+    "declineReasonRequired": "Decline reason is required",
+    "commentRequired": "Please enter a comment",
+    "amountInvalid": "Please enter a valid amount (numbers only)",
+    "currencyInvalid": "Invalid currency code (e.g. SAR)",
+    "dateInvalid": "Invalid date format",
+    "quorumThresholdInvalid": "Invalid quorum threshold count",
+    "formHasErrors": "Please review the form and fix the errors below"
   }
 }

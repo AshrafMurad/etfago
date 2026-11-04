@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState, useActionState } from "react";
 import { useTranslations } from "next-intl";
 import {
   addWorkspaceMemberAction,
@@ -8,6 +8,8 @@ import {
   removeWorkspaceMemberAction,
 } from "../../server/actions/workspaces";
 import { SketchSelect } from "../ui/SketchSelect";
+import { FieldErrorMessage, FormAlert } from "../ui";
+import { validateEmail } from "../../lib/validation";
 
 interface Member {
   id: string;
@@ -44,7 +46,20 @@ export function WorkspaceMemberList({
   const [, updateRoleAction] = useActionState(updateWorkspaceMemberRoleAction, null);
   const [, removeAction] = useActionState(removeWorkspaceMemberAction, null);
 
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState<string | null>(null);
+
   const canManage = currentActorRole === "OWNER" || currentActorRole === "ADMIN";
+
+  function handleAddSubmit(e: React.FormEvent<HTMLFormElement>) {
+    const err = validateEmail(email);
+    if (err) {
+      e.preventDefault();
+      setEmailError(err);
+      return;
+    }
+    setEmailError(null);
+  }
 
   return (
     <div className="space-y-6">
@@ -55,47 +70,65 @@ export function WorkspaceMemberList({
           </h3>
 
           {addState?.error && (
-            <div className="mb-3 p-2 text-xs bg-[#fbeee9] text-[var(--dp-color-accent)] rounded-[4px_2px_5px_3px] border border-[var(--dp-color-accent)] font-reading">
-              {addState.error}
+            <div className="mb-3">
+              <FormAlert type="error" message={addState.error} />
             </div>
           )}
 
           {addState?.success && (
-            <div className="mb-3 p-2 text-xs bg-[#eaf3ea] text-[var(--dp-color-ink)] rounded-[4px_2px_5px_3px] border border-[#96b79d] font-reading">
-              {t("memberAdded")}
+            <div className="mb-3">
+              <FormAlert type="success" message={t("memberAdded")} />
             </div>
           )}
 
-          <form action={addAction} className="flex flex-col sm:flex-row gap-3">
-            <input type="hidden" name="workspaceId" value={workspaceId} />
-            <input
-              type="email"
-              name="email"
-              required
-              placeholder="member@example.com"
-              dir="ltr"
-              className="flex-1 px-3 py-2 border border-[var(--dp-color-line)] rounded-[6px_3px_7px_4px] bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] text-sm font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
-            />
-            <div className="w-full sm:w-44">
-              <SketchSelect
-                name="role"
-                defaultValue="MEMBER"
-                size="md"
-                options={[
-                  { value: "MEMBER", label: t("roles.MEMBER") },
-                  ...(currentActorRole === "OWNER"
-                    ? [{ value: "ADMIN", label: t("roles.ADMIN") }]
-                    : []),
-                ]}
-              />
+          <form
+            action={addAction}
+            onSubmit={handleAddSubmit}
+            noValidate
+            className="space-y-2"
+          >
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input type="hidden" name="workspaceId" value={workspaceId} />
+              <div className="flex-1">
+                <input
+                  type="email"
+                  name="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (emailError) setEmailError(null);
+                  }}
+                  placeholder="member@example.com"
+                  dir="ltr"
+                  aria-invalid={Boolean(emailError)}
+                  aria-describedby={emailError ? "member-email-error" : undefined}
+                  className={`w-full px-3 py-2 border rounded-[6px_3px_7px_4px] bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] text-sm font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)] ${
+                    emailError ? "sketch-input-error" : "border-[var(--dp-color-line)]"
+                  }`}
+                />
+                <FieldErrorMessage id="member-email-error" error={emailError} />
+              </div>
+              <div className="w-full sm:w-44">
+                <SketchSelect
+                  name="role"
+                  defaultValue="MEMBER"
+                  size="md"
+                  options={[
+                    { value: "MEMBER", label: t("roles.MEMBER") },
+                    ...(currentActorRole === "OWNER"
+                      ? [{ value: "ADMIN", label: t("roles.ADMIN") }]
+                      : []),
+                  ]}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={isAdding}
+                className="sketch-btn sketch-btn-primary text-xs px-4 py-2 disabled:opacity-50 whitespace-nowrap self-start"
+              >
+                {isAdding ? common("loading") : common("save")}
+              </button>
             </div>
-            <button
-              type="submit"
-              disabled={isAdding}
-              className="sketch-btn sketch-btn-primary text-xs px-4 py-2 disabled:opacity-50 whitespace-nowrap"
-            >
-              {isAdding ? common("loading") : common("save")}
-            </button>
           </form>
         </div>
       )}
