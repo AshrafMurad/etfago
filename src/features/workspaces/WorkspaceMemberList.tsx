@@ -7,6 +7,7 @@ import {
   updateWorkspaceMemberRoleAction,
   removeWorkspaceMemberAction,
 } from "../../server/actions/workspaces";
+import { SketchSelect } from "../ui/SketchSelect";
 
 interface Member {
   id: string;
@@ -61,7 +62,7 @@ export function WorkspaceMemberList({
 
           {addState?.success && (
             <div className="mb-3 p-2 text-xs bg-[#eaf3ea] text-[var(--dp-color-ink)] rounded-[4px_2px_5px_3px] border border-[#96b79d] font-reading">
-              {addState.message}
+              {t("memberAdded")}
             </div>
           )}
 
@@ -75,15 +76,19 @@ export function WorkspaceMemberList({
               dir="ltr"
               className="flex-1 px-3 py-2 border border-[var(--dp-color-line)] rounded-[6px_3px_7px_4px] bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] text-sm font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
             />
-            <select
-              name="role"
-              className="sketch-select px-3 py-2 text-sm font-marker cursor-pointer"
-            >
-              <option value="MEMBER">{t("roles.MEMBER")}</option>
-              {currentActorRole === "OWNER" && (
-                <option value="ADMIN">{t("roles.ADMIN")}</option>
-              )}
-            </select>
+            <div className="w-full sm:w-44">
+              <SketchSelect
+                name="role"
+                defaultValue="MEMBER"
+                size="md"
+                options={[
+                  { value: "MEMBER", label: t("roles.MEMBER") },
+                  ...(currentActorRole === "OWNER"
+                    ? [{ value: "ADMIN", label: t("roles.ADMIN") }]
+                    : []),
+                ]}
+              />
+            </div>
             <button
               type="submit"
               disabled={isAdding}
@@ -134,18 +139,19 @@ export function WorkspaceMemberList({
               <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
                 {/* Role badge or editor */}
                 {canModifyThisMember && currentActorRole === "OWNER" ? (
-                  <form action={updateRoleAction} className="inline-block">
+                  <form action={updateRoleAction} className="inline-block w-32 sm:w-36">
                     <input type="hidden" name="workspaceId" value={workspaceId} />
                     <input type="hidden" name="targetUserId" value={m.user.id} />
-                    <select
+                    <SketchSelect
                       name="role"
-                      defaultValue={m.role}
-                      onChange={(e) => e.target.form?.requestSubmit()}
-                      className="sketch-select text-xs px-2.5 py-1 font-marker cursor-pointer"
-                    >
-                      <option value="MEMBER">{t("roles.MEMBER")}</option>
-                      <option value="ADMIN">{t("roles.ADMIN")}</option>
-                    </select>
+                      value={m.role}
+                      size="sm"
+                      autoSubmit
+                      options={[
+                        { value: "MEMBER", label: t("roles.MEMBER") },
+                        { value: "ADMIN", label: t("roles.ADMIN") },
+                      ]}
+                    />
                   </form>
                 ) : (
                   <span className="text-xs px-2.5 py-1 rounded-[4px_2px_5px_3px] bg-[var(--dp-color-ground)] text-[var(--dp-color-ink-muted)] border border-[var(--dp-color-line)] font-bold font-marker">

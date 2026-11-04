@@ -28,6 +28,7 @@ export interface SketchSelectProps {
   searchPlaceholder?: string;
   size?: "sm" | "md" | "lg";
   ariaLabel?: string;
+  autoSubmit?: boolean;
 }
 
 export function SketchSelect({
@@ -46,6 +47,7 @@ export function SketchSelect({
   searchPlaceholder = "بحث...",
   size = "md",
   ariaLabel,
+  autoSubmit = false,
 }: SketchSelectProps) {
   const [internalValue, setInternalValue] = useState<string>(
     controlledValue !== undefined ? controlledValue : defaultValue
@@ -55,6 +57,7 @@ export function SketchSelect({
   const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const hiddenInputRef = useRef<HTMLInputElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const selectId = useId();
@@ -121,9 +124,21 @@ export function SketchSelect({
     if (!isControlled) {
       setInternalValue(option.value);
     }
+    if (hiddenInputRef.current) {
+      hiddenInputRef.current.value = option.value;
+    }
     onChange?.(option.value);
     setIsOpen(false);
     setSearchQuery("");
+
+    if (autoSubmit) {
+      setTimeout(() => {
+        const form = containerRef.current?.closest("form") || hiddenInputRef.current?.form;
+        if (form) {
+          form.requestSubmit();
+        }
+      }, 0);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -187,6 +202,7 @@ export function SketchSelect({
       {/* Hidden native input for standard forms */}
       {name && (
         <input
+          ref={hiddenInputRef}
           type="hidden"
           name={name}
           value={selectedValue}

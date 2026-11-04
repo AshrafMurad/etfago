@@ -144,7 +144,7 @@ export function WorkspaceOperationalReportsView({
         <div className="sketch-card p-5 flex flex-col justify-between space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold font-marker text-[var(--dp-color-ink-muted)]">
-              {report.workspace.kind === "PERSONAL" ? "Personal Space" : "Team & Members"}
+              {report.workspace.kind === "PERSONAL" ? t("personalSpace") : t("teamMembers")}
             </span>
             <div className="p-2 bg-[var(--dp-color-ground)] border border-[var(--dp-color-line)] text-[var(--dp-color-annotation)] rounded-[4px_2px_5px_3px]">
               <Users className="w-4 h-4" />
@@ -157,13 +157,13 @@ export function WorkspaceOperationalReportsView({
             </div>
             <div className="mt-3 pt-3 border-t border-[var(--dp-color-line)]/60 flex flex-wrap gap-2 text-xs">
               <span className="px-2 py-0.5 rounded-[4px_2px_5px_3px] bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] border border-[var(--dp-color-line)] font-marker">
-                Owners: {metrics.members.owners}
+                {t("owners")}: {metrics.members.owners}
               </span>
               <span className="px-2 py-0.5 rounded-[4px_2px_5px_3px] bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] border border-[var(--dp-color-line)] font-marker">
-                Admins: {metrics.members.admins}
+                {t("admins")}: {metrics.members.admins}
               </span>
               <span className="px-2 py-0.5 rounded-[4px_2px_5px_3px] bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink-muted)] border border-[var(--dp-color-line)] font-marker">
-                Members: {metrics.members.regularMembers}
+                {t("members")}: {metrics.members.regularMembers}
               </span>
             </div>
           </div>
@@ -277,7 +277,7 @@ export function WorkspaceOperationalReportsView({
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-[var(--dp-color-accent)]" />
                   <span className="font-bold font-marker text-[var(--dp-color-ink)]">
-                    {act.actorName || act.actorEmail || "User"}
+                    {act.actorName || act.actorEmail || "—"}
                   </span>
                   <span className="text-[var(--dp-color-ink-muted)] font-mono">
                     [{act.action}]

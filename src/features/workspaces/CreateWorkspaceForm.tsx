@@ -24,7 +24,7 @@ export function CreateWorkspaceForm() {
 
       {state?.success && (
         <div className="mb-3 p-2.5 text-xs bg-[#eaf3ea] text-[var(--dp-color-ink)] rounded-[6px_3px_8px_4px] border border-[#96b79d] font-reading">
-          {state.message}
+          {t("createdSuccess")}
         </div>
       )}
 
