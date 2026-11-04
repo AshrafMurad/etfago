@@ -68,6 +68,12 @@
     "participantsCount": "{count} أطراف",
     "organizerRole": "منظّم الاتفاق",
     "participantRole": "طرف مشارك",
+    "roles": {
+      "ORGANIZER": "منظّم",
+      "EDITOR": "محرر مسودة",
+      "REVIEWER": "مراجع",
+      "OBSERVER": "مراقب (للقراءة فقط)"
+    },
     "noTermsYet": "لم تتم إضافة أية بنود بعد. ابدأ بإضافة أول بند.",
     "noActivityYet": "لا يوجد نشاط مسجل بعد.",
     "moveUp": "تحريك لأعلى",

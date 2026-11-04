@@ -68,6 +68,12 @@
     "participantsCount": "{count} participant(s)",
     "organizerRole": "Organizer",
     "participantRole": "Participant",
+    "roles": {
+      "ORGANIZER": "Organizer",
+      "EDITOR": "Draft Editor",
+      "REVIEWER": "Reviewer",
+      "OBSERVER": "Observer (Read-Only)"
+    },
     "noTermsYet": "No terms have been added yet. Start by adding your first term.",
     "noActivityYet": "No activity recorded yet.",
     "moveUp": "Move Up",

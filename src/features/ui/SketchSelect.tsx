@@ -26,6 +26,7 @@ export interface SketchSelectProps {
   menuClassName?: string;
   searchable?: boolean;
   searchPlaceholder?: string;
+  noResultsText?: string;
   size?: "sm" | "md" | "lg";
   ariaLabel?: string;
   autoSubmit?: boolean;
@@ -36,7 +37,7 @@ export function SketchSelect({
   value: controlledValue,
   defaultValue = "",
   options,
-  placeholder = "اختر...",
+  placeholder,
   onChange,
   disabled = false,
   required = false,
@@ -44,11 +45,23 @@ export function SketchSelect({
   triggerClassName = "",
   menuClassName = "",
   searchable = false,
-  searchPlaceholder = "بحث...",
+  searchPlaceholder,
+  noResultsText,
   size = "md",
   ariaLabel,
   autoSubmit = false,
 }: SketchSelectProps) {
+  const isEn =
+    typeof document !== "undefined" &&
+    (document.documentElement.lang === "en" || document.documentElement.dir === "ltr");
+
+  const effectivePlaceholder =
+    placeholder !== undefined ? placeholder : isEn ? "Select..." : "اختر...";
+  const effectiveSearchPlaceholder =
+    searchPlaceholder !== undefined ? searchPlaceholder : isEn ? "Search..." : "بحث...";
+  const effectiveNoResults =
+    noResultsText !== undefined ? noResultsText : isEn ? "No matching results" : "لا توجد نتائج مطابقة";
+
   const [internalValue, setInternalValue] = useState<string>(
     controlledValue !== undefined ? controlledValue : defaultValue
   );
@@ -218,7 +231,7 @@ export function SketchSelect({
         onClick={() => setIsOpen((prev) => !prev)}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        aria-label={ariaLabel || selectedOption?.label || placeholder}
+        aria-label={ariaLabel || selectedOption?.label || effectivePlaceholder}
         className={`w-full flex items-center justify-between gap-2.5 bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] border-[1.5px] border-[var(--dp-color-line)] rounded-[var(--dp-radius-control)] font-reading shadow-[1.5px_2px_0px_rgba(179,172,157,0.5)] transition-all cursor-pointer hover:border-[var(--dp-color-ink)] hover:shadow-[2px_2px_0px_var(--dp-color-ink)] focus:outline-dashed focus:outline-[var(--dp-color-annotation)] focus:outline-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${sizeClasses} ${triggerClassName}`}
       >
         <div className="flex items-center gap-2 truncate flex-1">
@@ -232,7 +245,7 @@ export function SketchSelect({
                 : "text-[var(--dp-color-ink-muted)] opacity-70"
             }`}
           >
-            {selectedOption ? selectedOption.label : placeholder}
+            {selectedOption ? selectedOption.label : effectivePlaceholder}
           </span>
           {selectedOption?.badge && (
             <span className="shrink-0">{selectedOption.badge}</span>
@@ -264,7 +277,7 @@ export function SketchSelect({
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={searchPlaceholder}
+                  placeholder={effectiveSearchPlaceholder}
                   className="w-full ps-8 pe-3 py-1.5 text-xs rounded-[5px_2px_6px_3px] border border-[var(--dp-color-line)] bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
                   onClick={(e) => e.stopPropagation()}
                 />
@@ -279,7 +292,7 @@ export function SketchSelect({
           >
             {filteredOptions.length === 0 ? (
               <li className="p-3 text-center text-xs font-reading text-[var(--dp-color-ink-muted)] italic">
-                لا توجد نتائج مطابقة
+                {effectiveNoResults}
               </li>
             ) : (
               filteredOptions.map((option, idx) => {
