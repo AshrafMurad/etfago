@@ -52,22 +52,22 @@ export function StarterTemplatesGallery({
   const renderIcon = (iconName: string) => {
     switch (iconName) {
       case "Users":
-        return <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />;
+        return <Users className="w-5 h-5 text-[var(--dp-color-annotation)]" />;
       case "Briefcase":
-        return <Briefcase className="w-5 h-5 text-blue-600 dark:text-blue-400" />;
+        return <Briefcase className="w-5 h-5 text-[var(--dp-color-ink)]" />;
       case "Package":
-        return <Package className="w-5 h-5 text-amber-600 dark:text-amber-400" />;
+        return <Package className="w-5 h-5 text-[#8c5b10]" />;
       case "ShieldCheck":
-        return <ShieldCheck className="w-5 h-5 text-purple-600 dark:text-purple-400" />;
+        return <ShieldCheck className="w-5 h-5 text-[var(--dp-color-accent)]" />;
       default:
-        return <FileText className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />;
+        return <FileText className="w-5 h-5 text-[var(--dp-color-ink-muted)]" />;
     }
   };
 
   return (
     <div className="space-y-4">
       {/* Category Filter Tabs */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-zinc-200 dark:border-zinc-800">
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b-[1.5px] border-dashed border-[var(--dp-color-line)]">
         {categories.map((cat) => {
           const isActive = selectedCategory === cat.id;
           return (
@@ -75,10 +75,10 @@ export function StarterTemplatesGallery({
               key={cat.id}
               type="button"
               onClick={() => setSelectedCategory(cat.id)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
+              className={`px-3 py-1.5 rounded-[6px_3px_8px_4px] text-xs font-marker font-bold whitespace-nowrap transition-colors cursor-pointer ${
                 isActive
-                  ? "bg-emerald-600 text-white shadow-2xs"
-                  : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                  ? "bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border border-[var(--dp-color-ink)] shadow-[1px_1px_0px_var(--dp-color-ink)]"
+                  : "text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-ink)] hover:bg-[var(--dp-color-scrap)]"
               }`}
             >
               {cat.label}
@@ -92,37 +92,37 @@ export function StarterTemplatesGallery({
         {filteredTemplates.map((template) => (
           <div
             key={template.id}
-            className="p-5 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500/50 dark:hover:border-emerald-500/50 transition-all flex flex-col justify-between shadow-2xs group"
+            className="sketch-card p-5 flex flex-col justify-between hover:rotate-[-0.1deg] transition-all group"
           >
             <div className="space-y-3">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700/60 group-hover:scale-105 transition-transform">
+                  <div className="p-2 rounded-[5px_2px_7px_3px] bg-[var(--dp-color-ground)] border border-[var(--dp-color-line)] group-hover:scale-105 transition-transform text-[var(--dp-color-ink)]">
                     {renderIcon(template.icon)}
                   </div>
                   <div>
-                    <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
+                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-[4px_2px_5px_3px] bg-[var(--dp-color-ground)] text-[var(--dp-color-ink-muted)] border border-[var(--dp-color-line)] font-marker">
                       {template.category}
                     </span>
                   </div>
                 </div>
-                <span className="text-xs text-zinc-400 font-medium">
+                <span className="text-xs text-[var(--dp-color-ink-muted)] font-reading font-semibold">
                   {template.termsCount} {locale === "ar" ? "بنود" : "terms"}
                 </span>
               </div>
 
               <div>
-                <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 leading-snug">
+                <h3 className="text-base font-bold font-marker text-[var(--dp-color-ink)] leading-snug">
                   {template.title}
                 </h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 line-clamp-2 leading-relaxed">
+                <p className="text-xs font-reading text-[var(--dp-color-ink-muted)] mt-1 line-clamp-2 leading-relaxed">
                   {template.description}
                 </p>
               </div>
 
               {template.suggestedRoles.length > 0 && (
-                <div className="text-[11px] text-zinc-500 dark:text-zinc-400 pt-1">
-                  <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                <div className="text-[11px] font-reading text-[var(--dp-color-ink-muted)] pt-1">
+                  <span className="font-bold text-[var(--dp-color-ink)]">
                     {labels.suggestedRoles}:{" "}
                   </span>
                   <span>{template.suggestedRoles.join(" • ")}</span>
@@ -131,11 +131,11 @@ export function StarterTemplatesGallery({
             </div>
 
             {/* Actions */}
-            <div className="pt-4 mt-3 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between gap-2">
+            <div className="pt-4 mt-3 border-t border-dashed border-[var(--dp-color-line)] flex items-center justify-between gap-2">
               <button
                 type="button"
                 onClick={() => setPreviewTemplate(template)}
-                className="px-3 py-1.5 text-xs font-semibold text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
+                className="sketch-btn sketch-btn-outline px-3 py-1.5 text-xs font-marker flex items-center gap-1.5"
               >
                 <Eye className="w-3.5 h-3.5" />
                 {labels.preview}
@@ -144,7 +144,7 @@ export function StarterTemplatesGallery({
               <button
                 type="button"
                 onClick={() => onSelectTemplate(template)}
-                className="px-3.5 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                className="sketch-btn sketch-btn-primary px-3.5 py-1.5 text-xs font-marker flex items-center gap-1.5"
               >
                 <Check className="w-3.5 h-3.5" />
                 {labels.useTemplate}

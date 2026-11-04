@@ -84,21 +84,22 @@ export default async function NewAgreementPage({
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex items-center gap-2 text-sm text-zinc-500">
+    <div className="max-w-4xl mx-auto space-y-6 py-6 px-4">
+      <div className="flex items-center gap-2 text-base font-reading text-[var(--dp-color-annotation)]">
         <Link
           href={`/${locale}/agreements`}
-          className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+          className="hover:text-[var(--dp-color-accent)] hover:underline transition-colors inline-flex items-center gap-1.5"
         >
-          ← {tAgreements("title")}
+          <span>←</span>
+          <span>{tAgreements("title")}</span>
         </Link>
       </div>
 
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+        <h1 className="text-2xl sm:text-3xl font-bold font-marker text-[var(--dp-color-ink)]">
           {tAgreements("createTitle")}
         </h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+        <p className="text-base font-reading text-[var(--dp-color-ink-muted)] mt-1">
           {tAgreements("createSubtitle")}
         </p>
       </div>

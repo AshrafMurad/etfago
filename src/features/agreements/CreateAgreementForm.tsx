@@ -6,6 +6,7 @@ import { createAgreementAction } from "../../server/actions/agreements";
 import { StructuredTerm } from "../../lib/schemas/agreements";
 import { LocalizedStarterTemplate } from "../../lib/schemas/templates";
 import { StarterTemplatesGallery } from "../templates/StarterTemplatesGallery";
+import { SketchSelect } from "../ui/SketchSelect";
 import { Sparkles, FileText, RotateCcw, CheckCircle2 } from "lucide-react";
 
 interface WorkspaceOption {
@@ -230,14 +231,14 @@ export function CreateAgreementForm({
     <div className="space-y-6">
       {/* Mode Selector Tabs (Templates vs Blank Draft) */}
       {starterTemplates.length > 0 && (
-        <div className="flex items-center gap-2 p-1.5 bg-zinc-100 dark:bg-zinc-800/80 rounded-xl border border-zinc-200 dark:border-zinc-700/60 max-w-fit">
+        <div className="flex items-center gap-2 p-1.5 bg-[var(--dp-color-scrap)] rounded-[8px_4px_12px_5px] border border-[var(--dp-color-line)] max-w-fit shadow-[1px_1px_0px_var(--dp-color-line)]">
           <button
             type="button"
             onClick={() => setActiveTab("templates")}
-            className={`px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-[6px_3px_8px_4px] text-xs font-bold font-marker flex items-center gap-1.5 transition-all cursor-pointer ${
               activeTab === "templates"
-                ? "bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-xs"
-                : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+                ? "bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border border-[var(--dp-color-ink)] shadow-[1px_1px_0px_var(--dp-color-ink)]"
+                : "text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-ink)]"
             }`}
           >
             <Sparkles className="w-3.5 h-3.5" />
@@ -247,10 +248,10 @@ export function CreateAgreementForm({
           <button
             type="button"
             onClick={() => setActiveTab("form")}
-            className={`px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-[6px_3px_8px_4px] text-xs font-bold font-marker flex items-center gap-1.5 transition-all cursor-pointer ${
               activeTab === "form"
-                ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-xs"
-                : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+                ? "bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border border-[var(--dp-color-ink)] shadow-[1px_1px_0px_var(--dp-color-ink)]"
+                : "text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-ink)]"
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
@@ -262,12 +263,12 @@ export function CreateAgreementForm({
       {/* Templates Gallery Tab View */}
       {activeTab === "templates" && starterTemplates.length > 0 && (
         <div className="space-y-4">
-          <div className="p-4 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50 rounded-xl">
-            <h3 className="text-sm font-bold text-emerald-900 dark:text-emerald-200">
+          <div className="sketch-card p-5 space-y-1.5">
+            <h3 className="text-base font-bold font-marker text-[var(--dp-color-ink)]">
               {templateLabels?.galleryTitle ||
                 (locale === "ar" ? "ابدأ بسرعة باستخدام النماذج الجاهزة" : "Start Fast with Curated Templates")}
             </h3>
-            <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-1 leading-relaxed">
+            <p className="text-sm font-reading text-[var(--dp-color-ink-muted)] leading-relaxed">
               {templateLabels?.gallerySubtitle ||
                 (locale === "ar"
                   ? "اختر النموذج المناسب لطبيعة تعاملك لتعبئة البنود المقترحة تلقائيًا، مع إمكانية تعديلها أو حذفها لاحقًا."
@@ -305,33 +306,33 @@ export function CreateAgreementForm({
       {activeTab === "form" && (
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="p-4 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-300">
+            <div className="p-3.5 rounded-[6px_3px_8px_4px] bg-[#fbeee9] border border-[var(--dp-color-accent)] text-xs font-reading text-[var(--dp-color-accent)]">
               {error}
             </div>
           )}
 
           {/* Active Template Applied Banner */}
           {activeTemplateName && (
-            <div className="p-4 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl border border-emerald-200 dark:border-emerald-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <div className="sketch-strip p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-reading">
+              <div className="flex items-center gap-2 text-[var(--dp-color-ink)]">
+                <CheckCircle2 className="w-4 h-4 text-[var(--dp-color-annotation)] shrink-0" />
                 <span>
                   {locale === "ar" ? "تم تطبيق النموذج:" : "Template applied:"}{" "}
-                  <strong className="font-bold">{activeTemplateName}</strong>
+                  <strong className="font-bold font-marker">{activeTemplateName}</strong>
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setActiveTab("templates")}
-                  className="px-2.5 py-1 rounded-md bg-white dark:bg-zinc-800 border border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100/50 transition-colors font-medium cursor-pointer"
+                  className="sketch-btn sketch-btn-secondary px-3 py-1 text-xs font-marker cursor-pointer"
                 >
                   {templateLabels?.switchTemplate || (locale === "ar" ? "تغيير النموذج" : "Switch Template")}
                 </button>
                 <button
                   type="button"
                   onClick={clearTemplate}
-                  className="px-2.5 py-1 rounded-md text-zinc-500 hover:text-red-600 transition-colors cursor-pointer flex items-center gap-1"
+                  className="sketch-btn sketch-btn-outline px-3 py-1 text-xs font-marker text-[var(--dp-color-accent)] cursor-pointer flex items-center gap-1"
                 >
                   <RotateCcw className="w-3 h-3" />
                   {templateLabels?.clearTemplate || (locale === "ar" ? "إعادة تعيين" : "Reset")}
@@ -341,29 +342,36 @@ export function CreateAgreementForm({
           )}
 
           {/* Workspace & Category */}
-          <div className="p-6 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 space-y-4 shadow-2xs">
+          <div className="sketch-card p-6 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                  {t.workspaceSelect} <span className="text-red-500">*</span>
+                <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1.5">
+                  {t.workspaceSelect} <span className="text-[var(--dp-color-accent)]">*</span>
                 </label>
-                <select
+                <SketchSelect
                   value={workspaceId}
-                  onChange={(e) => setWorkspaceId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
-                  required
-                >
-                  {workspaces.map((ws) => (
-                    <option key={ws.id} value={ws.id}>
-                      {ws.name} ({ws.kind === "PERSONAL" ? "شخصي" : "تجاري"})
-                    </option>
-                  ))}
-                </select>
+                  onChange={(val) => setWorkspaceId(val)}
+                  options={workspaces.map((ws) => ({
+                    value: ws.id,
+                    label: ws.name,
+                    badge: (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-[4px_2px_5px_3px] bg-[var(--dp-color-ground)] text-[var(--dp-color-ink-muted)] border border-[var(--dp-color-line)] font-marker">
+                        {ws.kind === "PERSONAL"
+                          ? locale === "ar"
+                            ? "شخصي"
+                            : "Personal"
+                          : locale === "ar"
+                          ? "أعمال"
+                          : "Business"}
+                      </span>
+                    ),
+                  }))}
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                  {t.categoryLabel} <span className="text-zinc-400 font-normal">({t.optional})</span>
+                <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1.5">
+                  {t.categoryLabel} <span className="text-[var(--dp-color-ink-muted)] font-normal">({t.optional})</span>
                 </label>
                 <input
                   type="text"
@@ -371,15 +379,54 @@ export function CreateAgreementForm({
                   onChange={(e) => setCategory(e.target.value)}
                   placeholder={t.categoryPlaceholder}
                   maxLength={64}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2 text-sm"
                 />
               </div>
             </div>
 
+            {/* Quick Template Picker Dropdown */}
+            {starterTemplates.length > 0 && (
+              <div className="pt-2 border-t border-dashed border-[var(--dp-color-line)]/50">
+                <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1.5 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-[var(--dp-color-annotation)]" />
+                  <span>
+                    {locale === "ar"
+                      ? "تعبئة سريعة من النماذج المقترحة"
+                      : "Quick Template Selection"}
+                  </span>
+                  <span className="text-[var(--dp-color-ink-muted)] font-normal">
+                    ({t.optional})
+                  </span>
+                </label>
+                <SketchSelect
+                  value={activeTemplateId || ""}
+                  onChange={(val) => {
+                    const tpl = starterTemplates.find((t) => t.id === val);
+                    if (tpl) applyTemplate(tpl);
+                  }}
+                  placeholder={
+                    locale === "ar"
+                      ? "اختر قالباً لتعبئة البنود المقترحة تلقائياً..."
+                      : "Choose a template to prefill terms..."
+                  }
+                  options={starterTemplates.map((t) => ({
+                    value: t.id,
+                    label: t.title,
+                    description: t.description,
+                    badge: (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-[4px_2px_5px_3px] bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border border-[var(--dp-color-ink)] font-marker">
+                        {t.terms.length} {locale === "ar" ? "بنود" : "terms"}
+                      </span>
+                    ),
+                  }))}
+                />
+              </div>
+            )}
+
             {/* Title */}
             <div>
-              <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                {t.titleLabel} <span className="text-red-500">*</span>
+              <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1.5">
+                {t.titleLabel} <span className="text-[var(--dp-color-accent)]">*</span>
               </label>
               <input
                 type="text"
@@ -388,14 +435,14 @@ export function CreateAgreementForm({
                 placeholder={t.titlePlaceholder}
                 maxLength={160}
                 required
-                className="w-full px-3.5 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3.5 py-2 text-base font-bold font-marker"
               />
             </div>
 
             {/* Description */}
             <div>
-              <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                {t.descriptionLabel} <span className="text-zinc-400 font-normal">({t.optional})</span>
+              <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1.5">
+                {t.descriptionLabel} <span className="text-[var(--dp-color-ink-muted)] font-normal">({t.optional})</span>
               </label>
               <textarea
                 value={description}
@@ -403,7 +450,7 @@ export function CreateAgreementForm({
                 placeholder={t.descriptionPlaceholder}
                 maxLength={4000}
                 rows={3}
-                className="w-full px-3.5 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3.5 py-2 text-sm font-reading"
               />
             </div>
           </div>
@@ -411,14 +458,14 @@ export function CreateAgreementForm({
           {/* Initial Terms */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
+              <h2 className="text-base font-bold font-marker text-[var(--dp-color-ink)]">
                 {t.addTerm} ({terms.length})
               </h2>
               <button
                 type="button"
                 onClick={handleAddTerm}
                 disabled={terms.length >= 50}
-                className="text-xs font-medium px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 transition-colors cursor-pointer"
+                className="sketch-btn sketch-btn-secondary px-3 py-1.5 text-xs font-marker"
               >
                 + {t.addTerm}
               </button>
@@ -428,17 +475,17 @@ export function CreateAgreementForm({
               {terms.map((term, index) => (
                 <div
                   key={term.id}
-                  className="p-5 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 space-y-3 relative shadow-2xs"
+                  className="sketch-card p-5 space-y-3 relative hover:rotate-[-0.1deg] transition-all"
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                  <div className="flex items-center justify-between gap-2 border-b border-dashed border-[var(--dp-color-line)] pb-2.5">
+                    <span className="text-sm font-bold font-marker text-[var(--dp-color-accent)]">
                       #{index + 1}
                     </span>
                     {terms.length > 1 && (
                       <button
                         type="button"
                         onClick={() => handleRemoveTerm(index)}
-                        className="text-xs text-red-500 hover:text-red-700 p-1 cursor-pointer"
+                        className="text-xs text-[var(--dp-color-accent)] hover:underline p-1 font-bold cursor-pointer"
                         title={t.removeTerm}
                       >
                         ✕ {t.removeTerm}
@@ -447,8 +494,8 @@ export function CreateAgreementForm({
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                      {t.termTitle} <span className="text-red-500">*</span>
+                    <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1">
+                      {t.termTitle} <span className="text-[var(--dp-color-accent)]">*</span>
                     </label>
                     <input
                       type="text"
@@ -457,13 +504,13 @@ export function CreateAgreementForm({
                       placeholder={t.termTitlePlaceholder}
                       maxLength={120}
                       required
-                      className="w-full px-3.5 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                      className="w-full px-3.5 py-2 text-base font-bold font-marker"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                      {t.termBody} <span className="text-zinc-400 font-normal">({t.optional})</span>
+                    <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1">
+                      {t.termBody} <span className="text-[var(--dp-color-ink-muted)] font-normal">({t.optional})</span>
                     </label>
                     <textarea
                       value={term.body || ""}
@@ -471,14 +518,14 @@ export function CreateAgreementForm({
                       placeholder={t.termBodyPlaceholder}
                       maxLength={4000}
                       rows={2}
-                      className="w-full px-3.5 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                      className="w-full px-3.5 py-2 text-sm font-reading"
                     />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                     <div>
-                      <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                        {t.amount} <span className="text-zinc-400 font-normal">({t.optional})</span>
+                      <label className="block text-xs font-reading text-[var(--dp-color-ink-muted)] mb-1">
+                        {t.amount} <span className="text-[var(--dp-color-ink-muted)] font-normal">({t.optional})</span>
                       </label>
                       <input
                         type="text"
@@ -486,13 +533,13 @@ export function CreateAgreementForm({
                         onChange={(e) => handleUpdateTerm(index, "amount", e.target.value)}
                         placeholder="1000"
                         maxLength={32}
-                        className="w-full px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                        className="w-full px-3 py-1.5 text-xs"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                        {t.currency} <span className="text-zinc-400 font-normal">({t.optional})</span>
+                      <label className="block text-xs font-reading text-[var(--dp-color-ink-muted)] mb-1">
+                        {t.currency} <span className="text-[var(--dp-color-ink-muted)] font-normal">({t.optional})</span>
                       </label>
                       <input
                         type="text"
@@ -500,19 +547,19 @@ export function CreateAgreementForm({
                         onChange={(e) => handleUpdateTerm(index, "currency", e.target.value.toUpperCase())}
                         placeholder="SAR"
                         maxLength={10}
-                        className="w-full px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 uppercase focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                        className="w-full px-3 py-1.5 text-xs uppercase"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                        {t.dueDate} <span className="text-zinc-400 font-normal">({t.optional})</span>
+                      <label className="block text-xs font-reading text-[var(--dp-color-ink-muted)] mb-1">
+                        {t.dueDate} <span className="text-[var(--dp-color-ink-muted)] font-normal">({t.optional})</span>
                       </label>
                       <input
                         type="date"
                         value={term.dueDate || ""}
                         onChange={(e) => handleUpdateTerm(index, "dueDate", e.target.value)}
-                        className="w-full px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                        className="w-full px-3 py-1.5 text-xs"
                       />
                     </div>
                   </div>
@@ -522,19 +569,19 @@ export function CreateAgreementForm({
           </div>
 
           {/* Form Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-800">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-dashed border-[var(--dp-color-line)]">
             <button
               type="button"
               onClick={() => router.back()}
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors disabled:opacity-50 cursor-pointer"
+              className="sketch-btn sketch-btn-outline px-5 py-2.5 text-sm font-marker disabled:opacity-50"
             >
               {t.cancel}
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition-colors disabled:opacity-50 shadow-xs cursor-pointer"
+              className="sketch-btn sketch-btn-primary px-6 py-2.5 text-sm font-marker disabled:opacity-50"
             >
               {isSubmitting ? t.loading : t.save}
             </button>
