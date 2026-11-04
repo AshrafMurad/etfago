@@ -427,14 +427,15 @@ export default async function AgreementDetailPage({
     pendingReview?.snapshot.terms || agreement.draft?.content.terms || [];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 py-6 px-4">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-zinc-500">
+      <div className="flex items-center gap-2 text-base font-reading text-[var(--dp-color-annotation)]">
         <Link
           href={`/${locale}/agreements`}
-          className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+          className="hover:text-[var(--dp-color-accent)] hover:underline transition-colors inline-flex items-center gap-1.5"
         >
-          ← {tAgreements("title")}
+          <span>←</span>
+          <span>{tAgreements("title")}</span>
         </Link>
       </div>
 
@@ -459,15 +460,15 @@ export default async function AgreementDetailPage({
 
       {/* Draft Status Notice (F-10 Invariant: Never present draft as agreed!) */}
       {agreement.lifecycleStatus === "DRAFT" && !pendingReview && (
-        <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 flex items-start gap-3">
-          <span className="text-amber-600 dark:text-amber-400 text-lg leading-none mt-0.5">
+        <div className="p-4 rounded-[8px_4px_12px_5px] bg-[var(--dp-color-highlight)]/40 border-[1.5px] border-[var(--dp-color-line)] shadow-[1px_2px_0px_var(--dp-color-line)] flex items-start gap-3">
+          <span className="text-xl leading-none mt-0.5">
             ⚠️
           </span>
           <div>
-            <h2 className="text-sm font-bold text-amber-800 dark:text-amber-200">
+            <h2 className="text-base font-bold font-marker text-[var(--dp-color-ink)]">
               {tAgreements("draftSubtitle")}
             </h2>
-            <p className="text-xs text-amber-700/80 dark:text-amber-300/80 mt-0.5">
+            <p className="text-sm font-reading text-[var(--dp-color-ink-muted)] mt-0.5">
               لا يمثل هذا المحتوى اتفاقًا معتمدًا حتى يتم تجميد النسخة والموافقة الصريحة عليها من جميع الأطراف.
             </p>
           </div>
@@ -475,55 +476,57 @@ export default async function AgreementDetailPage({
       )}
 
       {agreement.lifecycleStatus === "ARCHIVED" && (
-        <div className="p-4 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 text-sm text-zinc-700 dark:text-zinc-300">
+        <div className="p-4 rounded-[8px_4px_12px_5px] bg-[var(--dp-color-scrap)] border-[1.5px] border-dashed border-[var(--dp-color-line)] text-sm font-reading text-[var(--dp-color-ink-muted)]">
           🗄 {tAgreements("archivedNotice")}
         </div>
       )}
 
       {/* Agreement Header */}
-      <div className="p-6 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 space-y-4 shadow-2xs">
+      <div className="sketch-card p-6 space-y-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
               <span
-                className={`text-[10px] px-2.5 py-0.5 rounded-full font-medium ${
+                className={`text-xs px-2.5 py-0.5 rounded-[5px_2px_7px_3px] font-semibold font-reading ${
                   agreement.lifecycleStatus === "DRAFT"
-                    ? "bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300 border border-amber-200"
-                    : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200"
+                    ? "sketch-highlight border border-[var(--dp-color-ink)]/20"
+                    : agreement.lifecycleStatus === "AGREED"
+                    ? "bg-[#eaf3ea] text-[var(--dp-color-ink)] border border-[#96b79d]"
+                    : "bg-[var(--dp-color-ground)] text-[var(--dp-color-ink-muted)] border border-[var(--dp-color-line)]"
                 }`}
               >
                 {tAgreements(`status.${agreement.lifecycleStatus}`)}
               </span>
 
-              <span className="text-[10px] px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+              <span className="text-xs px-2 py-0.5 rounded-[5px_2px_7px_3px] bg-[var(--dp-color-ground)] border border-[var(--dp-color-line)] text-[var(--dp-color-ink-muted)] font-reading">
                 {agreement.workspace.name}
               </span>
 
               {agreement.category && (
-                <span className="text-[10px] px-2 py-0.5 rounded-md bg-zinc-50 dark:bg-zinc-800/60 text-zinc-500 border border-zinc-200 dark:border-zinc-700">
+                <span className="text-xs px-2 py-0.5 rounded-[5px_2px_7px_3px] bg-[var(--dp-color-ground)]/60 text-[var(--dp-color-ink-muted)] border border-dashed border-[var(--dp-color-line)] font-reading">
                   {agreement.category}
                 </span>
               )}
             </div>
 
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+            <h1 className="text-2xl sm:text-3xl font-bold font-marker text-[var(--dp-color-ink)]">
               {agreement.title}
             </h1>
 
             {agreement.description && (
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+              <p className="text-base font-reading text-[var(--dp-color-ink-muted)]">
                 {agreement.description}
               </p>
             )}
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
             <Link
               href={`/${locale}/agreements/${agreement.id}/export`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700/60 transition-colors"
+              className="sketch-btn sketch-btn-outline px-3 py-1.5 text-xs font-marker"
             >
               <span>🖨️</span>
               <span>{tAgreements("exportSummary")}</span>
@@ -573,13 +576,13 @@ export default async function AgreementDetailPage({
       </div>
 
       {/* Tabs Bar */}
-      <div className="flex border-b border-zinc-200 dark:border-zinc-800 gap-6 text-sm font-medium overflow-x-auto">
+      <div className="flex border-b-[1.5px] border-[var(--dp-color-line)] gap-2 text-sm font-reading overflow-x-auto pb-1">
         <Link
           href={`/${locale}/agreements/${agreement.id}?tab=terms`}
-          className={`pb-3 border-b-2 whitespace-nowrap transition-colors ${
+          className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap transition-all font-semibold ${
             tab === "terms"
-              ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-bold"
-              : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+              ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
+              : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
           }`}
         >
           {tAgreements("tabs.terms")} ({agreement.draft?.content.terms.length || 0})
@@ -587,10 +590,10 @@ export default async function AgreementDetailPage({
 
         <Link
           href={`/${locale}/agreements/${agreement.id}?tab=commitments`}
-          className={`pb-3 border-b-2 whitespace-nowrap transition-colors ${
+          className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap transition-all font-semibold ${
             tab === "commitments"
-              ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-bold"
-              : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+              ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
+              : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
           }`}
         >
           {tAgreements("tabs.commitments")} ({commitments.length})
@@ -598,10 +601,10 @@ export default async function AgreementDetailPage({
 
         <Link
           href={`/${locale}/agreements/${agreement.id}?tab=files`}
-          className={`pb-3 border-b-2 whitespace-nowrap transition-colors ${
+          className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap transition-all font-semibold ${
             tab === "files"
-              ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-bold"
-              : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+              ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
+              : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
           }`}
         >
           {tAgreements("tabs.files")} ({attachments.length})
@@ -609,10 +612,10 @@ export default async function AgreementDetailPage({
 
         <Link
           href={`/${locale}/agreements/${agreement.id}?tab=proposals`}
-          className={`pb-3 border-b-2 whitespace-nowrap transition-colors ${
+          className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap transition-all font-semibold ${
             tab === "proposals"
-              ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-bold"
-              : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+              ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
+              : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
           }`}
         >
           {tAgreements("tabs.proposals")} ({proposals.length})
@@ -620,10 +623,10 @@ export default async function AgreementDetailPage({
 
         <Link
           href={`/${locale}/agreements/${agreement.id}?tab=diff`}
-          className={`pb-3 border-b-2 whitespace-nowrap transition-colors ${
+          className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap transition-all font-semibold ${
             tab === "diff"
-              ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-bold"
-              : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+              ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
+              : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
           }`}
         >
           {tAgreements("tabs.diff")}
@@ -631,10 +634,10 @@ export default async function AgreementDetailPage({
 
         <Link
           href={`/${locale}/agreements/${agreement.id}?tab=discussion`}
-          className={`pb-3 border-b-2 whitespace-nowrap transition-colors ${
+          className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap transition-all font-semibold ${
             tab === "discussion"
-              ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-bold"
-              : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+              ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
+              : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
           }`}
         >
           {tAgreements("tabs.discussion")} ({comments.length})
@@ -642,10 +645,10 @@ export default async function AgreementDetailPage({
 
         <Link
           href={`/${locale}/agreements/${agreement.id}?tab=participants`}
-          className={`pb-3 border-b-2 whitespace-nowrap transition-colors ${
+          className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap transition-all font-semibold ${
             tab === "participants"
-              ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-bold"
-              : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+              ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
+              : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
           }`}
         >
           {tAgreements("tabs.participants")} ({agreement.participants.length})
@@ -653,10 +656,10 @@ export default async function AgreementDetailPage({
 
         <Link
           href={`/${locale}/agreements/${agreement.id}?tab=versions`}
-          className={`pb-3 border-b-2 whitespace-nowrap transition-colors ${
+          className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap transition-all font-semibold ${
             tab === "versions"
-              ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-bold"
-              : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+              ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
+              : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
           }`}
         >
           {tAgreements("tabs.versions")} ({versions.length})
@@ -664,10 +667,10 @@ export default async function AgreementDetailPage({
 
         <Link
           href={`/${locale}/agreements/${agreement.id}?tab=activity`}
-          className={`pb-3 border-b-2 whitespace-nowrap transition-colors ${
+          className={`px-3 py-1.5 rounded-[7px_3px_9px_4px] border-[1.5px] whitespace-nowrap transition-all font-semibold ${
             tab === "activity"
-              ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-bold"
-              : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+              ? "bg-[var(--dp-color-highlight)] border-[var(--dp-color-ink)] text-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] -translate-y-0.5"
+              : "border-transparent text-[var(--dp-color-ink-muted)] hover:border-[var(--dp-color-line)] hover:bg-[var(--dp-color-scrap)]"
           }`}
         >
           {tAgreements("tabs.activity")} ({agreement.recentActivity.length})
@@ -679,7 +682,7 @@ export default async function AgreementDetailPage({
         {tab === "terms" && (
           <div className="space-y-4">
             {pendingReview && (
-              <div className="p-4 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 text-xs text-blue-800 dark:text-blue-300">
+              <div className="sketch-strip p-4 text-xs font-reading text-[var(--dp-color-annotation)] flex items-center gap-2">
                 🔒 {tAgreements("lockedDraftNotice").replace("{versionNumber}", String(pendingReview.versionNumber))}
               </div>
             )}
@@ -700,10 +703,10 @@ export default async function AgreementDetailPage({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
+                <h3 className="text-lg font-bold font-marker text-[var(--dp-color-ink)]">
                   {tCommitments("title")}
                 </h3>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs font-reading text-[var(--dp-color-ink-muted)]">
                   {tCommitments("subtitle")}
                 </p>
               </div>
@@ -744,10 +747,10 @@ export default async function AgreementDetailPage({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
+                <h3 className="text-lg font-bold font-marker text-[var(--dp-color-ink)]">
                   {tProposals("title")}
                 </h3>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs font-reading text-[var(--dp-color-ink-muted)]">
                   {tProposals("subtitle")}
                 </p>
               </div>

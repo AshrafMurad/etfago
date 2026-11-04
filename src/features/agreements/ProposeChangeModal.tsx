@@ -4,6 +4,7 @@ import React, { useState, useTransition } from "react";
 import { StructuredTerm } from "../../lib/schemas/agreements";
 import { createChangeRequestAction } from "../../server/actions/proposals";
 import { ChangeOperation } from "../../lib/schemas/proposals";
+import { SketchSelect } from "../ui/SketchSelect";
 
 interface ProposeChangeModalProps {
   agreementId: string;
@@ -146,35 +147,36 @@ export function ProposeChangeModal({
       <button
         type="button"
         onClick={handleOpen}
-        className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs transition-colors flex items-center gap-1.5"
+        className="sketch-btn sketch-btn-primary text-xs flex items-center gap-1.5"
       >
         <span>💡</span>
         <span>{translations.proposeChangeButton}</span>
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
+          <div className="bg-[var(--dp-color-ground)] border-2 border-[var(--dp-color-ink)] rounded-[12px_4px_18px_6px] max-w-lg w-full p-6 shadow-[6px_6px_0px_var(--dp-color-ink)] space-y-4 max-h-[90vh] overflow-y-auto relative">
+            <div className="sketch-tape-top" />
+            <div className="flex items-center justify-between border-b border-[var(--dp-color-line)] pb-3">
               <div>
-                <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+                <h3 className="text-lg font-bold font-marker text-[var(--dp-color-ink)]">
                   {translations.modalTitle}
                 </h3>
-                <p className="text-xs text-zinc-500 mt-0.5">
+                <p className="text-xs text-[var(--dp-color-ink-muted)] font-reading mt-0.5">
                   {translations.modalSubtitle}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 text-lg leading-none"
+                className="text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-accent)] font-marker text-lg leading-none cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             {error && (
-              <div className="p-3 text-xs rounded-lg bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-200 dark:border-rose-900">
+              <div className="p-3 text-xs rounded-[6px_3px_7px_4px] bg-[#fbeee9] text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)] font-reading">
                 {error}
               </div>
             )}
@@ -182,7 +184,7 @@ export function ProposeChangeModal({
             <form onSubmit={handleSubmit} className="space-y-4 text-xs">
               {/* Operation Selection */}
               <div className="space-y-1.5">
-                <label className="font-semibold text-zinc-700 dark:text-zinc-300">
+                <label className="font-bold font-marker text-[var(--dp-color-ink)]">
                   {translations.operationLabel}
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -207,10 +209,10 @@ export function ProposeChangeModal({
                             setDueDate(selectedTerm.dueDate || "");
                           }
                         }}
-                        className={`py-2 px-3 rounded-lg border text-xs font-semibold transition-colors ${
+                        className={`py-2 px-3 rounded-[6px_3px_7px_4px] border text-xs font-marker font-bold transition-all cursor-pointer ${
                           operation === op
-                            ? "border-emerald-600 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300"
-                            : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                            ? "border-[var(--dp-color-ink)] bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] shadow-[1px_1px_0px_var(--dp-color-ink)]"
+                            : "border-[var(--dp-color-line)] bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-ink)]"
                         }`}
                       >
                         {translations.operations[op]}
@@ -223,28 +225,31 @@ export function ProposeChangeModal({
               {/* Term Selection (for UPDATE & REMOVE) */}
               {operation !== "ADD" && terms.length > 0 && (
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-zinc-700 dark:text-zinc-300">
+                  <label className="font-bold font-marker text-[var(--dp-color-ink)]">
                     {translations.selectTermLabel}
                   </label>
-                  <select
+                  <SketchSelect
                     value={selectedTermId}
-                    onChange={(e) => handleTermChange(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
-                  >
-                    {terms.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.title}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(val) => handleTermChange(val)}
+                    options={terms.map((t, idx) => ({
+                      value: t.id,
+                      label: t.title,
+                      description: t.body ? t.body.slice(0, 60) + "..." : undefined,
+                      badge: (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-[4px_2px_5px_3px] bg-[var(--dp-color-ground)] text-[var(--dp-color-ink-muted)] border border-[var(--dp-color-line)] font-mono">
+                          #{idx + 1}
+                        </span>
+                      ),
+                    }))}
+                  />
                 </div>
               )}
 
               {/* Term Details Fields (for UPDATE & ADD) */}
               {operation !== "REMOVE" && (
-                <div className="space-y-3 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800">
+                <div className="space-y-3 p-3 rounded-[8px_4px_10px_5px] bg-[var(--dp-color-scrap)] border border-[var(--dp-color-line)]">
                   <div className="space-y-1">
-                    <label className="font-semibold text-zinc-700 dark:text-zinc-300">
+                    <label className="font-bold font-marker text-[var(--dp-color-ink)]">
                       {translations.termTitleLabel} *
                     </label>
                     <input
@@ -252,12 +257,12 @@ export function ProposeChangeModal({
                       required
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
+                      className="w-full px-3 py-2 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="font-semibold text-zinc-700 dark:text-zinc-300">
+                    <label className="font-bold font-marker text-[var(--dp-color-ink)]">
                       {translations.termBodyLabel} *
                     </label>
                     <textarea
@@ -265,44 +270,44 @@ export function ProposeChangeModal({
                       rows={3}
                       value={body}
                       onChange={(e) => setBody(e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
+                      className="w-full px-3 py-2 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1">
-                      <label className="font-semibold text-zinc-700 dark:text-zinc-300">
+                      <label className="font-bold font-marker text-[var(--dp-color-ink)]">
                         {translations.amountLabel}
                       </label>
                       <input
                         type="text"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        className="w-full px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-mono"
+                        className="w-full px-3 py-1.5 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] font-mono focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="font-semibold text-zinc-700 dark:text-zinc-300">
+                      <label className="font-bold font-marker text-[var(--dp-color-ink)]">
                         {translations.currencyLabel}
                       </label>
                       <input
                         type="text"
                         value={currency}
                         onChange={(e) => setCurrency(e.target.value)}
-                        className="w-full px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-mono"
+                        className="w-full px-3 py-1.5 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] font-mono focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <label className="font-semibold text-zinc-700 dark:text-zinc-300">
+                    <label className="font-bold font-marker text-[var(--dp-color-ink)]">
                       {translations.dueDateLabel}
                     </label>
                     <input
                       type="date"
                       value={dueDate}
                       onChange={(e) => setDueDate(e.target.value)}
-                      className="w-full px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-mono"
+                      className="w-full px-3 py-1.5 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] font-mono focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
                     />
                   </div>
                 </div>
@@ -310,7 +315,7 @@ export function ProposeChangeModal({
 
               {/* Proposal Reason */}
               <div className="space-y-1">
-                <label className="font-semibold text-zinc-700 dark:text-zinc-300">
+                <label className="font-bold font-marker text-[var(--dp-color-ink)]">
                   {translations.reasonLabel}
                 </label>
                 <textarea
@@ -318,29 +323,29 @@ export function ProposeChangeModal({
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder={translations.reasonPlaceholder}
-                  className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                  className="w-full px-3 py-2 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
                 />
               </div>
 
               {/* Disclaimer */}
-              <p className="text-[11px] text-zinc-500 bg-zinc-50 dark:bg-zinc-800/60 p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700">
+              <p className="text-[11px] text-[var(--dp-color-ink-muted)] bg-[var(--dp-color-scrap)] p-2.5 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] font-reading">
                 ℹ️ {translations.disclaimer}
               </p>
 
               {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--dp-color-line)]">
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
                   disabled={isPending}
-                  className="px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                  className="sketch-btn sketch-btn-outline text-xs px-3.5 py-1.5"
                 >
                   {translations.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-2xs disabled:opacity-60"
+                  className="sketch-btn sketch-btn-primary text-xs px-4 py-1.5 disabled:opacity-60"
                 >
                   {isPending ? translations.loading : translations.submitProposal}
                 </button>

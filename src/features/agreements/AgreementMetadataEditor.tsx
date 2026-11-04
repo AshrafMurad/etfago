@@ -70,7 +70,7 @@ export function AgreementMetadataEditor({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="text-xs px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium transition-colors cursor-pointer"
+        className="sketch-btn sketch-btn-outline text-xs px-3 py-1.5"
       >
         ✎ {t.rename}
       </button>
@@ -78,27 +78,27 @@ export function AgreementMetadataEditor({
   }
 
   return (
-    <div className="p-5 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-300 dark:border-zinc-700 shadow-md space-y-4 mb-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{t.rename}</h3>
+    <div className="sketch-card p-5 space-y-4 mb-4 relative">
+      <div className="flex items-center justify-between border-b border-[var(--dp-color-line)] pb-2">
+        <h3 className="text-sm font-bold font-marker text-[var(--dp-color-ink)]">{t.rename}</h3>
         <button
           type="button"
           onClick={() => setIsOpen(false)}
-          className="text-xs text-zinc-500 hover:text-zinc-700 p-1 cursor-pointer"
+          className="text-xs text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-accent)] p-1 cursor-pointer font-marker"
         >
           ✕
         </button>
       </div>
 
       {error && (
-        <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/40 text-xs text-red-600 dark:text-red-400">
+        <div className="p-3 rounded-[6px_3px_7px_4px] bg-[#fbeee9] text-xs text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)] font-reading">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSave} className="space-y-3">
         <div>
-          <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+          <label className="block text-xs font-bold font-marker text-[var(--dp-color-ink)] mb-1">
             {t.titleLabel} *
           </label>
           <input
@@ -107,12 +107,12 @@ export function AgreementMetadataEditor({
             onChange={(e) => setTitle(e.target.value)}
             maxLength={160}
             required
-            className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+            className="w-full px-3 py-2 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-scrap)] text-sm text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+          <label className="block text-xs font-bold font-marker text-[var(--dp-color-ink)] mb-1">
             {t.categoryLabel} ({t.optional})
           </label>
           <input
@@ -120,12 +120,12 @@ export function AgreementMetadataEditor({
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             maxLength={64}
-            className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+            className="w-full px-3 py-2 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-scrap)] text-sm text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+          <label className="block text-xs font-bold font-marker text-[var(--dp-color-ink)] mb-1">
             {t.descriptionLabel} ({t.optional})
           </label>
           <textarea
@@ -133,22 +133,22 @@ export function AgreementMetadataEditor({
             onChange={(e) => setDescription(e.target.value)}
             maxLength={4000}
             rows={2}
-            className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+            className="w-full px-3 py-2 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-scrap)] text-xs text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
           />
         </div>
 
-        <div className="flex items-center justify-end gap-2 pt-2">
+        <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--dp-color-line)]">
           <button
             type="button"
             onClick={() => setIsOpen(false)}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
+            className="sketch-btn sketch-btn-outline text-xs px-3 py-1.5"
           >
             {t.cancel}
           </button>
           <button
             type="submit"
             disabled={isSaving}
-            className="px-4 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 cursor-pointer"
+            className="sketch-btn sketch-btn-primary text-xs px-4 py-1.5 disabled:opacity-50"
           >
             {isSaving ? t.loading : t.save}
           </button>

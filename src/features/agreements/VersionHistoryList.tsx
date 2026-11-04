@@ -49,12 +49,12 @@ export function VersionHistoryList({
 
   if (versions.length === 0) {
     return (
-      <div className="p-12 text-center rounded-xl border border-dashed border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-2">
+      <div className="sketch-card p-12 text-center border-dashed space-y-2">
         <span className="text-3xl">📜</span>
-        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+        <h3 className="text-base font-bold font-marker text-[var(--dp-color-ink)]">
           {translations.versionHistoryTitle}
         </h3>
-        <p className="text-xs text-zinc-500 max-w-sm mx-auto">
+        <p className="text-sm font-reading text-[var(--dp-color-ink-muted)] max-w-sm mx-auto">
           {translations.noVersionsYet}
         </p>
       </div>
@@ -66,37 +66,37 @@ export function VersionHistoryList({
     switch (state) {
       case "APPROVED":
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300">
+          <span className="px-2.5 py-0.5 rounded-[4px_2px_5px_3px] text-xs font-bold font-marker bg-[#eaf3ea] text-[var(--dp-color-ink)] border border-[#96b79d]">
             ✓ {label}
           </span>
         );
       case "IN_REVIEW":
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border border-blue-300">
+          <span className="px-2.5 py-0.5 rounded-[4px_2px_5px_3px] text-xs font-bold font-marker bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border border-[var(--dp-color-ink)]">
             ⏳ {label}
           </span>
         );
       case "REJECTED":
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 border border-red-300">
+          <span className="px-2.5 py-0.5 rounded-[4px_2px_5px_3px] text-xs font-bold font-marker bg-[#fbeee9] text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)]">
             ⚠️ {label}
           </span>
         );
       case "WITHDRAWN":
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 border border-zinc-300">
+          <span className="px-2.5 py-0.5 rounded-[4px_2px_5px_3px] text-xs font-bold font-marker bg-[var(--dp-color-ground)] text-[var(--dp-color-ink-muted)] border border-[var(--dp-color-line)]">
             🚫 {label}
           </span>
         );
       case "SUPERSEDED":
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300 border border-purple-300">
+          <span className="px-2.5 py-0.5 rounded-[4px_2px_5px_3px] text-xs font-bold font-marker bg-[var(--dp-color-ground)] text-[var(--dp-color-annotation)] border border-[var(--dp-color-annotation)]">
             🔄 {label}
           </span>
         );
       default:
         return (
-          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-zinc-100 text-zinc-600">
+          <span className="px-2 py-0.5 rounded-[4px_2px_5px_3px] text-xs font-medium font-marker bg-[var(--dp-color-ground)] text-[var(--dp-color-ink-muted)]">
             {label}
           </span>
         );
@@ -104,13 +104,13 @@ export function VersionHistoryList({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 font-reading">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
+          <h3 className="text-lg font-bold font-marker text-[var(--dp-color-ink)]">
             {translations.versionHistoryTitle}
           </h3>
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-[var(--dp-color-ink-muted)]">
             {translations.versionHistoryDesc}
           </p>
         </div>
@@ -123,16 +123,16 @@ export function VersionHistoryList({
           return (
             <div
               key={ver.id}
-              className="p-5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-3 shadow-2xs"
+              className="sketch-card p-5 space-y-3 hover:rotate-[-0.1deg] transition-all"
             >
               {/* Version Header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-extrabold px-2.5 py-1 rounded-md bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900">
+                  <span className="text-sm font-extrabold font-marker px-2.5 py-1 rounded-[5px_2px_7px_3px] bg-[var(--dp-color-ink)] text-[var(--dp-color-scrap)] shadow-[1px_1px_0px_var(--dp-color-ink)]">
                     v{ver.versionNumber}
                   </span>
                   {getStateBadge(ver.state)}
-                  <span className="text-xs text-zinc-500">
+                  <span className="text-xs text-[var(--dp-color-ink-muted)] font-mono" dir="ltr">
                     {new Date(ver.submittedAt).toLocaleDateString()}
                   </span>
                 </div>
@@ -143,7 +143,7 @@ export function VersionHistoryList({
                     onClick={() =>
                       setExpandedVersionId(isExpanded ? null : ver.id)
                     }
-                    className="px-3 py-1 rounded-lg text-xs font-medium border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-750 transition-colors cursor-pointer"
+                    className="sketch-btn sketch-btn-secondary px-3 py-1 text-xs font-marker"
                   >
                     {isExpanded ? "إخفاء البنود" : translations.versionTermsSnapshot} (
                     {ver.snapshot.terms.length})
@@ -154,7 +154,7 @@ export function VersionHistoryList({
                       type="button"
                       onClick={() => handleAmendFromVersion(ver.id)}
                       disabled={isPending}
-                      className="px-3 py-1 rounded-lg text-xs font-medium bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 transition-colors cursor-pointer"
+                      className="sketch-btn sketch-btn-outline px-3 py-1 text-xs font-marker"
                     >
                       {isPending ? translations.loading : translations.amendFromVersion}
                     </button>
@@ -163,23 +163,23 @@ export function VersionHistoryList({
               </div>
 
               {/* Hash & Reviewers Info */}
-              <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-zinc-500">
+              <div className="pt-2 border-t border-dashed border-[var(--dp-color-line)] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-[var(--dp-color-ink-muted)]">
                 <div className="flex items-center gap-1.5 font-mono text-[11px]">
-                  <span>{translations.hashLabel}</span>
-                  <span className="bg-zinc-50 dark:bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-200 dark:border-zinc-700">
+                  <span className="font-reading text-xs">{translations.hashLabel}:</span>
+                  <span className="bg-[var(--dp-color-ground)] px-1.5 py-0.5 rounded border border-[var(--dp-color-line)] text-[var(--dp-color-ink)] select-all font-semibold">
                     {ver.contentHash.slice(0, 16)}...
                   </span>
                   <button
                     type="button"
                     onClick={() => handleCopyHash(ver.id, ver.contentHash)}
-                    className="text-blue-600 hover:underline text-[10px] cursor-pointer"
+                    className="text-[var(--dp-color-annotation)] font-reading font-semibold hover:underline text-xs cursor-pointer"
                   >
                     {copiedHashId === ver.id ? "✓ تم" : translations.copyHash}
                   </button>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px]">المراجعون:</span>
+                  <span className="text-xs font-reading font-bold">المراجعون:</span>
                   <div className="flex flex-wrap items-center gap-1">
                     {ver.reviewers.map((r) => {
                       const approved = r.decision?.decision === "APPROVE";
@@ -188,12 +188,12 @@ export function VersionHistoryList({
                       return (
                         <span
                           key={r.id}
-                          className={`text-[10px] px-1.5 py-0.5 rounded-sm border ${
+                          className={`text-[10px] px-1.5 py-0.5 rounded-[3px_2px_4px_2px] border ${
                             approved
-                              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                              ? "bg-[#eaf3ea] text-[var(--dp-color-ink)] border-[#96b79d]"
                               : rejected
-                              ? "bg-red-50 text-red-700 border-red-200"
-                              : "bg-zinc-50 text-zinc-500 border-zinc-200"
+                              ? "bg-[#fbeee9] text-[var(--dp-color-accent)] border-[var(--dp-color-accent)]"
+                              : "bg-[var(--dp-color-ground)] text-[var(--dp-color-ink-muted)] border-[var(--dp-color-line)]"
                           }`}
                           title={r.decision?.reason || undefined}
                         >
@@ -208,32 +208,32 @@ export function VersionHistoryList({
 
               {/* Expandable Terms Snapshot */}
               {isExpanded && (
-                <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 space-y-2">
-                  <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100">
+                <div className="pt-3 border-t border-[var(--dp-color-line)] space-y-2">
+                  <h4 className="text-xs font-bold font-marker text-[var(--dp-color-ink)]">
                     البنود المجمدة في النسخة v{ver.versionNumber}:
                   </h4>
                   <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
                     {ver.snapshot.terms.map((term, index) => (
                       <div
                         key={term.id}
-                        className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 text-xs space-y-1"
+                        className="p-3 rounded-[6px_3px_8px_4px] bg-[var(--dp-color-ground)] border border-[var(--dp-color-line)] text-xs space-y-1"
                       >
-                        <div className="font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                          <span className="text-zinc-400">#{index + 1}</span>
-                          <span>{term.title}</span>
+                        <div className="font-semibold text-[var(--dp-color-ink)] flex items-center gap-2">
+                          <span className="text-[var(--dp-color-accent)] font-marker font-bold">#{index + 1}</span>
+                          <span className="font-marker font-bold">{term.title}</span>
                           {term.amount && (
-                            <span className="text-[11px] px-1.5 py-0.2 rounded bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-mono">
+                            <span className="text-[11px] px-1.5 py-0.2 rounded bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] border border-[var(--dp-color-line)] font-mono">
                               {term.amount} {term.currency || ""}
                             </span>
                           )}
                           {term.dueDate && (
-                            <span className="text-[10px] text-zinc-500">
+                            <span className="text-[10px] text-[var(--dp-color-ink-muted)]">
                               📅 {term.dueDate}
                             </span>
                           )}
                         </div>
                         {term.body && (
-                          <p className="text-zinc-600 dark:text-zinc-400 whitespace-pre-wrap">
+                          <p className="text-[11px] text-[var(--dp-color-ink-muted)] whitespace-pre-wrap leading-relaxed">
                             {term.body}
                           </p>
                         )}

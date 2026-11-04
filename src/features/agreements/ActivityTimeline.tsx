@@ -22,15 +22,15 @@ export function ActivityTimeline({
 }: ActivityTimelineProps) {
   if (activity.length === 0) {
     return (
-      <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 text-sm text-zinc-500">
+      <div className="sketch-card p-8 text-center text-sm text-[var(--dp-color-ink-muted)] font-reading border-dashed">
         {t.noActivityYet}
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 space-y-6">
-      <div className="relative border-s border-zinc-200 dark:border-zinc-800 ms-3 space-y-6">
+    <div className="sketch-card p-6 space-y-6 relative">
+      <div className="relative border-s-2 border-dashed border-[var(--dp-color-line)] ms-3 space-y-6">
         {activity.map((item) => {
           const actionLabel = t.actions[item.action] || item.action;
           const formattedDate = new Date(item.createdAt).toLocaleString(
@@ -66,20 +66,20 @@ export function ActivityTimeline({
 
           return (
             <div key={item.id} className="relative ps-6">
-              {/* Dot */}
-              <div className="absolute -start-1.5 top-1.5 w-3 h-3 rounded-full border-2 border-white dark:border-zinc-900 bg-emerald-600" />
+              {/* Dot / Stamp */}
+              <div className="absolute -start-[8px] top-1.5 w-3.5 h-3.5 rounded-full border-2 border-[var(--dp-color-ground)] bg-[var(--dp-color-annotation)] shadow-[1px_1px_0px_var(--dp-color-ink)]" />
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                <span className="text-sm font-bold font-marker text-[var(--dp-color-ink)]">
                   {actionLabel}
                 </span>
-                <span className="text-xs text-zinc-400 font-mono" dir="ltr">
+                <span className="text-xs text-[var(--dp-color-ink-muted)] font-mono" dir="ltr">
                   {formattedDate}
                 </span>
               </div>
 
               {summaryDisplay && (
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                <p className="text-xs text-[var(--dp-color-ink-muted)] font-reading mt-0.5">
                   {summaryDisplay}
                 </p>
               )}

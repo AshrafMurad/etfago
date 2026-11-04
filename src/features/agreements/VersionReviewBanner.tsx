@@ -135,23 +135,23 @@ export function VersionReviewBanner({
   };
 
   return (
-    <div className="rounded-xl border border-blue-200 dark:border-blue-900 bg-blue-50/70 dark:bg-blue-950/30 p-5 space-y-4 shadow-2xs">
+    <div className="sketch-card p-5 space-y-4 border-[1.5px] border-[var(--dp-color-annotation)] bg-[var(--dp-color-scrap)] shadow-[2px_3px_0px_var(--dp-color-annotation)]">
       {/* Banner Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-600 text-white">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-[5px_2px_7px_3px] text-xs font-bold font-marker bg-[var(--dp-color-annotation)] text-white shadow-[1px_1px_0px_var(--dp-color-ink)]">
               v{version.versionNumber}
             </span>
-            <span className="text-xs font-bold text-blue-900 dark:text-blue-200">
+            <span className="text-sm font-bold font-marker text-[var(--dp-color-ink)]">
               {translations.pendingReviewVersion}
             </span>
-            <span className="text-xs text-blue-700 dark:text-blue-300">
+            <span className="text-xs font-reading text-[var(--dp-color-annotation)] font-semibold">
               ({approvedCount}/{totalRequired} مكتمل)
             </span>
           </div>
 
-          <p className="text-xs text-blue-800 dark:text-blue-300">
+          <p className="text-xs font-reading text-[var(--dp-color-ink-muted)]">
             {translations.waitingOnReviewers.replace(
               "{count}",
               String(totalRequired - approvedCount)
@@ -166,7 +166,7 @@ export function VersionReviewBanner({
               <button
                 type="button"
                 onClick={() => setShowApproveModal(true)}
-                className="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-colors cursor-pointer"
+                className="sketch-btn sketch-btn-primary px-3.5 py-1.5 text-xs font-marker"
               >
                 ✓ {translations.recordApproval}
               </button>
@@ -174,7 +174,7 @@ export function VersionReviewBanner({
               <button
                 type="button"
                 onClick={() => setShowRequestChangesModal(true)}
-                className="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-amber-600 hover:bg-amber-700 text-white shadow-xs transition-colors cursor-pointer"
+                className="sketch-btn px-3.5 py-1.5 text-xs font-marker bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border-[var(--dp-color-ink)] shadow-[2px_2px_0px_var(--dp-color-ink)]"
               >
                 ⚠️ {translations.requestChanges}
               </button>
@@ -185,7 +185,7 @@ export function VersionReviewBanner({
             <button
               type="button"
               onClick={() => setShowWithdrawModal(true)}
-              className="px-3 py-1.5 rounded-lg text-xs font-medium border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+              className="sketch-btn sketch-btn-outline px-3 py-1.5 text-xs font-marker"
             >
               {translations.withdrawReview}
             </button>
@@ -194,13 +194,13 @@ export function VersionReviewBanner({
       </div>
 
       {errorMessage && (
-        <div className="p-3 text-xs rounded-lg bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300">
+        <div className="p-3 text-xs rounded-[6px_3px_8px_4px] bg-[#fbeee9] border border-[var(--dp-color-accent)] text-[var(--dp-color-accent)] font-reading">
           {errorMessage}
         </div>
       )}
 
       {/* Reviewers Roster & Status Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 pt-2 border-t border-blue-200 dark:border-blue-900/60">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 pt-2 border-t border-dashed border-[var(--dp-color-line)]">
         {version.reviewers.map((reviewer) => {
           const isApproved = reviewer.decision?.decision === "APPROVE";
           const isRejected = reviewer.decision?.decision === "REQUEST_CHANGES";
@@ -208,28 +208,28 @@ export function VersionReviewBanner({
           return (
             <div
               key={reviewer.id}
-              className="p-2.5 rounded-lg bg-white dark:bg-zinc-900 border border-blue-100 dark:border-zinc-800 flex items-center justify-between gap-2 text-xs"
+              className="p-2.5 rounded-[6px_3px_8px_4px] bg-[var(--dp-color-ground)] border border-[var(--dp-color-line)] flex items-center justify-between gap-2 text-xs font-reading"
             >
               <div className="min-w-0">
-                <div className="font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+                <div className="font-bold text-[var(--dp-color-ink)] truncate font-marker">
                   {reviewer.nameSnapshot}
                 </div>
-                <div className="text-[11px] text-zinc-500 truncate">
+                <div className="text-[11px] text-[var(--dp-color-ink-muted)] truncate">
                   {reviewer.emailSnapshot}
                 </div>
               </div>
 
               <div className="shrink-0 text-end">
                 {isApproved ? (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-[4px_2px_5px_3px] text-[10px] font-bold bg-[#eaf3ea] text-[var(--dp-color-ink)] border border-[#96b79d]">
                     ✓ تمت الموافقة
                   </span>
                 ) : isRejected ? (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border border-amber-200">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-[4px_2px_5px_3px] text-[10px] font-bold bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border border-[var(--dp-color-line)]">
                     ⚠️ طلب تعديل
                   </span>
                 ) : (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-[4px_2px_5px_3px] text-[10px] font-bold bg-[var(--dp-color-scrap)] text-[var(--dp-color-annotation)] border border-[var(--dp-color-annotation)]">
                     ⏳ بانتظار القرار
                   </span>
                 )}
@@ -240,37 +240,38 @@ export function VersionReviewBanner({
       </div>
 
       {/* Content Hash & Trust Boundary Footer */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[11px] text-zinc-500 dark:text-zinc-400 pt-2 border-t border-blue-100 dark:border-blue-900/40">
-        <div className="flex items-center gap-1.5 font-mono">
-          <span>{translations.hashLabel}</span>
-          <span className="bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-[10px] text-zinc-700 dark:text-zinc-300">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-[var(--dp-color-ink-muted)] pt-2 border-t border-dashed border-[var(--dp-color-line)] font-reading">
+        <div className="flex items-center gap-1.5 font-mono text-[11px]">
+          <span className="font-reading text-xs">{translations.hashLabel}:</span>
+          <span className="bg-[var(--dp-color-ground)] px-1.5 py-0.5 rounded border border-[var(--dp-color-line)] text-[var(--dp-color-ink)] select-all font-semibold">
             {version.contentHash.slice(0, 16)}...
           </span>
           <button
             type="button"
             onClick={handleCopyHash}
-            className="text-blue-600 hover:text-blue-700 underline text-[10px] cursor-pointer"
+            className="text-[var(--dp-color-annotation)] font-reading font-semibold hover:underline cursor-pointer"
           >
             {copiedHash ? "✓ تم النسخ" : translations.copyHash}
           </button>
         </div>
 
-        <div className="text-[11px] text-zinc-500 italic">
+        <div className="text-[11px] text-[var(--dp-color-ink-muted)] italic font-reading">
           🛡️ {translations.disclaimer}
         </div>
       </div>
 
       {/* Approve Confirmation Modal */}
       {showApproveModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl max-w-md w-full p-6 space-y-4 shadow-xl border border-zinc-200 dark:border-zinc-800">
-            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+        <div className="fixed inset-0 z-50 bg-[var(--dp-color-ink)]/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="sketch-card max-w-md w-full p-6 space-y-4 shadow-xl relative">
+            <div className="sketch-tape sketch-tape-top" aria-hidden="true" />
+            <h3 className="text-lg font-bold font-marker text-[var(--dp-color-ink)]">
               {translations.approveTitle}
             </h3>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            <p className="text-sm font-reading text-[var(--dp-color-ink-muted)]">
               {translations.approveDesc}
             </p>
-            <div className="p-3 bg-zinc-50 dark:bg-zinc-800/60 rounded-lg text-xs text-zinc-600 dark:text-zinc-300 space-y-1">
+            <div className="p-3 bg-[var(--dp-color-ground)] rounded-[6px_3px_8px_4px] border border-[var(--dp-color-line)] text-xs font-reading text-[var(--dp-color-ink)] space-y-1">
               <p>• {translations.unanimousNotice}</p>
               <p>• {translations.approvalNotice}</p>
             </div>
@@ -280,7 +281,7 @@ export function VersionReviewBanner({
                 type="button"
                 onClick={() => setShowApproveModal(false)}
                 disabled={isPending}
-                className="px-4 py-2 rounded-lg text-xs font-medium border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                className="sketch-btn sketch-btn-outline px-4 py-2 text-xs font-marker"
               >
                 {translations.cancel}
               </button>
@@ -288,7 +289,7 @@ export function VersionReviewBanner({
                 type="button"
                 onClick={handleApprove}
                 disabled={isPending}
-                className="px-4 py-2 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-colors cursor-pointer"
+                className="sketch-btn sketch-btn-primary px-4 py-2 text-xs font-marker"
               >
                 {isPending ? translations.loading : translations.recordApproval}
               </button>
@@ -299,18 +300,19 @@ export function VersionReviewBanner({
 
       {/* Request Changes Modal */}
       {showRequestChangesModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl max-w-md w-full p-6 space-y-4 shadow-xl border border-zinc-200 dark:border-zinc-800">
-            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+        <div className="fixed inset-0 z-50 bg-[var(--dp-color-ink)]/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="sketch-card max-w-md w-full p-6 space-y-4 shadow-xl relative">
+            <div className="sketch-tape sketch-tape-top" aria-hidden="true" />
+            <h3 className="text-lg font-bold font-marker text-[var(--dp-color-ink)]">
               {translations.requestChangesTitle}
             </h3>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400">
+            <p className="text-xs font-reading text-[var(--dp-color-ink-muted)]">
               {translations.requestChangesDesc}
             </p>
 
             <form onSubmit={handleRequestChanges} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                <label className="text-xs font-bold font-reading text-[var(--dp-color-ink)]">
                   {translations.requestChangesReasonLabel}
                 </label>
                 <textarea
@@ -319,7 +321,7 @@ export function VersionReviewBanner({
                   value={requestReason}
                   onChange={(e) => setRequestReason(e.target.value)}
                   placeholder={translations.requestChangesReasonPlaceholder}
-                  className="w-full text-xs rounded-lg border border-zinc-300 dark:border-zinc-700 p-2.5 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-hidden focus:ring-2 focus:ring-amber-500"
+                  className="w-full text-xs p-2.5"
                 />
               </div>
 
@@ -328,14 +330,14 @@ export function VersionReviewBanner({
                   type="button"
                   onClick={() => setShowRequestChangesModal(false)}
                   disabled={isPending}
-                  className="px-4 py-2 rounded-lg text-xs font-medium border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                  className="sketch-btn sketch-btn-outline px-4 py-2 text-xs font-marker"
                 >
                   {translations.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={isPending || !requestReason.trim()}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold bg-amber-600 hover:bg-amber-700 text-white shadow-xs transition-colors cursor-pointer"
+                  className="sketch-btn px-4 py-2 text-xs font-marker bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border-[var(--dp-color-ink)] shadow-[2px_2px_0px_var(--dp-color-ink)]"
                 >
                   {isPending ? translations.loading : translations.requestChanges}
                 </button>
@@ -347,12 +349,13 @@ export function VersionReviewBanner({
 
       {/* Withdraw Modal */}
       {showWithdrawModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl max-w-md w-full p-6 space-y-4 shadow-xl border border-zinc-200 dark:border-zinc-800">
-            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+        <div className="fixed inset-0 z-50 bg-[var(--dp-color-ink)]/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="sketch-card max-w-md w-full p-6 space-y-4 shadow-xl relative">
+            <div className="sketch-tape sketch-tape-top" aria-hidden="true" />
+            <h3 className="text-lg font-bold font-marker text-[var(--dp-color-ink)]">
               {translations.withdrawReview}
             </h3>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400">
+            <p className="text-xs font-reading text-[var(--dp-color-ink-muted)]">
               {translations.withdrawConfirm}
             </p>
 
@@ -363,7 +366,7 @@ export function VersionReviewBanner({
                   value={withdrawReason}
                   onChange={(e) => setWithdrawReason(e.target.value)}
                   placeholder={translations.withdrawReasonPlaceholder}
-                  className="w-full text-xs rounded-lg border border-zinc-300 dark:border-zinc-700 p-2.5 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                  className="w-full text-xs p-2.5"
                 />
               </div>
 
@@ -372,14 +375,14 @@ export function VersionReviewBanner({
                   type="button"
                   onClick={() => setShowWithdrawModal(false)}
                   disabled={isPending}
-                  className="px-4 py-2 rounded-lg text-xs font-medium border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                  className="sketch-btn sketch-btn-outline px-4 py-2 text-xs font-marker"
                 >
                   {translations.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold bg-zinc-800 hover:bg-zinc-900 text-white shadow-xs transition-colors cursor-pointer"
+                  className="sketch-btn sketch-btn-primary px-4 py-2 text-xs font-marker"
                 >
                   {isPending ? translations.loading : translations.withdrawReview}
                 </button>

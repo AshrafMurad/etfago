@@ -49,10 +49,10 @@ export function AgreementArchiveButton({
       type="button"
       onClick={handleToggleArchive}
       disabled={isLoading}
-      className={`text-xs px-3 py-1.5 rounded-lg border font-medium transition-colors cursor-pointer disabled:opacity-50 ${
+      className={`sketch-btn text-xs px-3 py-1.5 font-marker ${
         isArchived
-          ? "border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100"
-          : "border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900"
+          ? "bg-[#eaf3ea] text-[var(--dp-color-ink)] border border-[#96b79d] hover:bg-[#d8ebd8]"
+          : "sketch-btn-outline"
       }`}
     >
       {isLoading ? t.loading : isArchived ? `↻ ${t.restore}` : `🗄 ${t.archive}`}

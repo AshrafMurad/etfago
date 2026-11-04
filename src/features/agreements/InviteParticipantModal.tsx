@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { inviteParticipantAction } from "../../server/actions/invitations";
+import { SketchSelect } from "../ui/SketchSelect";
 
 interface InviteParticipantModalProps {
   agreementId: string;
@@ -81,30 +82,31 @@ export function InviteParticipantModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs">
-      <div className="w-full max-w-lg bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-xl p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
-          <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--dp-color-ink)]/40 backdrop-blur-xs">
+      <div className="sketch-card w-full max-w-lg p-6 space-y-4 shadow-xl relative">
+        <div className="sketch-tape sketch-tape-top" aria-hidden="true" />
+        <div className="flex items-center justify-between border-b-[1.5px] border-dashed border-[var(--dp-color-line)] pb-3">
+          <h2 className="text-xl font-bold font-marker text-[var(--dp-color-ink)]">
             {t.inviteParty}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 p-1 cursor-pointer"
+            className="text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-accent)] p-1 cursor-pointer font-bold text-sm"
           >
             ✕
           </button>
         </div>
 
         {error && (
-          <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 text-xs text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900">
+          <div className="p-3 rounded-[6px_3px_8px_4px] bg-[#fbeee9] text-xs text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)] font-reading">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+            <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1">
               {t.emailLabel} *
             </label>
             <input
@@ -113,12 +115,12 @@ export function InviteParticipantModal({
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t.emailPlaceholder}
               required
-              className="w-full px-3.5 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+              className="w-full px-3.5 py-2 text-sm font-reading"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+            <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1">
               {t.partyDisplayName} *
             </label>
             <input
@@ -128,52 +130,50 @@ export function InviteParticipantModal({
               placeholder={t.partyDisplayNamePlaceholder}
               maxLength={120}
               required
-              className="w-full px-3.5 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+              className="w-full px-3.5 py-2 text-sm font-reading"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+              <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1">
                 {t.partyKind}
               </label>
-              <select
+              <SketchSelect
                 value={partyKind}
-                onChange={(e) => setPartyKind(e.target.value as "PERSON" | "ORGANIZATION")}
-                className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100"
-              >
-                <option value="PERSON">{t.person}</option>
-                <option value="ORGANIZATION">{t.organization}</option>
-              </select>
+                onChange={(val) => setPartyKind(val as "PERSON" | "ORGANIZATION")}
+                options={[
+                  { value: "PERSON", label: t.person },
+                  { value: "ORGANIZATION", label: t.organization },
+                ]}
+              />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+              <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1">
                 {t.role}
               </label>
-              <select
+              <SketchSelect
                 value={agreementRole}
-                onChange={(e) =>
-                  setAgreementRole(e.target.value as "REVIEWER" | "EDITOR" | "OBSERVER")
-                }
-                className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100"
-              >
-                <option value="REVIEWER">{t.roles.REVIEWER}</option>
-                <option value="EDITOR">{t.roles.EDITOR}</option>
-                <option value="OBSERVER">{t.roles.OBSERVER}</option>
-              </select>
+                onChange={(val) => setAgreementRole(val as "REVIEWER" | "EDITOR" | "OBSERVER")}
+                options={[
+                  { value: "REVIEWER", label: t.roles.REVIEWER },
+                  { value: "EDITOR", label: t.roles.EDITOR },
+                  { value: "OBSERVER", label: t.roles.OBSERVER },
+                ]}
+              />
             </div>
           </div>
 
-          <div className="p-3 bg-zinc-50 dark:bg-zinc-800/60 rounded-xl border border-zinc-200 dark:border-zinc-800 flex items-start gap-2.5">
+          <div className="p-3 bg-[var(--dp-color-ground)] rounded-[6px_3px_8px_4px] border border-[var(--dp-color-line)] flex items-start gap-2.5 font-reading">
             <input
               type="checkbox"
               id="requiredByDefault"
               checked={requiredByDefault}
               onChange={(e) => setRequiredByDefault(e.target.checked)}
-              className="mt-0.5 rounded-sm border-zinc-300 text-emerald-600 focus:ring-emerald-500"
+              className="mt-0.5 rounded-sm border-[var(--dp-color-line)] text-[var(--dp-color-accent)] focus:ring-[var(--dp-color-annotation)]"
             />
-            <label htmlFor="requiredByDefault" className="text-xs text-zinc-700 dark:text-zinc-300 cursor-pointer">
+            <label htmlFor="requiredByDefault" className="text-xs text-[var(--dp-color-ink)] cursor-pointer">
               {t.requiredByDefault}
             </label>
           </div>
@@ -182,14 +182,14 @@ export function InviteParticipantModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
+              className="sketch-btn sketch-btn-outline px-4 py-2 text-xs font-marker"
             >
               {t.cancel}
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 cursor-pointer shadow-xs"
+              className="sketch-btn sketch-btn-primary px-5 py-2 text-xs font-marker disabled:opacity-50"
             >
               {isSubmitting ? t.loading : t.sendInvite}
             </button>

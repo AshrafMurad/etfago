@@ -109,29 +109,29 @@ export function CommentThread({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 font-reading">
       {/* Thread Header */}
-      <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-2">
-        <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+      <div className="flex items-center justify-between border-b-[1.5px] border-dashed border-[var(--dp-color-line)] pb-2">
+        <h4 className="text-base font-bold font-marker text-[var(--dp-color-ink)] flex items-center gap-2">
           <span>💬</span>
           <span>{translations.discussionTitle}</span>
-          <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+          <span className="text-xs px-2 py-0.5 rounded-[4px_2px_5px_3px] bg-[var(--dp-color-ground)] border border-[var(--dp-color-line)] text-[var(--dp-color-ink)]">
             {comments.length}
           </span>
         </h4>
       </div>
 
       {error && (
-        <div className="p-3 text-xs rounded-lg bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-200">
+        <div className="p-3 text-xs rounded-[6px_3px_8px_4px] bg-[#fbeee9] text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)]">
           {error}
         </div>
       )}
 
       {/* Empty State */}
       {comments.length === 0 && (
-        <div className="p-6 text-center bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-500 text-xs">
+        <div className="sketch-card p-6 text-center text-[var(--dp-color-ink-muted)] text-sm">
           <p>{translations.noCommentsYet}</p>
-          <p className="text-zinc-400 mt-0.5">{translations.addFirstComment}</p>
+          <p className="text-xs mt-0.5">{translations.addFirstComment}</p>
         </div>
       )}
 
@@ -145,29 +145,29 @@ export function CommentThread({
           return (
             <div
               key={comment.id}
-              className="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-2xs space-y-2 text-xs"
+              className="sketch-card p-4 space-y-2 text-xs relative rotate-[-0.2deg] hover:rotate-0 transition-transform"
             >
               {/* Comment Header */}
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center justify-between gap-2 border-b border-dashed border-[var(--dp-color-line)] pb-2">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold flex items-center justify-center text-[10px]">
+                  <div className="w-6 h-6 rounded-[4px_2px_5px_3px] bg-[var(--dp-color-ground)] border border-[var(--dp-color-line)] text-[var(--dp-color-ink)] font-bold font-marker flex items-center justify-center text-[10px]">
                     {comment.authorName.charAt(0).toUpperCase()}
                   </div>
-                  <strong className="text-zinc-900 dark:text-zinc-100">
+                  <strong className="text-[var(--dp-color-ink)] font-marker text-xs">
                     {comment.authorName}
                   </strong>
                   {comment.termId && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-500 font-mono">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-[3px_2px_4px_2px] bg-[var(--dp-color-ground)] text-[var(--dp-color-ink-muted)] border border-[var(--dp-color-line)] font-mono">
                       #{comment.termId}
                     </span>
                   )}
                 </div>
 
-                <div className="flex items-center gap-2 text-[11px] text-zinc-400">
+                <div className="flex items-center gap-2 text-[11px] text-[var(--dp-color-ink-muted)]">
                   {comment.editedAt && (
                     <span className="italic">{translations.edited}</span>
                   )}
-                  <span>{new Date(comment.createdAt).toLocaleDateString()}</span>
+                  <span className="font-mono">{new Date(comment.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
 
@@ -178,14 +178,14 @@ export function CommentThread({
                     rows={2}
                     value={editBody}
                     onChange={(e) => setEditBody(e.target.value)}
-                    className="w-full p-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                    className="w-full p-2.5"
                   />
                   <div className="flex items-center justify-end gap-2">
                     <button
                       type="button"
                       onClick={() => setEditingCommentId(null)}
                       disabled={isPending}
-                      className="px-2.5 py-1 rounded border border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 text-xs"
+                      className="sketch-btn sketch-btn-outline px-2.5 py-1 text-xs font-marker"
                     >
                       {translations.cancel}
                     </button>
@@ -193,26 +193,26 @@ export function CommentThread({
                       type="button"
                       onClick={() => handleSaveEdit(comment.id)}
                       disabled={isPending}
-                      className="px-2.5 py-1 rounded bg-emerald-600 text-white text-xs font-semibold"
+                      className="sketch-btn sketch-btn-primary px-2.5 py-1 text-xs font-marker"
                     >
                       {isPending ? translations.loading : translations.save}
                     </button>
                   </div>
                 </div>
               ) : (
-                <p className="text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap leading-relaxed">
+                <p className="text-[var(--dp-color-ink)] text-sm whitespace-pre-wrap leading-relaxed">
                   {comment.body}
                 </p>
               )}
 
               {/* Action buttons (Edit / Delete) */}
               {!isEditing && (isAuthor || canDelete) && (
-                <div className="flex items-center justify-end gap-3 pt-1 border-t border-zinc-100 dark:border-zinc-800/80 text-[11px]">
+                <div className="flex items-center justify-end gap-3 pt-1 border-t border-dashed border-[var(--dp-color-line)] text-xs">
                   {isAuthor && (
                     <button
                       type="button"
                       onClick={() => handleStartEdit(comment)}
-                      className="text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+                      className="text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-ink)] font-marker font-bold"
                     >
                       {translations.edit}
                     </button>
@@ -221,7 +221,7 @@ export function CommentThread({
                     <button
                       type="button"
                       onClick={() => handleDelete(comment.id)}
-                      className="text-rose-600 hover:text-rose-700 dark:text-rose-400"
+                      className="text-[var(--dp-color-accent)] hover:underline font-marker font-bold"
                     >
                       {translations.delete}
                     </button>
@@ -240,14 +240,14 @@ export function CommentThread({
           value={newCommentBody}
           onChange={(e) => setNewCommentBody(e.target.value)}
           placeholder={translations.postCommentPlaceholder}
-          className="w-full text-xs p-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-2xs"
+          className="w-full text-sm p-3 font-reading"
         />
 
         <div className="flex items-center justify-end">
           <button
             type="submit"
             disabled={isPending || !newCommentBody.trim()}
-            className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-2xs disabled:opacity-50 transition-colors"
+            className="sketch-btn sketch-btn-primary px-4 py-2 text-xs font-marker disabled:opacity-50"
           >
             {isPending ? translations.loading : translations.postCommentButton}
           </button>

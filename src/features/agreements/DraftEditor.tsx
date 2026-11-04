@@ -172,18 +172,18 @@ export function DraftEditor({
   return (
     <div className="space-y-6">
       {/* Top Controls Bar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-800">
+      <div className="sketch-card p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="text-xs font-mono font-medium px-2.5 py-1 rounded-md bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200">
+          <span className="text-xs font-bold font-mono px-2.5 py-1 rounded-[5px_2px_7px_3px] bg-[var(--dp-color-ground)] border border-[var(--dp-color-line)] text-[var(--dp-color-ink)]">
             {t.revision.replace("{number}", revision.toString())}
           </span>
           {isDirty && (
-            <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+            <span className="text-xs font-semibold font-reading text-[var(--dp-color-accent)]">
               ● {t.unsavedChanges}
             </span>
           )}
           {saveSuccess && (
-            <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
+            <span className="text-xs font-semibold font-reading text-[var(--dp-color-annotation)]">
               ✓ {t.saved}
             </span>
           )}
@@ -195,7 +195,7 @@ export function DraftEditor({
               type="button"
               onClick={handleAddTerm}
               disabled={terms.length >= 50 || isSaving}
-              className="text-xs font-semibold px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 transition-colors cursor-pointer"
+              className="sketch-btn sketch-btn-secondary px-3 py-1.5 text-xs font-marker"
             >
               + {t.addTerm}
             </button>
@@ -204,7 +204,7 @@ export function DraftEditor({
               type="button"
               onClick={handleSave}
               disabled={isSaving || !isDirty}
-              className="text-xs font-semibold px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors cursor-pointer shadow-2xs"
+              className="sketch-btn sketch-btn-primary px-4 py-1.5 text-xs font-marker disabled:opacity-50"
             >
               {isSaving ? t.saving : t.saveDraft}
             </button>
@@ -214,13 +214,13 @@ export function DraftEditor({
 
       {/* Error & Conflict Alert */}
       {errorMessage && (
-        <div className="p-4 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-300 flex items-center justify-between gap-4">
+        <div className="p-4 rounded-[8px_4px_12px_5px] bg-[#fbeee9] border-[1.5px] border-[var(--dp-color-accent)] text-sm font-reading text-[var(--dp-color-accent)] flex items-center justify-between gap-4">
           <span>{errorMessage}</span>
           {isConflict && (
             <button
               type="button"
               onClick={() => router.refresh()}
-              className="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-semibold hover:bg-red-700 cursor-pointer"
+              className="sketch-btn sketch-btn-primary px-3 py-1 text-xs font-marker"
             >
               {t.reload}
             </button>
@@ -230,14 +230,14 @@ export function DraftEditor({
 
       {/* Terms List */}
       {terms.length === 0 ? (
-        <div className="p-12 text-center bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 space-y-3">
-          <div className="text-zinc-400 text-3xl">📄</div>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.noTermsYet}</p>
+        <div className="sketch-card p-12 text-center space-y-3">
+          <div className="text-3xl">📄</div>
+          <p className="text-base font-reading text-[var(--dp-color-ink-muted)]">{t.noTermsYet}</p>
           {canEdit && (
             <button
               type="button"
               onClick={handleAddTerm}
-              className="text-xs font-semibold px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors cursor-pointer"
+              className="sketch-btn sketch-btn-primary px-4 py-2 text-xs font-marker"
             >
               + {t.addFirstTerm}
             </button>
@@ -248,11 +248,11 @@ export function DraftEditor({
           {terms.map((term, index) => (
             <div
               key={term.id}
-              className="p-5 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 space-y-3 shadow-2xs transition-shadow hover:border-zinc-300 dark:hover:border-zinc-700"
+              className="sketch-card p-5 space-y-3 hover:rotate-[-0.1deg] transition-all"
             >
               {/* Term Header */}
-              <div className="flex items-center justify-between gap-2 border-b border-zinc-100 dark:border-zinc-800/80 pb-2.5">
-                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+              <div className="flex items-center justify-between gap-2 border-b border-dashed border-[var(--dp-color-line)] pb-2.5">
+                <span className="text-sm font-bold font-marker text-[var(--dp-color-accent)]">
                   #{index + 1}
                 </span>
 
@@ -262,7 +262,7 @@ export function DraftEditor({
                       type="button"
                       disabled={index === 0}
                       onClick={() => handleMoveTerm(index, "up")}
-                      className="text-xs px-2 py-1 rounded-md border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
+                      className="sketch-btn sketch-btn-outline text-xs px-2 py-0.5 disabled:opacity-30"
                       title={t.moveUp}
                     >
                       ▲
@@ -271,7 +271,7 @@ export function DraftEditor({
                       type="button"
                       disabled={index === terms.length - 1}
                       onClick={() => handleMoveTerm(index, "down")}
-                      className="text-xs px-2 py-1 rounded-md border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
+                      className="sketch-btn sketch-btn-outline text-xs px-2 py-0.5 disabled:opacity-30"
                       title={t.moveDown}
                     >
                       ▼
@@ -279,7 +279,7 @@ export function DraftEditor({
                     <button
                       type="button"
                       onClick={() => handleRemoveTerm(index)}
-                      className="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded-md hover:bg-red-50 dark:hover:bg-red-950/30 cursor-pointer"
+                      className="text-xs text-[var(--dp-color-accent)] hover:underline px-2 py-0.5 font-bold cursor-pointer"
                       title={t.removeTerm}
                     >
                       ✕
@@ -297,11 +297,11 @@ export function DraftEditor({
                     onChange={(e) => handleUpdateTerm(index, "title", e.target.value)}
                     placeholder={t.termTitlePlaceholder}
                     maxLength={120}
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/60 text-sm font-semibold text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3.5 py-2 text-base font-bold font-marker"
                   />
                 </div>
               ) : (
-                <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
+                <h3 className="text-lg font-bold font-marker text-[var(--dp-color-ink)]">
                   {term.title}
                 </h3>
               )}
@@ -315,12 +315,12 @@ export function DraftEditor({
                     placeholder={t.termBodyPlaceholder}
                     maxLength={4000}
                     rows={3}
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/60 text-xs text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3.5 py-2.5 text-sm font-reading"
                   />
                 </div>
               ) : (
                 term.body && (
-                  <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap">
+                  <p className="text-base font-reading text-[var(--dp-color-ink)] leading-relaxed whitespace-pre-wrap">
                     {term.body}
                   </p>
                 )
@@ -331,48 +331,48 @@ export function DraftEditor({
                 {canEdit ? (
                   <>
                     <div>
-                      <label className="block text-[11px] text-zinc-500 mb-1">{t.amount}</label>
+                      <label className="block text-xs font-reading text-[var(--dp-color-ink-muted)] mb-1">{t.amount}</label>
                       <input
                         type="text"
                         value={term.amount || ""}
                         onChange={(e) => handleUpdateTerm(index, "amount", e.target.value)}
                         placeholder="5000"
                         maxLength={32}
-                        className="w-full px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/60 text-xs text-zinc-800 dark:text-zinc-200"
+                        className="w-full px-2.5 py-1.5 text-xs"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] text-zinc-500 mb-1">{t.currency}</label>
+                      <label className="block text-xs font-reading text-[var(--dp-color-ink-muted)] mb-1">{t.currency}</label>
                       <input
                         type="text"
                         value={term.currency || ""}
                         onChange={(e) => handleUpdateTerm(index, "currency", e.target.value)}
                         placeholder="SAR"
                         maxLength={10}
-                        className="w-full px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/60 text-xs text-zinc-800 dark:text-zinc-200 uppercase"
+                        className="w-full px-2.5 py-1.5 text-xs uppercase"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] text-zinc-500 mb-1">{t.dueDate}</label>
+                      <label className="block text-xs font-reading text-[var(--dp-color-ink-muted)] mb-1">{t.dueDate}</label>
                       <input
                         type="date"
                         value={term.dueDate || ""}
                         onChange={(e) => handleUpdateTerm(index, "dueDate", e.target.value)}
-                        className="w-full px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/60 text-xs text-zinc-800 dark:text-zinc-200"
+                        className="w-full px-2.5 py-1.5 text-xs"
                       />
                     </div>
                   </>
                 ) : (
                   <>
                     {term.amount && (
-                      <div className="text-xs text-zinc-600 dark:text-zinc-400">
-                        <span className="font-semibold text-zinc-900 dark:text-zinc-100">
+                      <div className="text-sm font-reading text-[var(--dp-color-ink-muted)]">
+                        <span className="font-bold text-[var(--dp-color-ink)]">
                           {term.amount} {term.currency || ""}
                         </span>
                       </div>
                     )}
                     {term.dueDate && (
-                      <div className="text-xs text-zinc-600 dark:text-zinc-400">
+                      <div className="text-sm font-reading text-[var(--dp-color-ink-muted)]">
                         <span>
                           {t.dueDate}: {term.dueDate}
                         </span>

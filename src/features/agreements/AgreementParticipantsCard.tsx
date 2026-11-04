@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { InviteParticipantModal } from "./InviteParticipantModal";
+import { SketchSelect } from "../ui/SketchSelect";
 import {
   resendInvitationAction,
   removeParticipantAction,
@@ -129,8 +130,8 @@ export function AgreementParticipantsCard({
   return (
     <div className="space-y-4">
       {/* Top Banner & Action */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200 dark:border-zinc-800">
-        <p className="text-xs text-zinc-600 dark:text-zinc-400">
+      <div className="sketch-card p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <p className="text-xs font-reading text-[var(--dp-color-ink-muted)]">
           💡 {t.upcomingSprintNotice}
         </p>
 
@@ -138,7 +139,7 @@ export function AgreementParticipantsCard({
           <button
             type="button"
             onClick={() => setIsInviteModalOpen(true)}
-            className="text-xs font-semibold px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-2xs shrink-0 cursor-pointer"
+            className="sketch-btn sketch-btn-primary px-4 py-1.5 text-xs font-marker shrink-0"
           >
             + {t.inviteParty}
           </button>
@@ -146,7 +147,7 @@ export function AgreementParticipantsCard({
       </div>
 
       {/* Participants List */}
-      <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 divide-y divide-zinc-100 dark:divide-zinc-800 shadow-2xs">
+      <div className="sketch-card divide-y divide-dashed divide-[var(--dp-color-line)]">
         {participants.map((p) => {
           const isParticipantOrganizer = p.agreementRole === "ORGANIZER";
           const isJoined = p.joinedAt !== null || p.userId !== null;
@@ -155,25 +156,25 @@ export function AgreementParticipantsCard({
           return (
             <div
               key={p.id}
-              className="p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+              className="p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-reading"
             >
               <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-sm shrink-0">
+                <div className="w-10 h-10 rounded-[8px_4px_10px_5px] bg-[var(--dp-color-ground)] border border-[var(--dp-color-line)] text-[var(--dp-color-ink)] flex items-center justify-center font-bold font-marker text-sm shrink-0 shadow-[1px_1px_0px_var(--dp-color-line)]">
                   {p.partyDisplayName.substring(0, 2).toUpperCase()}
                 </div>
 
                 <div className="space-y-0.5">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                    <span className="text-base font-bold font-marker text-[var(--dp-color-ink)]">
                       {p.partyDisplayName}
                     </span>
 
                     {/* Role badge */}
                     <span
-                      className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                      className={`text-[10px] px-2 py-0.5 rounded-[4px_2px_5px_3px] font-bold font-marker ${
                         isParticipantOrganizer
-                          ? "bg-purple-50 text-purple-700 dark:bg-purple-950/50 dark:text-purple-300 border border-purple-200"
-                          : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                          ? "bg-[var(--dp-color-ground)] text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)]"
+                          : "bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] border border-[var(--dp-color-line)]"
                       }`}
                     >
                       {t.roles[p.agreementRole] || p.agreementRole}
@@ -181,26 +182,26 @@ export function AgreementParticipantsCard({
 
                     {/* Joined vs Pending Badge */}
                     <span
-                      className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                      className={`text-[10px] px-2 py-0.5 rounded-[4px_2px_5px_3px] font-semibold ${
                         isJoined
-                          ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200"
-                          : "bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300 border border-amber-200"
+                          ? "bg-[#eaf3ea] text-[var(--dp-color-ink)] border border-[#96b79d]"
+                          : "bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border border-[var(--dp-color-line)]"
                       }`}
                     >
                       {isJoined ? `✓ ${t.joined}` : `⏳ ${t.pending}`}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2 text-xs text-zinc-500 font-mono" dir="ltr">
+                  <div className="flex items-center gap-2 text-xs text-[var(--dp-color-ink-muted)] font-mono" dir="ltr">
                     <span>{p.emailNormalized}</span>
-                    <span className="text-zinc-300 dark:text-zinc-700">•</span>
-                    <span className="font-sans text-[11px] text-zinc-400">
+                    <span className="text-[var(--dp-color-line)]">•</span>
+                    <span className="font-sans text-[11px] text-[var(--dp-color-ink-muted)]">
                       {p.partyKind === "ORGANIZATION" ? t.organization : t.person}
                     </span>
                     {p.requiredByDefault && (
                       <>
-                        <span className="text-zinc-300 dark:text-zinc-700">•</span>
-                        <span className="font-sans text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+                        <span className="text-[var(--dp-color-line)]">•</span>
+                        <span className="font-sans text-[11px] text-[var(--dp-color-annotation)] font-semibold">
                           مراجع مطلوب
                         </span>
                       </>
@@ -217,36 +218,39 @@ export function AgreementParticipantsCard({
                       type="button"
                       disabled={isLoading}
                       onClick={() => handleResend(p.id)}
-                      className="text-xs px-2.5 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium cursor-pointer disabled:opacity-50"
+                      className="sketch-btn sketch-btn-outline text-xs px-2.5 py-1 font-marker disabled:opacity-50"
                     >
-                      {isLoading ? t.loading : t.resend}
+                      {t.resend}
                     </button>
                   )}
 
-                  <select
-                    disabled={isLoading}
-                    value={p.agreementRole}
-                    onChange={(e) =>
-                      handleRoleChange(
-                        p.id,
-                        e.target.value as "EDITOR" | "REVIEWER" | "OBSERVER",
-                        p.requiredByDefault
-                      )
-                    }
-                    className="text-xs px-2 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200"
-                  >
-                    <option value="REVIEWER">{t.roles.REVIEWER}</option>
-                    <option value="EDITOR">{t.roles.EDITOR}</option>
-                    <option value="OBSERVER">{t.roles.OBSERVER}</option>
-                  </select>
+                  <div className="w-28">
+                    <SketchSelect
+                      size="sm"
+                      disabled={isLoading}
+                      value={p.agreementRole}
+                      onChange={(val) =>
+                        handleRoleChange(
+                          p.id,
+                          val as "EDITOR" | "REVIEWER" | "OBSERVER",
+                          p.requiredByDefault
+                        )
+                      }
+                      options={[
+                        { value: "EDITOR", label: t.roles.EDITOR },
+                        { value: "REVIEWER", label: t.roles.REVIEWER },
+                        { value: "OBSERVER", label: t.roles.OBSERVER },
+                      ]}
+                    />
+                  </div>
 
                   <button
                     type="button"
                     disabled={isLoading}
                     onClick={() => handleRemove(p.id, p.partyDisplayName)}
-                    className="text-xs px-2.5 py-1.5 rounded-md text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 font-medium cursor-pointer disabled:opacity-50"
+                    className="text-xs text-[var(--dp-color-accent)] hover:underline font-bold px-2 py-1 font-marker disabled:opacity-50"
                   >
-                    {t.remove}
+                    ✕ {t.remove}
                   </button>
                 </div>
               )}

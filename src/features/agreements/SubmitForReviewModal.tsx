@@ -81,66 +81,67 @@ export function SubmitForReviewModal({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-colors cursor-pointer"
+        className="sketch-btn sketch-btn-annotation text-xs px-4 py-2 font-marker shadow-[2px_2px_0px_var(--dp-color-ink)]"
       >
         🚀 {translations.submitForReview}
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl max-w-lg w-full p-6 space-y-4 shadow-xl border border-zinc-200 dark:border-zinc-800">
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="sketch-card-elevated max-w-lg w-full p-6 space-y-4 shadow-xl">
+            <div className="sketch-tape sketch-tape-top" />
             <div className="space-y-1">
-              <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+              <h3 className="text-xl font-bold font-marker text-[var(--dp-color-ink)]">
                 {translations.submitDraftTitle}
               </h3>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400">
+              <p className="text-sm font-reading text-[var(--dp-color-ink-muted)]">
                 {translations.submitDraftDesc}
               </p>
             </div>
 
             {errorMessage && (
-              <div className="p-3 text-xs rounded-lg bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300">
+              <div className="p-3 text-xs rounded-[6px_3px_8px_4px] bg-[#fbeee9] border border-[var(--dp-color-accent)] text-[var(--dp-color-accent)] font-reading">
                 {errorMessage}
               </div>
             )}
 
             {!isQuorumMet ? (
-              <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-200 space-y-2">
-                <div className="font-bold flex items-center gap-1.5">
+              <div className="p-4 rounded-[8px_4px_12px_5px] bg-[var(--dp-color-highlight)]/40 border border-[var(--dp-color-accent)] text-xs text-[var(--dp-color-ink)] space-y-2 font-reading">
+                <div className="font-bold font-marker flex items-center gap-1.5 text-[var(--dp-color-accent)]">
                   <span>⚠️</span>
                   <span>{translations.quorumWarning}</span>
                 </div>
-                <p className="text-amber-700/90 dark:text-amber-300/90">
+                <p className="leading-relaxed">
                   عدد الأطراف المنضمين حاليًا المطلوبين للمراجعة: {joinedRequiredParticipants.length} (المطلوب: 2 على الأقل).
                   يرجى دعوة طرف آخر والتأكد من انضمامه وتوثيق بريده قبل تقديم النسخة.
                 </p>
               </div>
             ) : (
-              <div className="space-y-3">
-                <div className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 text-xs space-y-2">
-                  <div className="font-semibold text-zinc-800 dark:text-zinc-200">
+              <div className="space-y-3 font-reading">
+                <div className="p-3 rounded-[6px_3px_8px_4px] bg-[var(--dp-color-ground)] border border-[var(--dp-color-line)] text-xs space-y-2">
+                  <div className="font-bold font-marker text-[var(--dp-color-ink)]">
                     ملخص النسخة المجمدة:
                   </div>
-                  <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400">
+                  <div className="flex items-center gap-4 text-[var(--dp-color-ink-muted)]">
                     <span>• {translations.termsCount.replace("{count}", String(termsCount))}</span>
                     <span>• إصدار المسودة: {draftRevision}</span>
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <div className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
+                  <div className="text-xs font-bold font-marker text-[var(--dp-color-ink)]">
                     {translations.frozenRosterLabel}
                   </div>
                   <div className="max-h-40 overflow-y-auto space-y-1.5">
                     {joinedRequiredParticipants.map((p) => (
                       <div
                         key={p.id}
-                        className="p-2 rounded-md bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs flex items-center justify-between"
+                        className="p-2 rounded-[5px_2px_7px_3px] bg-[var(--dp-color-scrap)] border border-[var(--dp-color-line)] text-xs flex items-center justify-between"
                       >
-                        <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                        <span className="font-bold font-marker text-[var(--dp-color-ink)]">
                           {p.partyDisplayName}
                         </span>
-                        <span className="text-zinc-500 text-[11px]">
+                        <span className="text-[var(--dp-color-ink-muted)] text-[11px] font-mono" dir="ltr">
                           {p.emailNormalized}
                         </span>
                       </div>
@@ -149,18 +150,18 @@ export function SubmitForReviewModal({
                 </div>
 
                 {/* Approval Policy & Quorum Settings (Sprint 10) */}
-                <div className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 space-y-2.5 text-xs">
-                  <div className="font-semibold text-zinc-800 dark:text-zinc-200">
+                <div className="p-3 rounded-[6px_3px_8px_4px] bg-[var(--dp-color-ground)] border border-[var(--dp-color-line)] space-y-2.5 text-xs">
+                  <div className="font-bold font-marker text-[var(--dp-color-ink)]">
                     سياسة الاعتماد والنصاب (Approval Policy):
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     <button
                       type="button"
                       onClick={() => setApprovalPolicy("UNANIMOUS")}
-                      className={`p-2 rounded-md border text-center font-medium transition-colors cursor-pointer ${
+                      className={`p-2 rounded-[5px_2px_7px_3px] border text-center font-marker font-bold transition-all cursor-pointer ${
                         approvalPolicy === "UNANIMOUS"
-                          ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300"
-                          : "border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                          ? "bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border-[var(--dp-color-ink)] shadow-[1px_1px_0px_var(--dp-color-ink)]"
+                          : "border-[var(--dp-color-line)] text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-ink)] bg-[var(--dp-color-scrap)]"
                       }`}
                     >
                       إجماع الأطراف
@@ -168,10 +169,10 @@ export function SubmitForReviewModal({
                     <button
                       type="button"
                       onClick={() => setApprovalPolicy("MAJORITY")}
-                      className={`p-2 rounded-md border text-center font-medium transition-colors cursor-pointer ${
+                      className={`p-2 rounded-[5px_2px_7px_3px] border text-center font-marker font-bold transition-all cursor-pointer ${
                         approvalPolicy === "MAJORITY"
-                          ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300"
-                          : "border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                          ? "bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border-[var(--dp-color-ink)] shadow-[1px_1px_0px_var(--dp-color-ink)]"
+                          : "border-[var(--dp-color-line)] text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-ink)] bg-[var(--dp-color-scrap)]"
                       }`}
                     >
                       أغلبية المراجعين
@@ -179,10 +180,10 @@ export function SubmitForReviewModal({
                     <button
                       type="button"
                       onClick={() => setApprovalPolicy("QUORUM_THRESHOLD")}
-                      className={`p-2 rounded-md border text-center font-medium transition-colors cursor-pointer ${
+                      className={`p-2 rounded-[5px_2px_7px_3px] border text-center font-marker font-bold transition-all cursor-pointer ${
                         approvalPolicy === "QUORUM_THRESHOLD"
-                          ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300"
-                          : "border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                          ? "bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border-[var(--dp-color-ink)] shadow-[1px_1px_0px_var(--dp-color-ink)]"
+                          : "border-[var(--dp-color-line)] text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-ink)] bg-[var(--dp-color-scrap)]"
                       }`}
                     >
                       نصاب محدد
@@ -190,8 +191,8 @@ export function SubmitForReviewModal({
                   </div>
 
                   {approvalPolicy === "QUORUM_THRESHOLD" && (
-                    <div className="flex items-center gap-2 pt-1">
-                      <span className="text-zinc-600 dark:text-zinc-400">
+                    <div className="flex items-center gap-2 pt-1 font-reading">
+                      <span className="text-[var(--dp-color-ink)]">
                         عدد الأصوات المطلوبة للاعتماد:
                       </span>
                       <input
@@ -200,43 +201,43 @@ export function SubmitForReviewModal({
                         max={joinedRequiredParticipants.length}
                         value={quorumThreshold}
                         onChange={(e) => setQuorumThreshold(parseInt(e.target.value, 10) || 1)}
-                        className="w-16 px-2 py-1 rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-xs font-mono text-center"
+                        className="w-16 px-2 py-1 rounded-[5px_2px_6px_3px] border border-[var(--dp-color-line)] bg-[var(--dp-color-scrap)] text-xs font-mono text-center"
                       />
-                      <span className="text-zinc-400 text-[11px]">
+                      <span className="text-[var(--dp-color-ink-muted)] text-[11px]">
                         (من أصل {joinedRequiredParticipants.length} مراجعين)
                       </span>
                     </div>
                   )}
 
-                  <div className="flex items-center gap-2 pt-1">
+                  <div className="flex items-center gap-2 pt-1 font-reading">
                     <input
                       id="isSequential"
                       type="checkbox"
                       checked={isSequential}
                       onChange={(e) => setIsSequential(e.target.checked)}
-                      className="w-4 h-4 rounded text-emerald-600 accent-emerald-600 cursor-pointer"
+                      className="w-4 h-4 rounded-sm border-[var(--dp-color-line)] text-[var(--dp-color-accent)] focus:ring-[var(--dp-color-annotation)] cursor-pointer"
                     />
                     <label
                       htmlFor="isSequential"
-                      className="text-zinc-700 dark:text-zinc-300 cursor-pointer select-none"
+                      className="text-[var(--dp-color-ink)] cursor-pointer select-none font-medium"
                     >
                       مراجعة تسلسلية متتابعة حسب مراحل المراجعين (Sequential Review)
                     </label>
                   </div>
                 </div>
 
-                <div className="text-[11px] text-zinc-500 italic p-2 bg-blue-50/50 dark:bg-blue-950/20 rounded-md">
+                <div className="text-[12px] text-[var(--dp-color-annotation)] italic p-2.5 sketch-strip">
                   🛡️ {translations.approvalNotice}
                 </div>
               </div>
             )}
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+            <div className="flex justify-end gap-2.5 pt-3 border-t border-dashed border-[var(--dp-color-line)]">
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
                 disabled={isPending}
-                className="px-4 py-2 rounded-lg text-xs font-medium border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                className="sketch-btn sketch-btn-outline px-4 py-2 text-xs font-marker cursor-pointer"
               >
                 {translations.cancel}
               </button>
@@ -246,7 +247,7 @@ export function SubmitForReviewModal({
                   type="button"
                   onClick={handleSubmit}
                   disabled={isPending}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-colors cursor-pointer"
+                  className="sketch-btn sketch-btn-annotation px-5 py-2 text-xs font-marker shadow-[2px_2px_0px_var(--dp-color-ink)] cursor-pointer"
                 >
                   {isPending ? translations.loading : translations.submitForReview}
                 </button>

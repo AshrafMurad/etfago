@@ -125,15 +125,15 @@ export function ChangeProposalsList({
   return (
     <div className="space-y-4">
       {/* Filter Tabs */}
-      <div className="flex items-center justify-between gap-3 pb-2 border-b border-zinc-200 dark:border-zinc-800">
-        <div className="flex items-center gap-1.5 p-1 bg-zinc-100 dark:bg-zinc-800/80 rounded-lg text-xs font-medium">
+      <div className="flex items-center justify-between gap-3 pb-2 border-b border-[var(--dp-color-line)]">
+        <div className="flex items-center gap-1.5 p-1 bg-[var(--dp-color-ground)] rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] text-xs font-marker">
           <button
             type="button"
             onClick={() => setFilter("ALL")}
-            className={`px-2.5 py-1 rounded-md transition-colors ${
+            className={`px-3 py-1 rounded-[4px_2px_5px_3px] transition-all cursor-pointer ${
               filter === "ALL"
-                ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-2xs font-semibold"
-                : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
+                ? "bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] font-bold border border-[var(--dp-color-ink)] shadow-[1px_1px_0px_var(--dp-color-ink)]"
+                : "text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-ink)]"
             }`}
           >
             {translations.filterAll} ({proposals.length})
@@ -141,10 +141,10 @@ export function ChangeProposalsList({
           <button
             type="button"
             onClick={() => setFilter("OPEN")}
-            className={`px-2.5 py-1 rounded-md transition-colors ${
+            className={`px-3 py-1 rounded-[4px_2px_5px_3px] transition-all cursor-pointer ${
               filter === "OPEN"
-                ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-2xs font-semibold"
-                : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
+                ? "bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] font-bold border border-[var(--dp-color-ink)] shadow-[1px_1px_0px_var(--dp-color-ink)]"
+                : "text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-ink)]"
             }`}
           >
             {translations.filterOpen} (
@@ -153,10 +153,10 @@ export function ChangeProposalsList({
           <button
             type="button"
             onClick={() => setFilter("RESOLVED")}
-            className={`px-2.5 py-1 rounded-md transition-colors ${
+            className={`px-3 py-1 rounded-[4px_2px_5px_3px] transition-all cursor-pointer ${
               filter === "RESOLVED"
-                ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-2xs font-semibold"
-                : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
+                ? "bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] font-bold border border-[var(--dp-color-ink)] shadow-[1px_1px_0px_var(--dp-color-ink)]"
+                : "text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-ink)]"
             }`}
           >
             {translations.filterResolved} (
@@ -166,16 +166,16 @@ export function ChangeProposalsList({
       </div>
 
       {actionError && (
-        <div className="p-3 text-xs rounded-lg bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-200">
+        <div className="p-3 text-xs rounded-[6px_3px_7px_4px] bg-[#fbeee9] text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)] font-reading">
           {actionError}
         </div>
       )}
 
       {/* Empty State */}
       {filtered.length === 0 && (
-        <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-500 text-sm space-y-1">
-          <p>{translations.noProposals}</p>
-          <p className="text-xs text-zinc-400">
+        <div className="sketch-card p-8 text-center text-[var(--dp-color-ink-muted)] space-y-1 border-dashed">
+          <p className="font-marker text-base text-[var(--dp-color-ink)]">{translations.noProposals}</p>
+          <p className="text-xs font-reading">
             {translations.createFirstProposal}
           </p>
         </div>
@@ -190,44 +190,44 @@ export function ChangeProposalsList({
           return (
             <div
               key={proposal.id}
-              className="p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-2xs space-y-3"
+              className="sketch-card p-5 space-y-3"
             >
               {/* Header */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-zinc-100 dark:border-zinc-800/80 pb-3">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-[var(--dp-color-line)] pb-3">
                 <div className="flex items-center gap-2">
                   <span
-                    className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                    className={`px-2 py-0.5 rounded-[4px_2px_5px_3px] text-[11px] font-bold font-marker ${
                       proposal.status === "OPEN"
-                        ? "bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-200"
+                        ? "bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border border-[var(--dp-color-ink)]"
                         : proposal.status === "ACCEPTED_IN_DRAFT"
-                        ? "bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-200"
-                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+                        ? "bg-[#eaf3ea] text-[var(--dp-color-ink)] border border-[#96b79d]"
+                        : "bg-[var(--dp-color-ground)] text-[var(--dp-color-ink-muted)] border border-[var(--dp-color-line)]"
                     }`}
                   >
                     {translations.status[proposal.status]}
                   </span>
 
-                  <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                  <span className="px-2 py-0.5 rounded-[4px_2px_5px_3px] text-[11px] font-medium font-marker bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink-muted)] border border-[var(--dp-color-line)]">
                     {translations.operations[proposal.operation]}
                   </span>
 
-                  <span className="text-xs text-zinc-500">
+                  <span className="text-xs text-[var(--dp-color-ink-muted)] font-marker">
                     {translations.proposedBy}:{" "}
-                    <strong className="text-zinc-800 dark:text-zinc-200">
+                    <strong className="text-[var(--dp-color-ink)]">
                       {proposal.creatorName}
                     </strong>
                   </span>
                 </div>
 
-                <span className="text-[11px] text-zinc-400">
+                <span className="text-[11px] text-[var(--dp-color-ink-muted)] font-mono">
                   {new Date(proposal.createdAt).toLocaleDateString()}
                 </span>
               </div>
 
               {/* Reason */}
               {proposal.reason && (
-                <div className="text-xs text-zinc-600 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-800/50 p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700/60">
-                  <span className="font-semibold text-zinc-700 dark:text-zinc-200 block mb-0.5">
+                <div className="text-xs text-[var(--dp-color-ink)] bg-[var(--dp-color-ground)] p-2.5 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] font-reading leading-relaxed">
+                  <span className="font-bold font-marker text-[var(--dp-color-ink)] block mb-0.5">
                     {translations.reasonLabel}:
                   </span>
                   {proposal.reason}
@@ -238,18 +238,18 @@ export function ChangeProposalsList({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                 {/* Old Term */}
                 {proposal.oldTerm && (
-                  <div className="p-3 rounded-lg border border-rose-200/80 bg-rose-50/30 dark:bg-rose-950/20 space-y-1.5">
-                    <span className="text-[10px] font-bold text-rose-600 uppercase tracking-wider block">
+                  <div className="p-3 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-accent)]/50 bg-[#fbeee9]/40 space-y-1.5">
+                    <span className="text-[10px] font-bold font-marker text-[var(--dp-color-accent)] uppercase tracking-wider block">
                       {translations.beforeLabel} (#{proposal.oldTerm.id})
                     </span>
-                    <h5 className="font-bold text-zinc-900 dark:text-zinc-100">
+                    <h5 className="font-bold font-marker text-sm text-[var(--dp-color-ink)]">
                       {proposal.oldTerm.title}
                     </h5>
-                    <p className="text-zinc-600 dark:text-zinc-400 whitespace-pre-wrap">
+                    <p className="text-[var(--dp-color-ink-muted)] font-reading whitespace-pre-wrap leading-relaxed">
                       {proposal.oldTerm.body}
                     </p>
                     {(proposal.oldTerm.amount || proposal.oldTerm.dueDate) && (
-                      <div className="flex gap-3 text-[11px] text-zinc-500 pt-1 font-mono">
+                      <div className="flex gap-3 text-[11px] text-[var(--dp-color-ink-muted)] pt-1 font-mono">
                         {proposal.oldTerm.amount && (
                           <span>
                             {proposal.oldTerm.amount} {proposal.oldTerm.currency}
@@ -265,18 +265,18 @@ export function ChangeProposalsList({
 
                 {/* New Term */}
                 {proposal.newTerm && (
-                  <div className="p-3 rounded-lg border border-emerald-200/80 bg-emerald-50/30 dark:bg-emerald-950/20 space-y-1.5">
-                    <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block">
+                  <div className="p-3 rounded-[6px_3px_7px_4px] border border-[#96b79d] bg-[#eaf3ea]/40 space-y-1.5">
+                    <span className="text-[10px] font-bold font-marker text-[#3c6b44] uppercase tracking-wider block">
                       {translations.afterLabel} (#{proposal.newTerm.id})
                     </span>
-                    <h5 className="font-bold text-zinc-900 dark:text-zinc-100">
+                    <h5 className="font-bold font-marker text-sm text-[var(--dp-color-ink)]">
                       {proposal.newTerm.title}
                     </h5>
-                    <p className="text-zinc-600 dark:text-zinc-400 whitespace-pre-wrap">
+                    <p className="text-[var(--dp-color-ink)] font-reading whitespace-pre-wrap leading-relaxed">
                       {proposal.newTerm.body}
                     </p>
                     {(proposal.newTerm.amount || proposal.newTerm.dueDate) && (
-                      <div className="flex gap-3 text-[11px] text-zinc-500 pt-1 font-mono">
+                      <div className="flex gap-3 text-[11px] text-[var(--dp-color-ink-muted)] pt-1 font-mono">
                         {proposal.newTerm.amount && (
                           <span>
                             {proposal.newTerm.amount} {proposal.newTerm.currency}
@@ -293,14 +293,14 @@ export function ChangeProposalsList({
 
               {/* Action Buttons */}
               {proposal.status === "OPEN" && (
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--dp-color-line)]">
                   {/* Cancel by Creator */}
                   {isCreator && (
                     <button
                       type="button"
                       disabled={isPending}
                       onClick={() => handleCancel(proposal.id)}
-                      className="px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-xs font-medium"
+                      className="sketch-btn sketch-btn-outline text-xs px-3 py-1.5"
                     >
                       {translations.cancelProposal}
                     </button>
@@ -313,7 +313,7 @@ export function ChangeProposalsList({
                         type="button"
                         disabled={isPending}
                         onClick={() => setDeclineTargetId(proposal.id)}
-                        className="px-3 py-1.5 rounded-lg border border-rose-300 text-rose-700 hover:bg-rose-50 dark:border-rose-900/60 dark:text-rose-300 dark:hover:bg-rose-950/40 text-xs font-semibold"
+                        className="sketch-btn text-xs px-3 py-1.5 border border-[var(--dp-color-accent)] text-[var(--dp-color-accent)] bg-[#fbeee9] hover:bg-[var(--dp-color-accent)] hover:text-white"
                       >
                         {translations.decline}
                       </button>
@@ -321,7 +321,7 @@ export function ChangeProposalsList({
                         type="button"
                         disabled={isPending}
                         onClick={() => handleAccept(proposal.id)}
-                        className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-2xs disabled:opacity-60"
+                        className="sketch-btn sketch-btn-primary text-xs px-3.5 py-1.5 disabled:opacity-60"
                       >
                         {isPending
                           ? translations.loading
@@ -338,9 +338,10 @@ export function ChangeProposalsList({
 
       {/* Decline Reason Modal */}
       {declineTargetId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
-            <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
+          <div className="bg-[var(--dp-color-ground)] border-2 border-[var(--dp-color-ink)] rounded-[12px_4px_18px_6px] max-w-md w-full p-6 shadow-[6px_6px_0px_var(--dp-color-ink)] space-y-4 relative">
+            <div className="sketch-tape-top" />
+            <h3 className="text-base font-bold font-marker text-[var(--dp-color-ink)]">
               {translations.confirmDeclineTitle}
             </h3>
 
@@ -350,7 +351,7 @@ export function ChangeProposalsList({
                 value={declineReason}
                 onChange={(e) => setDeclineReason(e.target.value)}
                 placeholder={translations.declineReasonPlaceholder}
-                className="w-full text-xs p-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                className="w-full text-xs p-3 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
               />
 
               <div className="flex items-center justify-end gap-2">
@@ -358,14 +359,14 @@ export function ChangeProposalsList({
                   type="button"
                   onClick={() => setDeclineTargetId(null)}
                   disabled={isPending}
-                  className="px-3.5 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs"
+                  className="sketch-btn sketch-btn-outline text-xs px-3.5 py-1.5"
                 >
                   {translations.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold shadow-2xs"
+                  className="sketch-btn text-xs px-3.5 py-1.5 bg-[var(--dp-color-accent)] text-white border border-[var(--dp-color-ink)] shadow-[2px_2px_0px_var(--dp-color-ink)] font-marker font-bold"
                 >
                   {isPending ? translations.loading : translations.decline}
                 </button>

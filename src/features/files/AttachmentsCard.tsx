@@ -91,18 +91,18 @@ export function AttachmentsCard({
   };
 
   return (
-    <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 space-y-5 shadow-2xs">
+    <div className="sketch-card p-6 space-y-5 relative">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-zinc-100 dark:border-zinc-800 pb-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[var(--dp-color-line)] pb-3">
         <div>
-          <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+          <h3 className="text-base font-bold font-marker text-[var(--dp-color-ink)] flex items-center gap-2">
             <span>📎</span>
             <span>{translations.title}</span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-mono">
+            <span className="text-xs px-2 py-0.5 rounded-[4px_2px_5px_3px] bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] font-bold border border-[var(--dp-color-ink)] font-mono">
               {attachments.length}
             </span>
           </h3>
-          <p className="text-xs text-zinc-500 mt-0.5">
+          <p className="text-xs text-[var(--dp-color-ink-muted)] font-reading mt-0.5">
             {translations.privateStorageNotice}
           </p>
         </div>
@@ -120,7 +120,7 @@ export function AttachmentsCard({
           />
           <label
             htmlFor="file-upload-input"
-            className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-2xs cursor-pointer flex items-center gap-1.5 transition-colors"
+            className="sketch-btn sketch-btn-primary cursor-pointer text-xs flex items-center gap-1.5"
           >
             <span>↑</span>
             <span>
@@ -131,19 +131,19 @@ export function AttachmentsCard({
       </div>
 
       {error && (
-        <div className="p-3 text-xs rounded-lg bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-200">
+        <div className="p-3 text-xs rounded-[6px_3px_7px_4px] bg-[#fbeee9] text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)] font-reading">
           {error}
         </div>
       )}
 
       {/* Allowed Formats info */}
-      <p className="text-[11px] text-zinc-500 bg-zinc-50 dark:bg-zinc-800/50 p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700/60">
+      <p className="text-[11px] text-[var(--dp-color-ink-muted)] bg-[var(--dp-color-scrap)] p-2.5 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] font-marker">
         🔒 {translations.allowedFormats}
       </p>
 
       {/* Attachments List */}
       {attachments.length === 0 ? (
-        <div className="p-8 text-center text-xs text-zinc-400">
+        <div className="p-8 text-center text-xs text-[var(--dp-color-ink-muted)] font-reading border border-dashed border-[var(--dp-color-line)] rounded-[6px_3px_7px_4px]">
           {translations.noAttachments}
         </div>
       ) : (
@@ -155,15 +155,15 @@ export function AttachmentsCard({
             return (
               <div
                 key={file.id}
-                className="flex items-center justify-between p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors text-xs"
+                className="flex items-center justify-between p-3 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-scrap)] hover:shadow-[2px_2px_0px_var(--dp-color-line)] transition-all text-xs"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <span className="text-lg">{getMimeIcon(file.mimeDetected)}</span>
                   <div className="min-w-0">
-                    <p className="font-semibold text-zinc-800 dark:text-zinc-200 truncate">
+                    <p className="font-bold font-marker text-[var(--dp-color-ink)] truncate">
                       {file.originalFilename}
                     </p>
-                    <p className="text-[11px] text-zinc-400">
+                    <p className="text-[11px] text-[var(--dp-color-ink-muted)] font-reading">
                       {formatFileSize(file.sizeBytes)} • {translations.uploadedBy}{" "}
                       {file.uploaderName} •{" "}
                       {new Date(file.createdAt).toLocaleDateString()}
@@ -175,7 +175,7 @@ export function AttachmentsCard({
                   <a
                     href={`/api/attachments/${file.id}/download`}
                     download
-                    className="px-2.5 py-1 rounded-md border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] font-medium"
+                    className="sketch-btn sketch-btn-outline text-[11px] px-2.5 py-1"
                   >
                     ⬇ {translations.download}
                   </a>
@@ -185,7 +185,7 @@ export function AttachmentsCard({
                       type="button"
                       disabled={isPending}
                       onClick={() => handleDelete(file.id)}
-                      className="text-zinc-400 hover:text-rose-600 px-1 py-1"
+                      className="text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-accent)] px-1 py-1 cursor-pointer transition-colors"
                       title={translations.delete}
                     >
                       🗑
