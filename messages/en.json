@@ -288,6 +288,7 @@
     },
     "removeMember": "Remove Member",
     "noWorkspaces": "No workspaces found",
+    "createdSuccess": "Workspace created successfully",
     "memberAdded": "Member added successfully",
     "memberRemoved": "Member removed successfully",
     "roleUpdated": "Member role updated successfully",
@@ -328,24 +329,34 @@
       "tableDueDate": "Due Date",
       "tableFlags": "Alerts",
       "overdueBadge": "Overdue",
-      "needsReviewBadge": "Needs Review"
+      "needsReviewBadge": "Needs Review",
+      "personalSpace": "Personal Space",
+      "teamMembers": "Team & Members",
+      "owners": "Owners",
+      "admins": "Admins",
+      "members": "Members"
     },
     "settings": {
       "title": "Workspace Settings",
       "renameTitle": "Rename Workspace",
       "renameDesc": "Change the visible name of this workspace for all team members",
       "saveName": "Save Name",
+      "renameSuccess": "Workspace name updated successfully",
       "transferTitle": "Transfer Workspace Ownership",
       "transferDesc": "Transfer full ownership of this workspace to another active member. You will automatically become an Admin.",
+      "noEligibleMembers": "No other active members in this workspace to transfer ownership to. Add team members first.",
       "selectNewOwner": "Select New Owner",
       "transferButton": "Transfer Ownership",
       "transferConfirm": "Are you sure you want to transfer ownership of this workspace?",
+      "transferSuccess": "Workspace ownership transferred successfully",
       "archiveTitle": "Archive Workspace",
       "archiveDesc": "Archiving makes this workspace read-only and prevents creating new agreements.",
       "archiveButton": "Archive Workspace",
       "restoreButton": "Restore Workspace",
       "archiveWarning": "Are you sure you want to archive this workspace?",
-      "personalCannotArchive": "Personal workspaces cannot be archived."
+      "personalCannotArchive": "Personal workspaces cannot be archived.",
+      "archiveSuccess": "Workspace archived successfully",
+      "restoreSuccess": "Workspace restored successfully"
     }
   },
   "Proposals": {
