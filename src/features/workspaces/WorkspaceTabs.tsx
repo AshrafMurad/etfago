@@ -53,7 +53,7 @@ export function WorkspaceTabs({
   ];
 
   return (
-    <div className="flex border-b border-zinc-200 dark:border-zinc-800 gap-2 overflow-x-auto">
+    <div className="flex border-b-2 border-[var(--dp-color-line)] gap-1.5 overflow-x-auto">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         const Icon = tab.icon;
@@ -62,20 +62,20 @@ export function WorkspaceTabs({
           <Link
             key={tab.id}
             href={`/${locale}/workspaces/${workspaceId}?tab=${tab.id}`}
-            className={`flex items-center gap-2 py-3 px-4 text-sm font-medium border-b-2 transition-all whitespace-nowrap ${
+            className={`flex items-center gap-2 py-2.5 px-4 text-xs font-marker transition-all whitespace-nowrap ${
               isActive
-                ? "border-emerald-600 text-emerald-600 dark:border-emerald-400 dark:text-emerald-400"
-                : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-zinc-300 dark:hover:border-zinc-700"
+                ? "bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border border-b-0 border-[var(--dp-color-ink)] shadow-[2px_-2px_0px_var(--dp-color-line)] font-bold rounded-t-[8px_4px]"
+                : "bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-ink)] border border-b-0 border-transparent hover:border-[var(--dp-color-line)] rounded-t-[8px_4px]"
             }`}
           >
             <Icon className="w-4 h-4" />
             <span>{tab.label}</span>
             {tab.badge !== undefined && (
               <span
-                className={`text-[11px] px-1.5 py-0.2 rounded-full font-mono ${
+                className={`text-[11px] px-1.5 py-0.2 rounded-[4px_2px_5px_3px] font-mono border ${
                   isActive
-                    ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
-                    : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                    ? "bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] border-[var(--dp-color-ink)]"
+                    : "bg-[var(--dp-color-ground)] text-[var(--dp-color-ink-muted)] border-[var(--dp-color-line)]"
                 }`}
               >
                 {tab.badge}

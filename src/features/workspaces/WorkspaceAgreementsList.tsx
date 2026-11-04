@@ -21,13 +21,13 @@ export function WorkspaceAgreementsList({
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+          <h2 className="text-lg font-bold font-marker text-[var(--dp-color-ink)]">
             {t("tabs.agreements")} ({agreements.length})
           </h2>
         </div>
         <Link
           href={`/${locale}/agreements/new?workspaceId=${workspaceId}`}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors cursor-pointer"
+          className="sketch-btn sketch-btn-primary text-xs inline-flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           <span>{t("createAgreementInWorkspace")}</span>
@@ -35,21 +35,21 @@ export function WorkspaceAgreementsList({
       </div>
 
       {agreements.length === 0 ? (
-        <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 space-y-4">
-          <div className="w-12 h-12 mx-auto rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+        <div className="sketch-card p-8 text-center space-y-4 border-dashed">
+          <div className="w-12 h-12 mx-auto rounded-full bg-[var(--dp-color-ground)] border border-[var(--dp-color-line)] flex items-center justify-center text-[var(--dp-color-ink-muted)]">
             <FileText className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">
+            <h3 className="font-bold font-marker text-base text-[var(--dp-color-ink)]">
               {agT("noAgreements")}
             </h3>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+            <p className="text-sm font-reading text-[var(--dp-color-ink-muted)] mt-1">
               {agT("createFirst")}
             </p>
           </div>
           <Link
             href={`/${locale}/agreements/new?workspaceId=${workspaceId}`}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors cursor-pointer"
+            className="sketch-btn sketch-btn-primary text-xs inline-flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             <span>{t("createAgreementInWorkspace")}</span>
@@ -61,46 +61,46 @@ export function WorkspaceAgreementsList({
             <Link
               key={ag.id}
               href={`/${locale}/agreements/${ag.id}`}
-              className="p-5 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500/50 hover:shadow-sm transition-all flex flex-col justify-between group"
+              className="sketch-card p-5 hover:shadow-[3px_3px_0px_var(--dp-color-ink)] transition-all flex flex-col justify-between group"
             >
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-2">
                   <span
-                    className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${
+                    className={`text-xs px-2.5 py-0.5 rounded-[4px_2px_5px_3px] font-bold font-marker border ${
                       ag.lifecycleStatus === "AGREED"
-                        ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
+                        ? "bg-[#eaf3ea] text-[var(--dp-color-ink)] border-[#96b79d]"
                         : ag.lifecycleStatus === "DRAFT"
-                        ? "bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300 border border-amber-200 dark:border-amber-800"
-                        : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                        ? "bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border-[var(--dp-color-ink)]"
+                        : "bg-[var(--dp-color-ground)] text-[var(--dp-color-ink-muted)] border-[var(--dp-color-line)]"
                     }`}
                   >
                     {agT(`status.${ag.lifecycleStatus}`)}
                   </span>
                   {ag.pendingReviewVersionId && (
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 border border-blue-200 font-medium">
+                    <span className="text-xs px-2 py-0.5 rounded-[4px_2px_5px_3px] bg-[var(--dp-color-ground)] text-[var(--dp-color-annotation)] border border-[var(--dp-color-annotation)] font-bold font-marker">
                       {agT("pendingReviewVersion")}
                     </span>
                   )}
                 </div>
 
-                <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-1">
+                <h3 className="font-bold font-marker text-base text-[var(--dp-color-ink)] group-hover:text-[var(--dp-color-accent)] transition-colors line-clamp-1">
                   {ag.title}
                 </h3>
 
                 {ag.description && (
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2">
+                  <p className="text-xs text-[var(--dp-color-ink-muted)] font-reading line-clamp-2">
                     {ag.description}
                   </p>
                 )}
               </div>
 
-              <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
+              <div className="mt-4 pt-3 border-t border-[var(--dp-color-line)]/60 flex items-center justify-between text-xs text-[var(--dp-color-ink-muted)]">
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex items-center gap-1">
+                  <span className="inline-flex items-center gap-1 font-marker">
                     <FileText className="w-3.5 h-3.5" />
                     <span>{ag.termsCount}</span>
                   </span>
-                  <span className="inline-flex items-center gap-1">
+                  <span className="inline-flex items-center gap-1 font-marker">
                     <Users className="w-3.5 h-3.5" />
                     <span>{ag.participantCount}</span>
                   </span>

@@ -11,19 +11,19 @@ export function CreateWorkspaceForm() {
   const [state, formAction, isPending] = useActionState(createBusinessWorkspaceAction, null);
 
   return (
-    <div className="p-4 bg-zinc-50 dark:bg-zinc-800/60 rounded-xl border border-zinc-200 dark:border-zinc-700/60">
-      <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
+    <div className="sketch-card p-5 relative">
+      <h3 className="font-marker font-bold text-lg text-[var(--dp-color-ink)] mb-3">
         {t("createNew")}
       </h3>
 
       {state?.error && (
-        <div className="mb-3 p-2 text-sm bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 rounded border border-rose-200 dark:border-rose-800">
+        <div className="mb-3 p-2.5 text-xs bg-[#fbeee9] text-[var(--dp-color-accent)] rounded-[6px_3px_8px_4px] border border-[var(--dp-color-accent)] font-reading">
           {state.error}
         </div>
       )}
 
       {state?.success && (
-        <div className="mb-3 p-2 text-sm bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 rounded border border-emerald-200 dark:border-emerald-800">
+        <div className="mb-3 p-2.5 text-xs bg-[#eaf3ea] text-[var(--dp-color-ink)] rounded-[6px_3px_8px_4px] border border-[#96b79d] font-reading">
           {state.message}
         </div>
       )}
@@ -36,12 +36,12 @@ export function CreateWorkspaceForm() {
           required
           minLength={2}
           maxLength={100}
-          className="flex-1 px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="flex-1 px-3.5 py-2 text-sm font-reading"
         />
         <button
           type="submit"
           disabled={isPending}
-          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+          className="sketch-btn sketch-btn-primary px-4 py-2 text-sm font-marker whitespace-nowrap disabled:opacity-50"
         >
           {isPending ? common("loading") : common("save")}
         </button>

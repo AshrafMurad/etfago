@@ -7,6 +7,7 @@ import {
   deleteCommitmentAction,
 } from "../../server/actions/commitments";
 import { CommitmentStatus } from "../../lib/schemas/commitments";
+import { SketchSelect } from "../ui/SketchSelect";
 
 interface CommitmentListProps {
   agreementId: string;
@@ -92,25 +93,25 @@ export function CommitmentList({
     switch (status) {
       case "TODO":
         return (
-          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+          <span className="px-2 py-0.5 rounded-[4px_2px_5px_3px] text-[11px] font-bold font-marker bg-[var(--dp-color-ground)] text-[var(--dp-color-ink-muted)] border border-[var(--dp-color-line)]">
             {translations.status.TODO}
           </span>
         );
       case "IN_PROGRESS":
         return (
-          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200">
+          <span className="px-2 py-0.5 rounded-[4px_2px_5px_3px] text-[11px] font-bold font-marker bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border border-[var(--dp-color-ink)]">
             {translations.status.IN_PROGRESS}
           </span>
         );
       case "DONE":
         return (
-          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200">
-            {translations.status.DONE}
+          <span className="px-2 py-0.5 rounded-[4px_2px_5px_3px] text-[11px] font-bold font-marker bg-[#eaf3ea] text-[var(--dp-color-ink)] border border-[#96b79d]">
+            ✓ {translations.status.DONE}
           </span>
         );
       case "CANCELLED":
         return (
-          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-zinc-200 dark:bg-zinc-800 text-zinc-500 line-through">
+          <span className="px-2 py-0.5 rounded-[4px_2px_5px_3px] text-[11px] font-bold font-marker bg-[#fbeee9] text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)] line-through">
             {translations.status.CANCELLED}
           </span>
         );
@@ -120,15 +121,15 @@ export function CommitmentList({
   return (
     <div className="space-y-4">
       {/* Filter Tabs */}
-      <div className="flex items-center justify-between gap-3 pb-2 border-b border-zinc-200 dark:border-zinc-800">
-        <div className="flex items-center gap-1.5 p-1 bg-zinc-100 dark:bg-zinc-800/80 rounded-lg text-xs font-medium">
+      <div className="flex items-center justify-between gap-3 pb-2 border-b border-[var(--dp-color-line)]">
+        <div className="flex items-center gap-1.5 p-1 bg-[var(--dp-color-ground)] rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] text-xs font-marker">
           <button
             type="button"
             onClick={() => setFilter("ALL")}
-            className={`px-2.5 py-1 rounded-md transition-colors ${
+            className={`px-3 py-1 rounded-[4px_2px_5px_3px] transition-all cursor-pointer ${
               filter === "ALL"
-                ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-2xs font-semibold"
-                : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
+                ? "bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] font-bold border border-[var(--dp-color-ink)] shadow-[1px_1px_0px_var(--dp-color-ink)]"
+                : "text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-ink)]"
             }`}
           >
             All ({commitments.length})
@@ -136,10 +137,10 @@ export function CommitmentList({
           <button
             type="button"
             onClick={() => setFilter("ACTIVE")}
-            className={`px-2.5 py-1 rounded-md transition-colors ${
+            className={`px-3 py-1 rounded-[4px_2px_5px_3px] transition-all cursor-pointer ${
               filter === "ACTIVE"
-                ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-2xs font-semibold"
-                : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
+                ? "bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] font-bold border border-[var(--dp-color-ink)] shadow-[1px_1px_0px_var(--dp-color-ink)]"
+                : "text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-ink)]"
             }`}
           >
             Active (
@@ -153,10 +154,10 @@ export function CommitmentList({
           <button
             type="button"
             onClick={() => setFilter("COMPLETED")}
-            className={`px-2.5 py-1 rounded-md transition-colors ${
+            className={`px-3 py-1 rounded-[4px_2px_5px_3px] transition-all cursor-pointer ${
               filter === "COMPLETED"
-                ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-2xs font-semibold"
-                : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
+                ? "bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] font-bold border border-[var(--dp-color-ink)] shadow-[1px_1px_0px_var(--dp-color-ink)]"
+                : "text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-ink)]"
             }`}
           >
             Completed (
@@ -171,16 +172,16 @@ export function CommitmentList({
       </div>
 
       {actionError && (
-        <div className="p-3 text-xs rounded-lg bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-200">
+        <div className="p-3 text-xs rounded-[6px_3px_7px_4px] bg-[#fbeee9] text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)] font-reading">
           {actionError}
         </div>
       )}
 
       {/* Empty State */}
       {filtered.length === 0 && (
-        <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-500 text-sm space-y-1">
-          <p>{translations.noCommitments}</p>
-          <p className="text-xs text-zinc-400">{translations.createFirst}</p>
+        <div className="sketch-card p-8 text-center text-[var(--dp-color-ink-muted)] space-y-1 border-dashed">
+          <p className="font-marker text-base text-[var(--dp-color-ink)]">{translations.noCommitments}</p>
+          <p className="text-xs font-reading">{translations.createFirst}</p>
         </div>
       )}
 
@@ -193,16 +194,16 @@ export function CommitmentList({
           return (
             <div
               key={commitment.id}
-              className={`p-4 rounded-xl border bg-white dark:bg-zinc-900 shadow-2xs space-y-3 transition-colors ${
+              className={`p-4 rounded-[8px_4px_12px_5px] border bg-[var(--dp-color-scrap)] shadow-[2px_2px_0px_var(--dp-color-line)] space-y-3 transition-colors ${
                 commitment.needsReview
-                  ? "border-amber-300 dark:border-amber-800/80 bg-amber-50/15"
-                  : "border-zinc-200 dark:border-zinc-800"
+                  ? "border-[var(--dp-color-accent)] bg-[#fcf8ef]"
+                  : "border-[var(--dp-color-line)]"
               }`}
             >
               {/* Needs Review Alert Banner */}
               {commitment.needsReview && (
-                <div className="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 flex items-center justify-between text-xs text-amber-800 dark:text-amber-200">
-                  <span className="flex items-center gap-1.5 font-medium">
+                <div className="p-2.5 rounded-[5px_2px_6px_3px] bg-[var(--dp-color-highlight)]/40 border border-[var(--dp-color-accent)]/40 flex items-center justify-between text-xs text-[var(--dp-color-accent)] font-marker">
+                  <span className="flex items-center gap-1.5 font-bold">
                     ⚠️ {translations.needsReviewNotice}
                   </span>
                   {commitment.sourceTermId && (
@@ -217,41 +218,40 @@ export function CommitmentList({
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   {getStatusBadge(commitment.status)}
-                  <h4 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100">
+                  <h4 className="font-marker font-bold text-sm text-[var(--dp-color-ink)]">
                     {commitment.title}
                   </h4>
                 </div>
 
                 {/* Status Dropdown */}
                 <div className="flex items-center gap-2">
-                  <select
-                    disabled={isPending}
-                    value={commitment.status}
-                    onChange={(e) =>
-                      handleStatusChange(
-                        commitment.id,
-                        e.target.value as CommitmentStatus,
-                        commitment.rowRevision
-                      )
-                    }
-                    className="text-xs px-2.5 py-1 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-medium cursor-pointer"
-                  >
-                    <option value="TODO">{translations.status.TODO}</option>
-                    <option value="IN_PROGRESS">
-                      {translations.status.IN_PROGRESS}
-                    </option>
-                    <option value="DONE">{translations.status.DONE}</option>
-                    <option value="CANCELLED">
-                      {translations.status.CANCELLED}
-                    </option>
-                  </select>
+                  <div className="w-36">
+                    <SketchSelect
+                      size="sm"
+                      disabled={isPending}
+                      value={commitment.status}
+                      onChange={(val) =>
+                        handleStatusChange(
+                          commitment.id,
+                          val as CommitmentStatus,
+                          commitment.rowRevision
+                        )
+                      }
+                      options={[
+                        { value: "TODO", label: translations.status.TODO },
+                        { value: "IN_PROGRESS", label: translations.status.IN_PROGRESS },
+                        { value: "DONE", label: translations.status.DONE },
+                        { value: "CANCELLED", label: translations.status.CANCELLED },
+                      ]}
+                    />
+                  </div>
 
                   {canManage && (
                     <button
                       type="button"
                       disabled={isPending}
                       onClick={() => handleDelete(commitment.id)}
-                      className="text-xs text-zinc-400 hover:text-rose-600 px-1 py-1"
+                      className="text-xs text-[var(--dp-color-ink-muted)] hover:text-[var(--dp-color-accent)] px-1.5 py-1 cursor-pointer transition-colors"
                       title={translations.delete}
                     >
                       🗑
@@ -262,16 +262,16 @@ export function CommitmentList({
 
               {/* Details */}
               {commitment.details && (
-                <p className="text-xs text-zinc-600 dark:text-zinc-300 whitespace-pre-wrap">
+                <p className="text-xs text-[var(--dp-color-ink-muted)] font-reading whitespace-pre-wrap leading-relaxed">
                   {commitment.details}
                 </p>
               )}
 
               {/* Metadata footer */}
-              <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-500 pt-1 border-t border-zinc-100 dark:border-zinc-800/80">
+              <div className="flex flex-wrap items-center gap-4 text-xs text-[var(--dp-color-ink-muted)] pt-2 border-t border-[var(--dp-color-line)]/60 font-marker">
                 <span className="flex items-center gap-1">
                   👤 {translations.assigneeLabel}:{" "}
-                  <strong className="text-zinc-700 dark:text-zinc-300">
+                  <strong className="text-[var(--dp-color-ink)]">
                     {commitment.assigneeName || translations.unassigned}
                   </strong>
                 </span>

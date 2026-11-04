@@ -22,20 +22,20 @@ export default async function WorkspacesPage({ params }: WorkspacesPageProps) {
   const authT = await getTranslations({ locale, namespace: "Auth" });
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 py-6 px-4">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+        <h1 className="text-2xl sm:text-3xl font-bold font-marker text-[var(--dp-color-ink)]">
           {t("title")}
         </h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+        <p className="text-base font-reading text-[var(--dp-color-ink-muted)] mt-1">
           {t("subtitle")}
         </p>
       </div>
 
       {/* User Verification Warning if unverified */}
       {!user.emailVerified && (
-        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl text-sm text-amber-800 dark:text-amber-200">
-          <p className="font-semibold">{authT("unverifiedBadge")}</p>
+        <div className="sketch-card p-4 border-[1.5px] border-[var(--dp-color-accent)] bg-[#fbeee9] text-sm text-[var(--dp-color-accent)] font-reading">
+          <p className="font-bold font-marker">{authT("unverifiedBadge")}</p>
           <p className="mt-1 text-xs opacity-90">{authT("legalNote")}</p>
         </div>
       )}
@@ -49,30 +49,30 @@ export default async function WorkspacesPage({ params }: WorkspacesPageProps) {
           <Link
             key={ws.id}
             href={`/${locale}/workspaces/${ws.id}`}
-            className="block p-5 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500/60 transition-colors shadow-xs group"
+            className="sketch-card block p-5 hover:rotate-[-0.2deg] transition-all group"
           >
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-3 font-reading">
               <span
-                className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${
+                className={`text-xs px-2.5 py-0.5 rounded-[5px_2px_7px_3px] font-semibold ${
                   ws.kind === "PERSONAL"
-                    ? "bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 border border-blue-200 dark:border-blue-900"
-                    : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900"
+                    ? "bg-[var(--dp-color-ground)] text-[var(--dp-color-annotation)] border border-[var(--dp-color-annotation)]"
+                    : "bg-[#eaf3ea] text-[var(--dp-color-ink)] border border-[#96b79d]"
                 }`}
               >
                 {ws.kind === "PERSONAL" ? t("personal") : t("business")}
               </span>
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">
+              <span className="text-xs text-[var(--dp-color-ink-muted)] font-semibold">
                 {t(`roles.${ws.role}`)}
               </span>
             </div>
 
-            <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+            <h2 className="text-lg font-bold font-marker text-[var(--dp-color-ink)] group-hover:text-[var(--dp-color-accent)] transition-colors">
               {ws.name}
             </h2>
 
-            <div className="mt-4 flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+            <div className="mt-4 flex items-center justify-between text-xs font-reading text-[var(--dp-color-ink-muted)] pt-3 border-t border-dashed border-[var(--dp-color-line)]">
               <span>{t("members")}: {ws.memberCount}</span>
-              <span>{new Date(ws.createdAt).toLocaleDateString(locale)}</span>
+              <span className="font-mono" dir="ltr">{new Date(ws.createdAt).toLocaleDateString(locale)}</span>
             </div>
           </Link>
         ))}

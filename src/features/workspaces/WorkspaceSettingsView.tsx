@@ -52,25 +52,25 @@ export function WorkspaceSettingsView({
   return (
     <div className="space-y-6">
       {/* 1. Rename Workspace */}
-      <div className="p-6 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 space-y-4">
+      <div className="sketch-card p-6 space-y-4">
         <div>
-          <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-            <Settings className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+          <h3 className="text-base font-bold font-marker text-[var(--dp-color-ink)] flex items-center gap-2">
+            <Settings className="w-4 h-4 text-[var(--dp-color-ink-muted)]" />
             <span>{t("renameTitle")}</span>
           </h3>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-xs text-[var(--dp-color-ink-muted)] font-reading mt-1">
             {t("renameDesc")}
           </p>
         </div>
 
         {renameState?.error && (
-          <div className="p-3 text-xs bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 rounded-lg border border-rose-200">
+          <div className="p-3 text-xs bg-[#fbeee9] text-[var(--dp-color-accent)] rounded-[6px_3px_7px_4px] border border-[var(--dp-color-accent)] font-reading">
             {renameState.error}
           </div>
         )}
 
         {renameState?.success && (
-          <div className="p-3 text-xs bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 rounded-lg border border-emerald-200">
+          <div className="p-3 text-xs bg-[#eaf3ea] text-[var(--dp-color-ink)] rounded-[6px_3px_7px_4px] border border-[#96b79d] font-reading">
             {renameState.message}
           </div>
         )}
@@ -84,12 +84,12 @@ export function WorkspaceSettingsView({
             required
             minLength={2}
             maxLength={100}
-            className="flex-1 px-3 py-2 text-sm border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="flex-1 px-3 py-2 text-sm border border-[var(--dp-color-line)] rounded-[6px_3px_7px_4px] bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] font-reading focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
           />
           <button
             type="submit"
             disabled={isRenaming}
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+            className="sketch-btn sketch-btn-primary text-xs px-4 py-2 disabled:opacity-50 whitespace-nowrap"
           >
             {isRenaming ? common("loading") : t("saveName")}
           </button>
@@ -98,31 +98,31 @@ export function WorkspaceSettingsView({
 
       {/* 2. Transfer Ownership (Owner only) */}
       {isOwner && (
-        <div className="p-6 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 space-y-4">
+        <div className="sketch-card p-6 space-y-4 border-[var(--dp-color-annotation)]">
           <div>
-            <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-              <ArrowRightLeft className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+            <h3 className="text-base font-bold font-marker text-[var(--dp-color-ink)] flex items-center gap-2">
+              <ArrowRightLeft className="w-4 h-4 text-[var(--dp-color-annotation)]" />
               <span>{t("transferTitle")}</span>
             </h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+            <p className="text-xs text-[var(--dp-color-ink-muted)] font-reading mt-1">
               {t("transferDesc")}
             </p>
           </div>
 
           {transferState?.error && (
-            <div className="p-3 text-xs bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 rounded-lg border border-rose-200">
+            <div className="p-3 text-xs bg-[#fbeee9] text-[var(--dp-color-accent)] rounded-[6px_3px_7px_4px] border border-[var(--dp-color-accent)] font-reading">
               {transferState.error}
             </div>
           )}
 
           {transferState?.success && (
-            <div className="p-3 text-xs bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 rounded-lg border border-emerald-200">
+            <div className="p-3 text-xs bg-[#eaf3ea] text-[var(--dp-color-ink)] rounded-[6px_3px_7px_4px] border border-[#96b79d] font-reading">
               {transferState.message}
             </div>
           )}
 
           {eligibleNewOwners.length === 0 ? (
-            <div className="text-xs text-zinc-500 dark:text-zinc-400 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
+            <div className="text-xs text-[var(--dp-color-ink-muted)] p-3 bg-[var(--dp-color-ground)] rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] font-reading">
               No other active members in this workspace to transfer ownership to. Add team members first.
             </div>
           ) : (
@@ -139,7 +139,7 @@ export function WorkspaceSettingsView({
               <select
                 name="newOwnerUserId"
                 required
-                className="flex-1 px-3 py-2 text-sm border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="sketch-select flex-1 px-3 py-2 text-sm font-marker"
               >
                 <option value="">{t("selectNewOwner")}</option>
                 {eligibleNewOwners.map((m) => (
@@ -151,7 +151,7 @@ export function WorkspaceSettingsView({
               <button
                 type="submit"
                 disabled={isTransferring}
-                className="px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+                className="sketch-btn text-xs px-4 py-2 bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border border-[var(--dp-color-ink)] font-marker font-bold disabled:opacity-50 whitespace-nowrap"
               >
                 {isTransferring ? common("loading") : t("transferButton")}
               </button>
@@ -162,13 +162,13 @@ export function WorkspaceSettingsView({
 
       {/* 3. Archive / Restore Workspace (Owner only, Business only) */}
       {isOwner && (
-        <div className="p-6 bg-white dark:bg-zinc-900 rounded-xl border border-rose-200 dark:border-rose-950/60 space-y-4">
+        <div className="sketch-card p-6 space-y-4 border-[var(--dp-color-accent)]">
           <div>
-            <h3 className="text-base font-bold text-rose-700 dark:text-rose-400 flex items-center gap-2">
+            <h3 className="text-base font-bold font-marker text-[var(--dp-color-accent)] flex items-center gap-2">
               <ShieldAlert className="w-4 h-4" />
               <span>{t("archiveTitle")}</span>
             </h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+            <p className="text-xs text-[var(--dp-color-ink-muted)] font-reading mt-1">
               {workspaceKind === "PERSONAL"
                 ? t("personalCannotArchive")
                 : t("archiveDesc")}
@@ -176,13 +176,13 @@ export function WorkspaceSettingsView({
           </div>
 
           {archiveState?.error && (
-            <div className="p-3 text-xs bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 rounded-lg border border-rose-200">
+            <div className="p-3 text-xs bg-[#fbeee9] text-[var(--dp-color-accent)] rounded-[6px_3px_7px_4px] border border-[var(--dp-color-accent)] font-reading">
               {archiveState.error}
             </div>
           )}
 
           {archiveState?.success && (
-            <div className="p-3 text-xs bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 rounded-lg border border-emerald-200">
+            <div className="p-3 text-xs bg-[#eaf3ea] text-[var(--dp-color-ink)] rounded-[6px_3px_7px_4px] border border-[#96b79d] font-reading">
               {archiveState.message}
             </div>
           )}
@@ -205,10 +205,10 @@ export function WorkspaceSettingsView({
               <button
                 type="submit"
                 disabled={isArchiving}
-                className={`px-4 py-2 text-xs font-medium rounded-lg transition-colors cursor-pointer ${
+                className={`sketch-btn text-xs px-4 py-2 font-marker font-bold ${
                   isArchived
-                    ? "bg-zinc-800 hover:bg-zinc-700 text-white"
-                    : "bg-rose-600 hover:bg-rose-700 text-white"
+                    ? "bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] border border-[var(--dp-color-ink)]"
+                    : "bg-[#fbeee9] text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)]"
                 }`}
               >
                 {isArchiving
