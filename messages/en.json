@@ -263,6 +263,7 @@
     "signInSubtitle": "Enter your email to sign in or create an account",
     "emailLabel": "Email address",
     "nameLabel": "Full Name (Optional)",
+    "statusLabel": "Status",
     "sendLink": "Continue",
     "verificationNotice": "A verification link has been sent to your email address.",
     "verifiedSuccess": "Your email address has been successfully verified!",
