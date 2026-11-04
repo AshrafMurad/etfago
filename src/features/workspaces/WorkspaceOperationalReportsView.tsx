@@ -20,6 +20,7 @@ export function WorkspaceOperationalReportsView({
 }: WorkspaceOperationalReportsViewProps) {
   const t = useTranslations("Workspaces.reports");
   const commT = useTranslations("Commitments");
+  const agActT = useTranslations("Agreements.actions");
 
   const { metrics, commitments, recentActivity } = report;
 
@@ -279,8 +280,8 @@ export function WorkspaceOperationalReportsView({
                   <span className="font-bold font-marker text-[var(--dp-color-ink)]">
                     {act.actorName || act.actorEmail || "—"}
                   </span>
-                  <span className="text-[var(--dp-color-ink-muted)] font-mono">
-                    [{act.action}]
+                  <span className="text-[var(--dp-color-ink-muted)] font-reading">
+                    ({agActT.has(act.action) ? agActT(act.action) : act.action})
                   </span>
                   <a
                     href={`/${locale}/agreements/${act.agreementId}`}

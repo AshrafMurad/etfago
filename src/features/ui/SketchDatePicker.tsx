@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useId, useMemo } from "react";
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, X, RotateCcw } from "lucide-react";
+import { SketchSelect } from "./SketchSelect";
 
 export interface SketchDatePickerProps {
   name?: string;
@@ -423,7 +424,7 @@ export function SketchDatePicker({
           ref={popoverRef}
           role="dialog"
           aria-label={isAr ? "منتقي التاريخ" : "Date Picker"}
-          className={`absolute z-50 mt-1.5 w-72 sm:w-80 bg-[var(--dp-color-scrap)] border-[1.5px] border-[var(--dp-color-ink)] rounded-[9px_4px_14px_6px] shadow-[3px_4px_0px_var(--dp-color-ink)] p-3 overflow-hidden select-none animate-in fade-in duration-100 ${
+          className={`absolute z-50 mt-1.5 w-72 sm:w-80 bg-[var(--dp-color-scrap)] border-[1.5px] border-[var(--dp-color-ink)] rounded-[9px_4px_14px_6px] shadow-[3px_4px_0px_var(--dp-color-ink)] p-3 overflow-visible select-none animate-in fade-in duration-100 ${
             isAr ? "right-0" : "left-0"
           } ${popoverClassName}`}
         >
@@ -439,31 +440,31 @@ export function SketchDatePicker({
             </button>
 
             <div className="flex items-center gap-1.5 font-marker">
-              <select
-                value={viewMonth}
-                onChange={(e) => setViewMonth(Number(e.target.value))}
-                aria-label={isAr ? "اختر الشهر" : "Select month"}
-                className="bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] px-2 py-0.5 rounded-[5px_2px_6px_3px] border border-[var(--dp-color-line)] text-xs font-marker cursor-pointer focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
-              >
-                {monthNames.map((m, idx) => (
-                  <option key={idx} value={idx}>
-                    {m}
-                  </option>
-                ))}
-              </select>
+              <div className="w-24">
+                <SketchSelect
+                  size="sm"
+                  value={String(viewMonth)}
+                  onChange={(val) => setViewMonth(Number(val))}
+                  ariaLabel={isAr ? "اختر الشهر" : "Select month"}
+                  options={monthNames.map((m, idx) => ({
+                    value: String(idx),
+                    label: m,
+                  }))}
+                />
+              </div>
 
-              <select
-                value={viewYear}
-                onChange={(e) => setViewYear(Number(e.target.value))}
-                aria-label={isAr ? "اختر السنة" : "Select year"}
-                className="bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] px-2 py-0.5 rounded-[5px_2px_6px_3px] border border-[var(--dp-color-line)] text-xs font-marker cursor-pointer focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
-              >
-                {yearOptions.map((y) => (
-                  <option key={y} value={y}>
-                    {y}
-                  </option>
-                ))}
-              </select>
+              <div className="w-20">
+                <SketchSelect
+                  size="sm"
+                  value={String(viewYear)}
+                  onChange={(val) => setViewYear(Number(val))}
+                  ariaLabel={isAr ? "اختر السنة" : "Select year"}
+                  options={yearOptions.map((y) => ({
+                    value: String(y),
+                    label: String(y),
+                  }))}
+                />
+              </div>
             </div>
 
             <button

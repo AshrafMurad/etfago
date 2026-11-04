@@ -3,22 +3,21 @@
 # See docs/07-private-server-file-storage.md & docs/11-deployment-and-operations.md
 
 FROM node:22-alpine AS base
-RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
 
 # 1. Dependencies stage
 FROM base AS deps
-COPY package.json pnpm-lock.yaml* .npmrc* ./
+COPY package.json package-lock.json* .npmrc* ./
 COPY prisma ./prisma/
-RUN pnpm install --frozen-lockfile=false
+RUN npm ci
 
 # 2. Builder stage
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NODE_ENV=production
-RUN pnpm db:generate
-RUN pnpm build
+RUN npm run db:generate
+RUN npm run build
 
 # 3. Production runner stage
 FROM node:22-alpine AS runner

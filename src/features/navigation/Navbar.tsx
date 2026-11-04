@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getCurrentUser } from "../../server/auth/session";
 import { getTranslations } from "next-intl/server";
 import { signOutAction } from "../../server/actions/auth";
@@ -18,13 +19,15 @@ export async function Navbar({ locale }: NavbarProps) {
   return (
     <header className="border-b-[1.5px] border-[var(--dp-color-line)] bg-[var(--dp-color-ground)]/95 backdrop-blur-xs px-4 sm:px-6 py-3.5 sticky top-0 z-50 flex items-center justify-between">
       <div className="flex items-center gap-6">
-        <Link href={`/${locale}`} className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-[8px_4px_10px_5px] bg-[var(--dp-color-accent)] text-white flex items-center justify-center font-bold text-sm border-[1.5px] border-[var(--dp-color-ink)] shadow-[2px_2px_0px_var(--dp-color-ink)] font-marker group-hover:rotate-1 transition-transform">
-            ات
-          </div>
-          <span className="text-xl font-bold font-marker text-[var(--dp-color-ink)]">
-            {tCommon("appName")}
-          </span>
+        <Link href={`/${locale}`} className="flex items-center gap-2 group py-0.5">
+          <Image
+            src="/logo.png"
+            alt={tCommon("appName")}
+            width={120}
+            height={44}
+            className="h-9 w-auto object-contain transition-transform group-hover:scale-102"
+            priority
+          />
         </Link>
 
         {user && (

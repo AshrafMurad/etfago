@@ -157,7 +157,7 @@ export default async function AgreementExportPage({
                       {p.emailNormalized}
                     </td>
                     <td className="py-2.5 px-2 text-[var(--dp-color-ink-muted)]">
-                      {p.agreementRole}
+                      {tAgreements(`roles.${p.agreementRole}`) || p.agreementRole}
                     </td>
                     <td className="py-2.5 px-2 font-bold font-marker">
                       {reviewer?.decision?.decision === "APPROVE" ? (
@@ -255,7 +255,9 @@ export default async function AgreementExportPage({
                       {new Date(c.dueAt).toLocaleDateString()}
                     </span>
                   )}
-                  <span className="font-bold font-marker">{c.status}</span>
+                  <span className="font-bold font-marker">
+                    {tCommitments(`status.${c.status}`) || c.status}
+                  </span>
                 </div>
               </div>
             ))}
@@ -271,7 +273,9 @@ export default async function AgreementExportPage({
             : "Approval recorded within the platform confirms acceptance of the terms by participating parties; it does not constitute a certified legal signature."}
         </p>
         <p className="text-[10px] text-[var(--dp-color-ink-muted)] font-mono">
-          Etfago Agreement Workspace • Exported on{" "}
+          {locale === "ar"
+            ? "منصة اتفقنا • تم التصدير بتاريخ "
+            : "Etfago Agreement Workspace • Exported on "}
           {new Date().toISOString().split("T")[0]}
         </p>
       </div>

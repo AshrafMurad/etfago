@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Menu,
@@ -125,12 +126,13 @@ export function MobileNav({
             onClick={() => setIsOpen(false)}
             className="flex items-center gap-2 group"
           >
-            <div className="w-8 h-8 rounded-[8px_4px_10px_5px] bg-[var(--dp-color-accent)] text-white flex items-center justify-center font-bold text-sm border-[1.5px] border-[var(--dp-color-ink)] shadow-[1.5px_1.5px_0px_var(--dp-color-ink)] font-marker group-hover:rotate-1 transition-transform">
-              ات
-            </div>
-            <span className="font-marker font-bold text-lg text-[var(--dp-color-ink)]">
-              {translations.menu}
-            </span>
+            <Image
+              src="/logo.png"
+              alt="Etfago"
+              width={100}
+              height={36}
+              className="h-8 w-auto object-contain"
+            />
           </Link>
 
           <button

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
 
@@ -57,6 +59,16 @@ export function SignInForm({ locale, defaultEmail = "", verified = false }: Sign
       <div className="sketch-tape sketch-tape-top" aria-hidden="true" />
 
       <div className="mb-6 text-center">
+        <Link href={`/${locale}`} className="inline-flex items-center justify-center mb-4 group">
+          <Image
+            src="/logo.png"
+            alt={common("appName")}
+            width={130}
+            height={48}
+            className="h-11 w-auto object-contain transition-transform group-hover:scale-102"
+            priority
+          />
+        </Link>
         <h1 className="text-2xl sm:text-3xl font-bold font-marker text-[var(--dp-color-ink)]">
           {t("signInTitle")}
         </h1>

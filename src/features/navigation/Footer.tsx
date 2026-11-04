@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
 interface FooterProps {
@@ -12,10 +13,16 @@ export async function Footer({ locale }: FooterProps) {
   return (
     <footer className="border-t-[1.5px] border-dashed border-[var(--dp-color-line)] bg-[var(--dp-color-ground)] py-8 px-6 mt-auto text-sm text-[var(--dp-color-ink-muted)] font-reading">
       <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex flex-col sm:flex-row items-center gap-2 text-center sm:text-start">
-          <span className="font-bold font-marker text-base text-[var(--dp-color-ink)]">
-            {tCommon("appName")}
-          </span>
+        <div className="flex flex-col sm:flex-row items-center gap-2.5 text-center sm:text-start">
+          <Link href={`/${locale}`} className="inline-flex items-center">
+            <Image
+              src="/logo.png"
+              alt={tCommon("appName")}
+              width={90}
+              height={33}
+              className="h-6 w-auto object-contain opacity-90 hover:opacity-100 transition-opacity"
+            />
+          </Link>
           <span className="hidden sm:inline text-[var(--dp-color-line)]">•</span>
           <span>{tCommon("tagline")}</span>
         </div>

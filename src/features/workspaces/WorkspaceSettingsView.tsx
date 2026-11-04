@@ -7,6 +7,7 @@ import {
   archiveWorkspaceAction,
   transferWorkspaceOwnershipAction,
 } from "../../server/actions/workspaces";
+import { SketchSelect } from "../ui/SketchSelect";
 import { Settings, ShieldAlert, ArrowRightLeft } from "lucide-react";
 
 interface Member {
@@ -137,18 +138,21 @@ export function WorkspaceSettingsView({
               className="flex flex-col sm:flex-row gap-3 max-w-lg"
             >
               <input type="hidden" name="workspaceId" value={workspaceId} />
-              <select
-                name="newOwnerUserId"
-                required
-                className="sketch-select flex-1 px-3 py-2 text-sm font-marker"
-              >
-                <option value="">{t("selectNewOwner")}</option>
-                {eligibleNewOwners.map((m) => (
-                  <option key={m.user.id} value={m.user.id}>
-                    {m.user.name || m.user.emailNormalized} ({tWorkspaces(`roles.${m.role}`)})
-                  </option>
-                ))}
-              </select>
+              <div className="flex-1 min-w-[220px]">
+                <SketchSelect
+                  name="newOwnerUserId"
+                  required
+                  placeholder={t("selectNewOwner")}
+                  options={[
+                    { value: "", label: t("selectNewOwner"), disabled: true },
+                    ...eligibleNewOwners.map((m) => ({
+                      value: m.user.id,
+                      label: `${m.user.name || m.user.emailNormalized} (${tWorkspaces(`roles.${m.role}`)})`,
+                      description: m.user.emailNormalized,
+                    })),
+                  ]}
+                />
+              </div>
               <button
                 type="submit"
                 disabled={isTransferring}

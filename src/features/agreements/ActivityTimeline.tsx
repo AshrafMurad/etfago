@@ -48,17 +48,39 @@ export function ActivityTimeline({
           if (item.summaryJson && typeof item.summaryJson === "object") {
             const summary = item.summaryJson as Record<string, unknown>;
             if (summary.termId && summary.operation) {
-              summaryDisplay = `${summary.operation} (#${summary.termId})${
+              const opLabel =
+                locale === "ar"
+                  ? summary.operation === "UPDATE"
+                    ? "تعديل بند"
+                    : summary.operation === "ADD"
+                    ? "إضافة بند"
+                    : summary.operation === "REMOVE"
+                    ? "حذف بند"
+                    : String(summary.operation)
+                  : summary.operation === "UPDATE"
+                  ? "Update Term"
+                  : summary.operation === "ADD"
+                  ? "Add Term"
+                  : summary.operation === "REMOVE"
+                  ? "Remove Term"
+                  : String(summary.operation);
+              summaryDisplay = `${opLabel} (#${summary.termId})${
                 summary.reason ? ` — ${summary.reason}` : ""
               }`;
             } else if (summary.snippet) {
               summaryDisplay = `"${summary.snippet}"`;
             } else if (summary.versionNumber) {
-              summaryDisplay = `Version ${summary.versionNumber}`;
+              summaryDisplay =
+                locale === "ar"
+                  ? `النسخة ${summary.versionNumber}`
+                  : `Version ${summary.versionNumber}`;
             } else if (summary.title) {
               summaryDisplay = `${summary.title}`;
             } else if (summary.revision) {
-              summaryDisplay = `Revision ${summary.revision}`;
+              summaryDisplay =
+                locale === "ar"
+                  ? `المراجعة ${summary.revision}`
+                  : `Revision ${summary.revision}`;
             } else if (summary.inviteeEmail) {
               summaryDisplay = `${summary.inviteeEmail}`;
             }

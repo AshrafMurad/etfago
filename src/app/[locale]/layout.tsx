@@ -10,6 +10,10 @@ import "../globals.css";
 export const metadata: Metadata = {
   title: "اتفقنا | Etfago",
   description: "مساحة عمل تشاركية للاتفاقات للأفراد والمؤسسات",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/logo.png",
+  },
 };
 
 export function generateStaticParams() {

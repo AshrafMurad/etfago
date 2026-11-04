@@ -185,7 +185,7 @@ export function CreateAgreementForm({
       return;
     }
     if (!workspaceId) {
-      setError("Please select a workspace");
+      setError(locale === "ar" ? "يرجى اختيار مساحة العمل" : "Please select a workspace");
       return;
     }
 
@@ -219,11 +219,20 @@ export function CreateAgreementForm({
       if (res.success && res.agreementId) {
         router.push(`/${locale}/agreements/${res.agreementId}`);
       } else {
-        setError(res.error || "Failed to create agreement");
+        setError(
+          res.error ||
+            (locale === "ar" ? "فشل إنشاء مسودة الاتفاق" : "Failed to create agreement")
+        );
         setIsSubmitting(false);
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An unexpected error occurred");
+      setError(
+        err instanceof Error
+          ? err.message
+          : locale === "ar"
+          ? "حدث خطأ غير متوقع"
+          : "An unexpected error occurred"
+      );
       setIsSubmitting(false);
     }
   };
