@@ -5,6 +5,7 @@ import { StructuredTerm } from "../../lib/schemas/agreements";
 import { createChangeRequestAction } from "../../server/actions/proposals";
 import { ChangeOperation } from "../../lib/schemas/proposals";
 import { SketchSelect } from "../ui/SketchSelect";
+import { SketchDatePicker } from "../ui/SketchDatePicker";
 
 interface ProposeChangeModalProps {
   agreementId: string;
@@ -303,11 +304,11 @@ export function ProposeChangeModal({
                     <label className="font-bold font-marker text-[var(--dp-color-ink)]">
                       {translations.dueDateLabel}
                     </label>
-                    <input
-                      type="date"
+                    <SketchDatePicker
                       value={dueDate}
-                      onChange={(e) => setDueDate(e.target.value)}
-                      className="w-full px-3 py-1.5 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] font-mono focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
+                      onChange={(val) => setDueDate(val)}
+                      placeholder={translations.dueDateLabel}
+                      size="sm"
                     />
                   </div>
                 </div>

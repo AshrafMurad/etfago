@@ -4,6 +4,7 @@ import React, { useState, useTransition } from "react";
 import { createCommitmentAction } from "../../server/actions/commitments";
 import { StructuredTerm } from "../../lib/schemas/agreements";
 import { SketchSelect } from "../ui/SketchSelect";
+import { SketchDatePicker } from "../ui/SketchDatePicker";
 
 interface CreateCommitmentModalProps {
   agreementId: string;
@@ -178,11 +179,11 @@ export function CreateCommitmentModal({
                 <label className="font-bold font-marker text-[var(--dp-color-ink)]">
                   {translations.dueDateLabel}
                 </label>
-                <input
-                  type="date"
+                <SketchDatePicker
                   value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-[6px_3px_7px_4px] border border-[var(--dp-color-line)] bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] font-mono focus:outline-dashed focus:outline-[var(--dp-color-annotation)]"
+                  onChange={(val) => setDueDate(val)}
+                  placeholder={translations.dueDateLabel}
+                  size="md"
                 />
               </div>
 

@@ -123,7 +123,7 @@ export function SubmitForReviewModal({
                     ملخص النسخة المجمدة:
                   </div>
                   <div className="flex items-center gap-4 text-[var(--dp-color-ink-muted)]">
-                    <span>• {translations.termsCount.replace("{count}", String(termsCount))}</span>
+                    <span>• {translations.termsCount?.includes("{count}") ? translations.termsCount.replace("{count}", String(termsCount)) : `${termsCount} ${translations.termsCount}`}</span>
                     <span>• إصدار المسودة: {draftRevision}</span>
                   </div>
                 </div>

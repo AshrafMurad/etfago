@@ -113,7 +113,7 @@ export default async function AgreementDetailPage({
     saveDraft: tAgreements("saveDraft"),
     saving: tAgreements("saving"),
     saved: tAgreements("saved"),
-    revision: tAgreements("revision"),
+    revision: tAgreements.raw("revision"),
     unsavedChanges: tAgreements("unsavedChanges"),
     conflictError: tAgreements("conflictError"),
     reload: tAgreements("reload"),
@@ -122,6 +122,7 @@ export default async function AgreementDetailPage({
     removeTerm: tAgreements("removeTerm"),
     noTermsYet: tAgreements("noTermsYet"),
     addFirstTerm: tAgreements("addFirstTerm"),
+    optional: tCommon("optional"),
   };
 
   const metadataEditorTranslations = {
@@ -173,7 +174,7 @@ export default async function AgreementDetailPage({
   const reviewBannerTranslations = {
     pendingReviewVersion: tAgreements("pendingReviewVersion"),
     awaitingApproval: tAgreements("awaitingApproval"),
-    waitingOnReviewers: tAgreements("waitingOnReviewers"),
+    waitingOnReviewers: tAgreements.raw("waitingOnReviewers"),
     recordApproval: tAgreements("recordApproval"),
     requestChanges: tAgreements("requestChanges"),
     withdrawReview: tAgreements("withdrawReview"),
@@ -217,7 +218,7 @@ export default async function AgreementDetailPage({
     approvalNotice: tAgreements("approvalNotice"),
     cancel: tCommon("cancel"),
     loading: tCommon("loading"),
-    termsCount: tAgreements("termsCount"),
+    termsCount: tAgreements.raw("termsCount"),
   };
 
   const versionHistoryTranslations = {
@@ -683,7 +684,7 @@ export default async function AgreementDetailPage({
           <div className="space-y-4">
             {pendingReview && (
               <div className="sketch-strip p-4 text-xs font-reading text-[var(--dp-color-annotation)] flex items-center gap-2">
-                🔒 {tAgreements("lockedDraftNotice").replace("{versionNumber}", String(pendingReview.versionNumber))}
+                🔒 {tAgreements("lockedDraftNotice", { versionNumber: pendingReview.versionNumber })}
               </div>
             )}
 

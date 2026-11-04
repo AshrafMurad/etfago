@@ -7,6 +7,7 @@ import { StructuredTerm } from "../../lib/schemas/agreements";
 import { LocalizedStarterTemplate } from "../../lib/schemas/templates";
 import { StarterTemplatesGallery } from "../templates/StarterTemplatesGallery";
 import { SketchSelect } from "../ui/SketchSelect";
+import { SketchDatePicker } from "../ui/SketchDatePicker";
 import { Sparkles, FileText, RotateCcw, CheckCircle2 } from "lucide-react";
 
 interface WorkspaceOption {
@@ -291,7 +292,7 @@ export function CreateAgreementForm({
               preview: templateLabels?.preview || "معاينة",
               useTemplate: templateLabels?.useTemplate || "استخدام النموذج",
               suggestedRoles: templateLabels?.suggestedRoles || "الأدوار المقترحة",
-              termsCount: templateLabels?.termsCount || "بنود",
+              termsCount: templateLabels?.termsCount || (locale === "ar" ? "{count} بنود مقترحة" : "{count} suggested terms"),
               disclaimer:
                 templateLabels?.disclaimer ||
                 "النماذج المقترحة هي مسودات استرشادية لتنظيم العمل والاتفاقات ولا تعد استشارة قانونية.",
@@ -555,11 +556,12 @@ export function CreateAgreementForm({
                       <label className="block text-xs font-reading text-[var(--dp-color-ink-muted)] mb-1">
                         {t.dueDate} <span className="text-[var(--dp-color-ink-muted)] font-normal">({t.optional})</span>
                       </label>
-                      <input
-                        type="date"
+                      <SketchDatePicker
                         value={term.dueDate || ""}
-                        onChange={(e) => handleUpdateTerm(index, "dueDate", e.target.value)}
-                        className="w-full px-3 py-1.5 text-xs"
+                        onChange={(val) => handleUpdateTerm(index, "dueDate", val || null)}
+                        placeholder={t.dueDate}
+                        locale={locale}
+                        size="sm"
                       />
                     </div>
                   </div>

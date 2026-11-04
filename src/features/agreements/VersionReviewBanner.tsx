@@ -152,10 +152,12 @@ export function VersionReviewBanner({
           </div>
 
           <p className="text-xs font-reading text-[var(--dp-color-ink-muted)]">
-            {translations.waitingOnReviewers.replace(
-              "{count}",
-              String(totalRequired - approvedCount)
-            )}
+            {translations.waitingOnReviewers?.includes("{count}")
+              ? translations.waitingOnReviewers.replace(
+                  "{count}",
+                  String(totalRequired - approvedCount)
+                )
+              : translations.waitingOnReviewers}
           </p>
         </div>
 

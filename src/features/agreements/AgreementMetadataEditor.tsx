@@ -113,7 +113,7 @@ export function AgreementMetadataEditor({
 
         <div>
           <label className="block text-xs font-bold font-marker text-[var(--dp-color-ink)] mb-1">
-            {t.categoryLabel} ({t.optional})
+            {t.categoryLabel} <span className="text-[var(--dp-color-ink-muted)] font-normal">({t.optional})</span>
           </label>
           <input
             type="text"
@@ -126,7 +126,7 @@ export function AgreementMetadataEditor({
 
         <div>
           <label className="block text-xs font-bold font-marker text-[var(--dp-color-ink)] mb-1">
-            {t.descriptionLabel} ({t.optional})
+            {t.descriptionLabel} <span className="text-[var(--dp-color-ink-muted)] font-normal">({t.optional})</span>
           </label>
           <textarea
             value={description}

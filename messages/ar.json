@@ -26,7 +26,10 @@
     "privacy": "سياسة الخصوصية",
     "terms": "شروط الاستخدام",
     "signOut": "تسجيل الخروج",
-    "signIn": "تسجيل الدخول"
+    "signIn": "تسجيل الدخول",
+    "menu": "القائمة",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة"
   },
   "Agreements": {
     "title": "الاتفاقات",
@@ -36,9 +39,9 @@
     "createSubtitle": "حدد مساحة العمل وأضف عنوان الاتفاق وبنوده الأولية",
     "titleLabel": "عنوان الاتفاق",
     "titlePlaceholder": "مثال: اتفاقية توريد خدمات تقنية",
-    "descriptionLabel": "وصف موجز (اختياري)",
+    "descriptionLabel": "وصف موجز",
     "descriptionPlaceholder": "اكتب ملخصًا لطبيعة الاتفاق...",
-    "categoryLabel": "التصنيف (اختياري)",
+    "categoryLabel": "التصنيف",
     "categoryPlaceholder": "مثال: خدمات، توريد، شراكة...",
     "workspaceSelect": "مساحة العمل",
     "noAgreements": "لا توجد اتفاقات بعد",
@@ -204,12 +207,12 @@
     "termTitlePlaceholder": "مثال: نطاق الخدمات ومواعيد التسليم",
     "termBody": "تفاصيل البند",
     "termBodyPlaceholder": "اكتب الشروط أو الالتزامات التفصيلية لهذا البند...",
-    "amount": "المبلغ (اختياري)",
+    "amount": "المبلغ",
     "amountPlaceholder": "مثال: 5000",
-    "currency": "العملة (اختياري)",
+    "currency": "العملة",
     "currencyPlaceholder": "مثال: SAR",
-    "dueDate": "تاريخ الاستحقاق (اختياري)",
-    "assignedTo": "المسؤول (اختياري)"
+    "dueDate": "تاريخ الاستحقاق",
+    "assignedTo": "المسؤول"
   },
   "Commitments": {
     "title": "الالتزامات التنفيذية",

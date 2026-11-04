@@ -330,6 +330,22 @@ select:focus,
   box-shadow: 1.5px 1.5px 0px var(--dp-color-annotation);
 }
 
+/* Dedicated Date Input & Calendar indicator styling for Sketch identity */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.65;
+  filter: sepia(30%) hue-rotate(185deg);
+  transition: opacity var(--dp-motion-control) ease, transform var(--dp-motion-control) ease;
+  border-radius: 4px;
+  padding: 2px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  background-color: var(--dp-color-ground);
+}
+
 /* Paper-themed custom scrollbar */
 ::-webkit-scrollbar {
   width: 7px;
@@ -347,6 +363,46 @@ select:focus,
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--dp-color-ink-muted);
+}
+
+/* Mobile navigation drawer animations */
+@keyframes drawerSlideInRtl {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes drawerSlideInLtr {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeInOverlay 180ms ease-out forwards;
+}
+
+[dir="rtl"] .animate-drawer-in {
+  animation: drawerSlideInRtl 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+[dir="ltr"] .animate-drawer-in {
+  animation: drawerSlideInLtr 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Reduced motion preferences */

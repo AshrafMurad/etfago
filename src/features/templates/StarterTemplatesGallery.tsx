@@ -107,7 +107,9 @@ export function StarterTemplatesGallery({
                   </div>
                 </div>
                 <span className="text-xs text-[var(--dp-color-ink-muted)] font-reading font-semibold">
-                  {template.termsCount} {locale === "ar" ? "بنود" : "terms"}
+                  {labels.termsCount?.includes("{count}")
+                    ? labels.termsCount.replace("{count}", String(template.termsCount))
+                    : `${template.termsCount} ${labels.termsCount || (locale === "ar" ? "بنود" : "terms")}`}
                 </span>
               </div>
 

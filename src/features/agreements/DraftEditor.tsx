@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateDraftAction } from "../../server/actions/agreements";
 import { DraftContent, StructuredTerm } from "../../lib/schemas/agreements";
+import { SketchDatePicker } from "../ui/SketchDatePicker";
 
 interface DraftEditorProps {
   agreementId: string;
@@ -31,6 +32,7 @@ interface DraftEditorProps {
     removeTerm: string;
     noTermsYet: string;
     addFirstTerm: string;
+    optional?: string;
   };
 }
 
@@ -175,7 +177,9 @@ export function DraftEditor({
       <div className="sketch-card p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <span className="text-xs font-bold font-mono px-2.5 py-1 rounded-[5px_2px_7px_3px] bg-[var(--dp-color-ground)] border border-[var(--dp-color-line)] text-[var(--dp-color-ink)]">
-            {t.revision.replace("{number}", revision.toString())}
+            {t.revision?.includes("{number}")
+              ? t.revision.replace("{number}", revision.toString())
+              : `${t.revision} ${revision}`}
           </span>
           {isDirty && (
             <span className="text-xs font-semibold font-reading text-[var(--dp-color-accent)]">
@@ -331,7 +335,9 @@ export function DraftEditor({
                 {canEdit ? (
                   <>
                     <div>
-                      <label className="block text-xs font-reading text-[var(--dp-color-ink-muted)] mb-1">{t.amount}</label>
+                      <label className="block text-xs font-reading text-[var(--dp-color-ink-muted)] mb-1">
+                        {t.amount} {t.optional && <span className="font-normal">({t.optional})</span>}
+                      </label>
                       <input
                         type="text"
                         value={term.amount || ""}
@@ -342,7 +348,9 @@ export function DraftEditor({
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-reading text-[var(--dp-color-ink-muted)] mb-1">{t.currency}</label>
+                      <label className="block text-xs font-reading text-[var(--dp-color-ink-muted)] mb-1">
+                        {t.currency} {t.optional && <span className="font-normal">({t.optional})</span>}
+                      </label>
                       <input
                         type="text"
                         value={term.currency || ""}
@@ -353,12 +361,14 @@ export function DraftEditor({
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-reading text-[var(--dp-color-ink-muted)] mb-1">{t.dueDate}</label>
-                      <input
-                        type="date"
+                      <label className="block text-xs font-reading text-[var(--dp-color-ink-muted)] mb-1">
+                        {t.dueDate} {t.optional && <span className="font-normal">({t.optional})</span>}
+                      </label>
+                      <SketchDatePicker
                         value={term.dueDate || ""}
-                        onChange={(e) => handleUpdateTerm(index, "dueDate", e.target.value)}
-                        className="w-full px-2.5 py-1.5 text-xs"
+                        onChange={(val) => handleUpdateTerm(index, "dueDate", val || null)}
+                        placeholder={t.dueDate}
+                        size="sm"
                       />
                     </div>
                   </>

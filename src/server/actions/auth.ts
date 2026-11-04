@@ -2,6 +2,7 @@
 
 import { RegisterInputSchema, SignInInputSchema } from "../../lib/schemas/auth";
 import { registerOrGetUser, requestVerificationEmail } from "../auth/service";
+import { signOut } from "../auth/auth";
 
 export type ActionState = {
   success?: boolean;
@@ -91,4 +92,14 @@ export async function requestVerificationAction(
       error: "Could not send verification email. Please try again.",
     };
   }
+}
+
+export async function signOutAction(formDataOrLocale?: FormData | string): Promise<void> {
+  let locale = "ar";
+  if (typeof formDataOrLocale === "string") {
+    locale = formDataOrLocale;
+  } else if (formDataOrLocale instanceof FormData) {
+    locale = (formDataOrLocale.get("locale") as string) || "ar";
+  }
+  await signOut({ redirectTo: `/${locale}/auth/signin` });
 }

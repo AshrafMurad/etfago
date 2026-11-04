@@ -67,7 +67,9 @@ export function TemplatePreviewModal({
                   {template.category}
                 </span>
                 <span className="text-xs text-[var(--dp-color-ink-muted)] font-reading">
-                  {template.termsCount} {locale === "ar" ? "بنود" : "terms"}
+                  {labels.termsCount?.includes("{count}")
+                    ? labels.termsCount.replace("{count}", String(template.termsCount))
+                    : `${template.termsCount} ${labels.termsCount || (locale === "ar" ? "بنود" : "terms")}`}
                 </span>
               </div>
               <h2

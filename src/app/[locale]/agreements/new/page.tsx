@@ -72,7 +72,7 @@ export default async function NewAgreementPage({
     preview: tTemplates("preview"),
     useTemplate: tTemplates("useTemplate"),
     suggestedRoles: tTemplates("suggestedRoles"),
-    termsCount: tTemplates("termsCount"),
+    termsCount: tTemplates.raw("termsCount"),
     disclaimer: tTemplates("disclaimer"),
     close: tCommon("close"),
     previewTitle: tTemplates("previewTitle"),

@@ -26,7 +26,10 @@
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
     "signOut": "Sign Out",
-    "signIn": "Sign In"
+    "signIn": "Sign In",
+    "menu": "Menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "Agreements": {
     "title": "Agreements",
@@ -36,9 +39,9 @@
     "createSubtitle": "Select a workspace, set agreement title and initial terms",
     "titleLabel": "Agreement Title",
     "titlePlaceholder": "e.g., Technical Services Agreement",
-    "descriptionLabel": "Brief Description (Optional)",
+    "descriptionLabel": "Brief Description",
     "descriptionPlaceholder": "Write a brief summary of the agreement...",
-    "categoryLabel": "Category (Optional)",
+    "categoryLabel": "Category",
     "categoryPlaceholder": "e.g., Services, Supply, Partnership...",
     "workspaceSelect": "Workspace",
     "noAgreements": "No agreements yet",
@@ -204,12 +207,12 @@
     "termTitlePlaceholder": "e.g., Scope of Services and Delivery Dates",
     "termBody": "Term Details",
     "termBodyPlaceholder": "Write detailed conditions or obligations for this term...",
-    "amount": "Amount (optional)",
+    "amount": "Amount",
     "amountPlaceholder": "e.g., 5000",
-    "currency": "Currency (optional)",
+    "currency": "Currency",
     "currencyPlaceholder": "e.g., SAR",
-    "dueDate": "Due Date (optional)",
-    "assignedTo": "Assignee (optional)"
+    "dueDate": "Due Date",
+    "assignedTo": "Assignee"
   },
   "Commitments": {
     "title": "Action Commitments",
