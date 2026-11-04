@@ -23,38 +23,39 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
   return (
     <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+        <h1 className="text-2xl font-bold font-marker text-[var(--dp-color-ink)]">
           {t("title")}
         </h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+        <p className="text-sm font-reading text-[var(--dp-color-ink-muted)] mt-1">
           {t("subtitle")}
         </p>
       </div>
 
       {/* Account Info Card */}
-      <div className="p-6 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-xs space-y-4">
-        <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-800 pb-3">
+      <div className="sketch-card p-6 space-y-4 relative">
+        <div className="sketch-tape-top" />
+        <h2 className="text-base font-bold font-marker text-[var(--dp-color-ink)] border-b border-[var(--dp-color-line)] pb-3">
           {t("accountTitle")}
         </h2>
         <div className="grid sm:grid-cols-2 gap-4 text-sm">
           <div>
-            <span className="text-xs text-zinc-500 block mb-1">
+            <span className="text-xs font-marker text-[var(--dp-color-ink-muted)] block mb-1">
               {t("emailLabel")}
             </span>
-            <span className="font-mono text-zinc-900 dark:text-zinc-100 text-sm" dir="ltr">
+            <span className="font-mono text-[var(--dp-color-ink)] text-sm" dir="ltr">
               {user.email}
             </span>
           </div>
           <div>
-            <span className="text-xs text-zinc-500 block mb-1">
+            <span className="text-xs font-marker text-[var(--dp-color-ink-muted)] block mb-1">
               {authT("statusLabel") || "Status"}
             </span>
             {user.emailVerified ? (
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold font-marker px-2.5 py-1 rounded-[4px_2px_5px_3px] bg-[#eaf3ea] text-[var(--dp-color-ink)] border border-[#96b79d]">
                 ✓ {t("verifiedNotice")}
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold font-marker px-2.5 py-1 rounded-[4px_2px_5px_3px] bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] border border-[var(--dp-color-ink)]">
                 ! {t("unverifiedNotice")}
               </span>
             )}
@@ -63,12 +64,12 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
       </div>
 
       {/* Notification Preferences Card */}
-      <div className="p-6 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-xs space-y-5">
+      <div className="sketch-card p-6 space-y-5 relative">
         <div>
-          <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+          <h2 className="text-base font-bold font-marker text-[var(--dp-color-ink)]">
             {t("preferencesTitle")}
           </h2>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">
+          <p className="text-xs font-reading text-[var(--dp-color-ink-muted)] mt-1">
             {t("preferencesSubtitle")}
           </p>
         </div>

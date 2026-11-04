@@ -43,7 +43,7 @@ export function RedeemInvitationButton({
   return (
     <div className="space-y-3">
       {error && (
-        <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 text-xs text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900">
+        <div className="p-3 rounded-[6px_3px_7px_4px] bg-[#fbeee9] text-xs text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)] font-reading">
           {error}
         </div>
       )}
@@ -52,7 +52,7 @@ export function RedeemInvitationButton({
         type="button"
         disabled={isSubmitting}
         onClick={handleRedeem}
-        className="w-full py-3 px-6 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 disabled:opacity-50 transition-colors shadow-md cursor-pointer flex items-center justify-center gap-2"
+        className="sketch-btn sketch-btn-primary w-full py-3 px-6 text-sm font-marker font-bold disabled:opacity-50 flex items-center justify-center gap-2"
       >
         {isSubmitting ? t.loading : t.acceptAndJoin}
       </button>

@@ -48,10 +48,10 @@ export function NotificationPreferencesForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       {feedback && (
         <div
-          className={`p-4 rounded-xl text-sm font-medium border ${
+          className={`p-4 rounded-[6px_3px_7px_4px] text-xs font-reading border ${
             feedback.type === "success"
-              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800"
-              : "bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-200 border-red-200 dark:border-red-800"
+              ? "bg-[#eaf3ea] text-[var(--dp-color-ink)] border-[#96b79d]"
+              : "bg-[#fbeee9] text-[var(--dp-color-accent)] border border-[var(--dp-color-accent)]"
           }`}
         >
           {feedback.message}
@@ -60,15 +60,15 @@ export function NotificationPreferencesForm({
 
       <div className="space-y-4">
         {/* Review Reminders Option */}
-        <div className="flex items-start justify-between gap-4 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800">
+        <div className="flex items-start justify-between gap-4 p-4 rounded-[8px_4px_12px_5px] bg-[var(--dp-color-scrap)] border border-[var(--dp-color-line)]">
           <div className="space-y-1">
             <label
               htmlFor="reviewReminders"
-              className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 cursor-pointer"
+              className="text-sm font-bold font-marker text-[var(--dp-color-ink)] cursor-pointer"
             >
               {t("reviewRemindersTitle")}
             </label>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400">
+            <p className="text-xs text-[var(--dp-color-ink-muted)] font-reading">
               {t("reviewRemindersDesc")}
             </p>
           </div>
@@ -77,20 +77,20 @@ export function NotificationPreferencesForm({
             type="checkbox"
             checked={reviewReminders}
             onChange={(e) => setReviewReminders(e.target.checked)}
-            className="w-5 h-5 rounded-md text-emerald-600 focus:ring-emerald-500 border-zinc-300 dark:border-zinc-700 mt-1 cursor-pointer accent-emerald-600"
+            className="w-5 h-5 rounded-[3px] accent-[var(--dp-color-accent)] focus:outline-dashed focus:outline-[var(--dp-color-annotation)] mt-1 cursor-pointer"
           />
         </div>
 
         {/* Commitment Reminders Option */}
-        <div className="flex items-start justify-between gap-4 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800">
+        <div className="flex items-start justify-between gap-4 p-4 rounded-[8px_4px_12px_5px] bg-[var(--dp-color-scrap)] border border-[var(--dp-color-line)]">
           <div className="space-y-1">
             <label
               htmlFor="commitmentReminders"
-              className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 cursor-pointer"
+              className="text-sm font-bold font-marker text-[var(--dp-color-ink)] cursor-pointer"
             >
               {t("commitmentRemindersTitle")}
             </label>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400">
+            <p className="text-xs text-[var(--dp-color-ink-muted)] font-reading">
               {t("commitmentRemindersDesc")}
             </p>
           </div>
@@ -99,7 +99,7 @@ export function NotificationPreferencesForm({
             type="checkbox"
             checked={commitmentReminders}
             onChange={(e) => setCommitmentReminders(e.target.checked)}
-            className="w-5 h-5 rounded-md text-emerald-600 focus:ring-emerald-500 border-zinc-300 dark:border-zinc-700 mt-1 cursor-pointer accent-emerald-600"
+            className="w-5 h-5 rounded-[3px] accent-[var(--dp-color-accent)] focus:outline-dashed focus:outline-[var(--dp-color-annotation)] mt-1 cursor-pointer"
           />
         </div>
       </div>
@@ -108,7 +108,7 @@ export function NotificationPreferencesForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm transition-colors disabled:opacity-50 cursor-pointer shadow-xs"
+          className="sketch-btn sketch-btn-primary text-xs px-5 py-2.5 disabled:opacity-50"
         >
           {isSubmitting ? t("saving") : t("save")}
         </button>

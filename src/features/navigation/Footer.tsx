@@ -10,35 +10,35 @@ export async function Footer({ locale }: FooterProps) {
   const tNav = await getTranslations({ locale, namespace: "Navigation" });
 
   return (
-    <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 py-8 px-6 mt-auto text-xs text-zinc-500">
-      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+    <footer className="border-t-[1.5px] border-dashed border-[var(--dp-color-line)] bg-[var(--dp-color-ground)] py-8 px-6 mt-auto text-sm text-[var(--dp-color-ink-muted)] font-reading">
+      <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex flex-col sm:flex-row items-center gap-2 text-center sm:text-start">
-          <span className="font-bold text-zinc-800 dark:text-zinc-200">
+          <span className="font-bold font-marker text-base text-[var(--dp-color-ink)]">
             {tCommon("appName")}
           </span>
-          <span className="hidden sm:inline">•</span>
+          <span className="hidden sm:inline text-[var(--dp-color-line)]">•</span>
           <span>{tCommon("tagline")}</span>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 text-xs font-semibold">
           <Link
             href={`/${locale}/privacy`}
-            className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+            className="hover:text-[var(--dp-color-accent)] hover:underline transition-colors"
           >
             {tNav("privacy")}
           </Link>
-          <span>•</span>
+          <span className="text-[var(--dp-color-line)]">•</span>
           <Link
             href={`/${locale}/terms`}
-            className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+            className="hover:text-[var(--dp-color-accent)] hover:underline transition-colors"
           >
             {tNav("terms")}
           </Link>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-900 text-center text-[11px] text-zinc-400">
-        <p>{tCommon("disclaimer")}</p>
+      <div className="max-w-5xl mx-auto mt-4 pt-4 border-t border-[var(--dp-color-line)]/50 text-center text-xs text-[var(--dp-color-ink-muted)]">
+        <p className="sketch-highlight inline-block">{tCommon("disclaimer")}</p>
       </div>
     </footer>
   );

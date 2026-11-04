@@ -53,31 +53,33 @@ export function SignInForm({ locale, defaultEmail = "", verified = false }: Sign
   }
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800">
+    <div className="sketch-card w-full max-w-md mx-auto p-6 sm:p-8 relative">
+      <div className="sketch-tape sketch-tape-top" aria-hidden="true" />
+
       <div className="mb-6 text-center">
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+        <h1 className="text-2xl sm:text-3xl font-bold font-marker text-[var(--dp-color-ink)]">
           {t("signInTitle")}
         </h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+        <p className="text-sm font-reading text-[var(--dp-color-ink-muted)] mt-1">
           {t("signInSubtitle")}
         </p>
       </div>
 
       {message && (
-        <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-300 rounded-lg text-sm">
+        <div className="mb-4 p-3 bg-[#eaf3ea] border border-[#96b79d] text-[var(--dp-color-ink)] rounded-[6px_3px_8px_4px] text-xs font-reading">
           {message}
         </div>
       )}
 
       {error && (
-        <div className="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-800 dark:bg-rose-950/40 dark:border-rose-800 dark:text-rose-300 rounded-lg text-sm">
+        <div className="mb-4 p-3 bg-[#fbeee9] border border-[var(--dp-color-accent)] text-[var(--dp-color-accent)] rounded-[6px_3px_8px_4px] text-xs font-reading">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+          <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1">
             {t("emailLabel")}
           </label>
           <input
@@ -86,13 +88,13 @@ export function SignInForm({ locale, defaultEmail = "", verified = false }: Sign
             onChange={(e) => setEmail(e.target.value)}
             required
             placeholder="user@example.com"
-            className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full px-3 py-2 text-sm font-reading"
             dir="ltr"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+          <label className="block text-xs font-bold font-reading text-[var(--dp-color-ink)] mb-1">
             {t("nameLabel")}
           </label>
           <input
@@ -100,20 +102,20 @@ export function SignInForm({ locale, defaultEmail = "", verified = false }: Sign
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="الاسم الكريم"
-            className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full px-3 py-2 text-sm font-reading"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading || !email}
-          className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-medium rounded-lg transition-colors cursor-pointer"
+          className="sketch-btn sketch-btn-primary w-full py-3 px-4 font-marker text-base disabled:opacity-50"
         >
           {loading ? common("loading") : t("sendLink")}
         </button>
       </form>
 
-      <div className="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-800 text-xs text-zinc-500 dark:text-zinc-400 text-center leading-relaxed">
+      <div className="mt-6 pt-4 border-t border-dashed border-[var(--dp-color-line)] text-xs text-[var(--dp-color-ink-muted)] font-reading text-center leading-relaxed">
         {t("legalNote")}
       </div>
     </div>

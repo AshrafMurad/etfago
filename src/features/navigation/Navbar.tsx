@@ -17,34 +17,34 @@ export async function Navbar({ locale }: NavbarProps) {
   const otherLocaleName = locale === "ar" ? "English" : "العربية";
 
   return (
-    <header className="border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xs px-6 py-3.5 sticky top-0 z-50 flex items-center justify-between">
+    <header className="border-b-[1.5px] border-[var(--dp-color-line)] bg-[var(--dp-color-ground)]/95 backdrop-blur-xs px-6 py-3.5 sticky top-0 z-50 flex items-center justify-between">
       <div className="flex items-center gap-6">
-        <Link href={`/${locale}`} className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-xs">
+        <Link href={`/${locale}`} className="flex items-center gap-2.5 group">
+          <div className="w-8 h-8 rounded-[8px_4px_10px_5px] bg-[var(--dp-color-accent)] text-white flex items-center justify-center font-bold text-sm border-[1.5px] border-[var(--dp-color-ink)] shadow-[2px_2px_0px_var(--dp-color-ink)] font-marker group-hover:rotate-1 transition-transform">
             ات
           </div>
-          <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+          <span className="text-xl font-bold font-marker text-[var(--dp-color-ink)]">
             {tCommon("appName")}
           </span>
         </Link>
 
         {user && (
-          <nav className="hidden sm:flex items-center gap-4 text-sm font-medium text-zinc-600 dark:text-zinc-400">
+          <nav className="hidden sm:flex items-center gap-5 text-base font-reading font-semibold text-[var(--dp-color-ink-muted)]">
             <Link
               href={`/${locale}/agreements`}
-              className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+              className="hover:text-[var(--dp-color-accent)] transition-colors"
             >
               {tNav("agreements")}
             </Link>
             <Link
               href={`/${locale}/workspaces`}
-              className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+              className="hover:text-[var(--dp-color-accent)] transition-colors"
             >
               {tNav("workspaces")}
             </Link>
             <Link
               href={`/${locale}/settings`}
-              className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+              className="hover:text-[var(--dp-color-accent)] transition-colors"
             >
               {tNav("settings")}
             </Link>
@@ -55,24 +55,24 @@ export async function Navbar({ locale }: NavbarProps) {
       <div className="flex items-center gap-3">
         <Link
           href={`/${otherLocale}`}
-          className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
+          className="sketch-btn sketch-btn-secondary text-xs px-2.5 py-1.5 font-marker"
         >
           {otherLocaleName}
         </Link>
 
         {user ? (
           <div className="flex items-center gap-3">
-            <div className="hidden md:flex flex-col text-end">
-              <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+            <div className="hidden md:flex flex-col text-end font-reading">
+              <span className="text-xs font-semibold text-[var(--dp-color-ink)]">
                 {user.name || user.email}
               </span>
-              <span className="text-[10px] text-zinc-500 font-mono" dir="ltr">
+              <span className="text-[11px]" dir="ltr">
                 {user.emailVerified ? (
-                  <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                  <span className="text-[var(--dp-color-annotation)] font-medium">
                     ✓ {authT("verifiedBadge")}
                   </span>
                 ) : (
-                  <span className="text-amber-600 dark:text-amber-400 font-medium">
+                  <span className="text-[var(--dp-color-accent)] font-medium">
                     ! {authT("unverifiedBadge")}
                   </span>
                 )}
@@ -87,7 +87,7 @@ export async function Navbar({ locale }: NavbarProps) {
             >
               <button
                 type="submit"
-                className="text-xs px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors font-medium text-zinc-700 dark:text-zinc-300 cursor-pointer"
+                className="sketch-btn sketch-btn-outline text-xs px-3 py-1.5 font-marker"
               >
                 {tNav("signOut")}
               </button>
@@ -96,7 +96,7 @@ export async function Navbar({ locale }: NavbarProps) {
         ) : (
           <Link
             href={`/${locale}/auth/signin`}
-            className="text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+            className="sketch-btn sketch-btn-primary text-xs px-3.5 py-1.5 font-marker"
           >
             {tNav("signIn")}
           </Link>

@@ -6,20 +6,21 @@ export default async function NotFoundPage() {
 
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
-      <div className="max-w-md space-y-4">
-        <div className="w-16 h-16 mx-auto rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-2xl">
+      <div className="sketch-card max-w-md w-full p-8 space-y-4 relative">
+        <div className="sketch-tape-top" />
+        <div className="w-16 h-16 mx-auto rounded-[8px_4px_10px_5px] bg-[var(--dp-color-ground)] border border-[var(--dp-color-line)] flex items-center justify-center text-2xl shadow-[2px_2px_0px_var(--dp-color-ink)]">
           🔍
         </div>
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+        <h1 className="text-2xl font-bold font-marker text-[var(--dp-color-ink)]">
           {t("notFoundTitle")}
         </h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="text-sm font-reading text-[var(--dp-color-ink-muted)]">
           {t("notFoundSubtitle")}
         </p>
         <div className="pt-2">
           <Link
             href="/"
-            className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 transition-colors"
+            className="sketch-btn sketch-btn-primary text-xs px-4 py-2 inline-block"
           >
             {t("backHome")}
           </Link>
