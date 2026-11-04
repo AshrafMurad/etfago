@@ -52,10 +52,9 @@ export async function Navbar({ locale }: NavbarProps) {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
-        <LocaleSwitcher locale={locale} />
-
-        {/* Desktop user status & sign in/out */}
+        {/* Desktop user status, language switcher & sign in/out */}
         <div className="hidden md:flex items-center gap-3">
+          <LocaleSwitcher locale={locale} />
           {user ? (
             <>
               <div className="flex flex-col text-end font-reading">
@@ -96,35 +95,37 @@ export async function Navbar({ locale }: NavbarProps) {
         </div>
 
         {/* Mobile Hamburger menu */}
-        <MobileNav
-          locale={locale}
-          user={
-            user
-              ? {
-                  id: user.id,
-                  name: user.name ?? null,
-                  email: user.email,
-                  emailVerified: !!user.emailVerified,
-                }
-              : null
-          }
-          translations={{
-            menu: tNav("menu"),
-            openMenu: tNav("openMenu"),
-            closeMenu: tNav("closeMenu"),
-            home: tNav("home"),
-            agreements: tNav("agreements"),
-            newAgreement: tNav("newAgreement"),
-            workspaces: tNav("workspaces"),
-            settings: tNav("settings"),
-            privacy: tNav("privacy"),
-            terms: tNav("terms"),
-            signOut: tNav("signOut"),
-            signIn: tNav("signIn"),
-            verifiedBadge: authT("verifiedBadge"),
-            unverifiedBadge: authT("unverifiedBadge"),
-          }}
-        />
+        <div className="md:hidden flex items-center">
+          <MobileNav
+            locale={locale}
+            user={
+              user
+                ? {
+                    id: user.id,
+                    name: user.name ?? null,
+                    email: user.email,
+                    emailVerified: !!user.emailVerified,
+                  }
+                : null
+            }
+            translations={{
+              menu: tNav("menu"),
+              openMenu: tNav("openMenu"),
+              closeMenu: tNav("closeMenu"),
+              home: tNav("home"),
+              agreements: tNav("agreements"),
+              newAgreement: tNav("newAgreement"),
+              workspaces: tNav("workspaces"),
+              settings: tNav("settings"),
+              privacy: tNav("privacy"),
+              terms: tNav("terms"),
+              signOut: tNav("signOut"),
+              signIn: tNav("signIn"),
+              verifiedBadge: authT("verifiedBadge"),
+              unverifiedBadge: authT("unverifiedBadge"),
+            }}
+          />
+        </div>
       </div>
     </header>
   );

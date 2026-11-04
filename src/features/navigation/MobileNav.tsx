@@ -104,7 +104,7 @@ export function MobileNav({
     <>
       {/* Backdrop overlay */}
       <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 animate-fade-in md:hidden"
+        className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 animate-fade-in md:!hidden"
         onClick={() => setIsOpen(false)}
         aria-hidden="true"
       />
@@ -116,7 +116,7 @@ export function MobileNav({
         aria-modal="true"
         aria-label={translations.menu}
         dir={locale === "ar" ? "rtl" : "ltr"}
-        className="fixed inset-y-0 start-0 w-[85%] max-w-xs sm:max-w-sm bg-[var(--dp-color-ground)] z-50 shadow-2xl flex flex-col border-e-[2px] border-[var(--dp-color-line)] p-5 overflow-y-auto animate-drawer-in md:hidden"
+        className="fixed inset-y-0 start-0 w-[85%] max-w-xs sm:max-w-sm bg-[var(--dp-color-ground)] z-50 shadow-2xl flex flex-col border-e-[2px] border-[var(--dp-color-line)] p-5 overflow-y-auto animate-drawer-in md:!hidden"
       >
         {/* Drawer Header */}
         <div className="flex items-center justify-between pb-3 border-b-[1.5px] border-[var(--dp-color-line)]">
@@ -355,7 +355,7 @@ export function MobileNav({
         aria-expanded={isOpen}
         aria-controls="mobile-nav-drawer"
         aria-label={isOpen ? translations.closeMenu : translations.openMenu}
-        className="sketch-btn sketch-btn-secondary p-2 min-h-10 min-w-10 flex items-center justify-center text-[var(--dp-color-ink)] hover:text-[var(--dp-color-accent)] transition-transform active:scale-95 md:hidden"
+        className="sketch-btn sketch-btn-secondary p-2 min-h-10 min-w-10 flex items-center justify-center text-[var(--dp-color-ink)] hover:text-[var(--dp-color-accent)] transition-transform active:scale-95 md:!hidden"
       >
         <Menu className="w-5 h-5 stroke-[2.2]" />
       </button>
