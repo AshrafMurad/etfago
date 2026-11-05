@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useId, useMemo } from "react";
+import React, { useState, useRef, useEffect, useId, useMemo, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, X, RotateCcw } from "lucide-react";
 import { SketchSelect } from "./SketchSelect";
 
@@ -117,10 +118,11 @@ export function SketchDatePicker({
     controlledValue !== undefined ? controlledValue || "" : defaultValue
   );
   const [isOpen, setIsOpen] = useState(false);
+  // Portal popover position
+  const [popoverStyle, setPopoverStyle] = useState<React.CSSProperties>({});
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const popoverRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
   const inputId = useId();
 
   const isControlled = controlledValue !== undefined;
@@ -165,12 +167,66 @@ export function SketchDatePicker({
     }
   }, [controlledValue]);
 
-  // Click outside listener
+  // Compute portal popover position from trigger rect
+  const updatePopoverPosition = useCallback(() => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    const popoverWidth = Math.max(288, rect.width); // min 288px (w-72)
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    const popoverHeight = 380; // approximate
+    const openUpward = spaceBelow < popoverHeight && spaceAbove > spaceBelow;
+
+    // RTL: align to right edge of trigger; LTR: align to left edge
+    let left: number;
+    if (isAr) {
+      left = rect.right - popoverWidth;
+    } else {
+      left = rect.left;
+    }
+    // Clamp so the popover doesn't go off-screen
+    left = Math.max(8, Math.min(left, window.innerWidth - popoverWidth - 8));
+
+    if (openUpward) {
+      setPopoverStyle({
+        position: "fixed",
+        bottom: window.innerHeight - rect.top + 6,
+        left,
+        width: popoverWidth,
+        zIndex: 9999,
+      });
+    } else {
+      setPopoverStyle({
+        position: "fixed",
+        top: rect.bottom + 6,
+        left,
+        width: popoverWidth,
+        zIndex: 9999,
+      });
+    }
+  }, [isAr]);
+
+  // Recompute on open and on scroll/resize
+  useEffect(() => {
+    if (!isOpen) return;
+    updatePopoverPosition();
+    window.addEventListener("scroll", updatePopoverPosition, true);
+    window.addEventListener("resize", updatePopoverPosition);
+    return () => {
+      window.removeEventListener("scroll", updatePopoverPosition, true);
+      window.removeEventListener("resize", updatePopoverPosition);
+    };
+  }, [isOpen, updatePopoverPosition]);
+
+  // Click outside listener — works across portal boundary
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      const target = event.target as Node;
       if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
+        triggerRef.current &&
+        !triggerRef.current.contains(target) &&
+        popoverRef.current &&
+        !popoverRef.current.contains(target)
       ) {
         setIsOpen(false);
       }
@@ -349,9 +405,152 @@ export function SketchDatePicker({
     lg: "px-4 py-2.5 text-base min-h-[46px]",
   }[size];
 
+  const popover =
+    isOpen && typeof document !== "undefined"
+      ? createPortal(
+          <div
+            ref={popoverRef}
+            role="dialog"
+            aria-label={isAr ? "منتقي التاريخ" : "Date Picker"}
+            style={popoverStyle}
+            className={`bg-[var(--dp-color-scrap)] border-[1.5px] border-[var(--dp-color-ink)] rounded-[9px_4px_14px_6px] shadow-[3px_4px_0px_var(--dp-color-ink)] p-3 overflow-visible select-none animate-in fade-in duration-100 ${popoverClassName}`}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setIsOpen(false);
+                triggerRef.current?.focus();
+              }
+            }}
+          >
+            {/* Header: Prev / Month & Year Selectors / Next */}
+            <div className="flex items-center justify-between gap-1 pb-2 mb-2 border-b border-dashed border-[var(--dp-color-line)]">
+              <button
+                type="button"
+                onClick={isAr ? handleNextMonth : handlePrevMonth}
+                aria-label={isAr ? "الشهر القادم" : "Previous month"}
+                className="p-1.5 rounded-[5px_2px_6px_3px] border border-transparent hover:border-[var(--dp-color-ink)] hover:bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] transition-colors cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              <div className="flex items-center gap-1.5 font-marker">
+                <div className="w-24">
+                  <SketchSelect
+                    size="sm"
+                    value={String(viewMonth)}
+                    onChange={(val) => setViewMonth(Number(val))}
+                    ariaLabel={isAr ? "اختر الشهر" : "Select month"}
+                    options={monthNames.map((m, idx) => ({
+                      value: String(idx),
+                      label: m,
+                    }))}
+                  />
+                </div>
+
+                <div className="w-20">
+                  <SketchSelect
+                    size="sm"
+                    value={String(viewYear)}
+                    onChange={(val) => setViewYear(Number(val))}
+                    ariaLabel={isAr ? "اختر السنة" : "Select year"}
+                    options={yearOptions.map((y) => ({
+                      value: String(y),
+                      label: String(y),
+                    }))}
+                  />
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={isAr ? handlePrevMonth : handleNextMonth}
+                aria-label={isAr ? "الشهر السابق" : "Next month"}
+                className="p-1.5 rounded-[5px_2px_6px_3px] border border-transparent hover:border-[var(--dp-color-ink)] hover:bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] transition-colors cursor-pointer"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Weekday Labels Header */}
+            <div className="grid grid-cols-7 gap-1 text-center mb-1">
+              {weekdays.map((w, i) => (
+                <span
+                  key={i}
+                  title={w.full}
+                  className="text-[11px] font-marker font-bold text-[var(--dp-color-ink-muted)] py-1"
+                >
+                  {w.short}
+                </span>
+              ))}
+            </div>
+
+            {/* Days Grid */}
+            <div className="grid grid-cols-7 gap-1 text-center">
+              {calendarGrid.map((cell, idx) => {
+                const isSelected = selectedValue === cell.iso;
+                const isCellToday = today.iso === cell.iso;
+
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    disabled={cell.disabled}
+                    onClick={() => handleSelectDate(cell.iso)}
+                    className={`h-8 w-full text-xs font-reading rounded-[5px_2px_6px_3px] transition-all flex items-center justify-center cursor-pointer ${
+                      cell.disabled
+                        ? "opacity-25 cursor-not-allowed pointer-events-none"
+                        : isSelected
+                        ? "bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] font-bold border border-[var(--dp-color-ink)] shadow-[1px_1px_0px_var(--dp-color-ink)]"
+                        : isCellToday
+                        ? "border border-dashed border-[var(--dp-color-annotation)] text-[var(--dp-color-annotation)] font-bold bg-[var(--dp-color-ground)]/50 hover:bg-[var(--dp-color-ground)]"
+                        : cell.isCurrentMonth
+                        ? "text-[var(--dp-color-ink)] hover:bg-[var(--dp-color-ground)] hover:border hover:border-[var(--dp-color-line)]"
+                        : "text-[var(--dp-color-line)] opacity-40 hover:opacity-80 hover:bg-[var(--dp-color-ground)]"
+                    }`}
+                  >
+                    {cell.day}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Popover Footer: Quick Actions */}
+            <div className="mt-3 pt-2 border-t border-dashed border-[var(--dp-color-line)] flex items-center justify-between text-xs font-marker">
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={handleSetToday}
+                  className="px-2 py-1 rounded-[4px_2px_5px_3px] border border-[var(--dp-color-line)] bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] hover:border-[var(--dp-color-ink)] transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  <RotateCcw className="w-3 h-3 text-[var(--dp-color-annotation)]" />
+                  <span>{isAr ? "اليوم" : "Today"}</span>
+                </button>
+
+                {clearable && selectedValue && (
+                  <button
+                    type="button"
+                    onClick={() => handleClear()}
+                    className="px-2 py-1 rounded-[4px_2px_5px_3px] border border-[var(--dp-color-line)] text-[var(--dp-color-accent)] hover:border-[var(--dp-color-accent)] transition-colors cursor-pointer"
+                  >
+                    {isAr ? "مسح" : "Clear"}
+                  </button>
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="px-2.5 py-1 rounded-[4px_2px_5px_3px] border border-[var(--dp-color-ink)] bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] hover:bg-[var(--dp-color-ground)] transition-colors cursor-pointer"
+              >
+                {isAr ? "إغلاق" : "Close"}
+              </button>
+            </div>
+          </div>,
+          document.body
+        )
+      : null;
+
   return (
     <div
-      ref={containerRef}
       className={`relative inline-block w-full text-start ${className}`}
       onKeyDown={handleKeyDown}
     >
@@ -425,141 +624,8 @@ export function SketchDatePicker({
         </div>
       </button>
 
-      {/* Floating Sketch Calendar Popover */}
-      {isOpen && (
-        <div
-          ref={popoverRef}
-          role="dialog"
-          aria-label={isAr ? "منتقي التاريخ" : "Date Picker"}
-          className={`absolute z-50 mt-1.5 w-72 sm:w-80 bg-[var(--dp-color-scrap)] border-[1.5px] border-[var(--dp-color-ink)] rounded-[9px_4px_14px_6px] shadow-[3px_4px_0px_var(--dp-color-ink)] p-3 overflow-visible select-none animate-in fade-in duration-100 ${
-            isAr ? "right-0" : "left-0"
-          } ${popoverClassName}`}
-        >
-          {/* Header: Prev / Month & Year Selectors / Next */}
-          <div className="flex items-center justify-between gap-1 pb-2 mb-2 border-b border-dashed border-[var(--dp-color-line)]">
-            <button
-              type="button"
-              onClick={isAr ? handleNextMonth : handlePrevMonth}
-              aria-label={isAr ? "الشهر القادم" : "Previous month"}
-              className="p-1.5 rounded-[5px_2px_6px_3px] border border-transparent hover:border-[var(--dp-color-ink)] hover:bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] transition-colors cursor-pointer"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-
-            <div className="flex items-center gap-1.5 font-marker">
-              <div className="w-24">
-                <SketchSelect
-                  size="sm"
-                  value={String(viewMonth)}
-                  onChange={(val) => setViewMonth(Number(val))}
-                  ariaLabel={isAr ? "اختر الشهر" : "Select month"}
-                  options={monthNames.map((m, idx) => ({
-                    value: String(idx),
-                    label: m,
-                  }))}
-                />
-              </div>
-
-              <div className="w-20">
-                <SketchSelect
-                  size="sm"
-                  value={String(viewYear)}
-                  onChange={(val) => setViewYear(Number(val))}
-                  ariaLabel={isAr ? "اختر السنة" : "Select year"}
-                  options={yearOptions.map((y) => ({
-                    value: String(y),
-                    label: String(y),
-                  }))}
-                />
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={isAr ? handlePrevMonth : handleNextMonth}
-              aria-label={isAr ? "الشهر السابق" : "Next month"}
-              className="p-1.5 rounded-[5px_2px_6px_3px] border border-transparent hover:border-[var(--dp-color-ink)] hover:bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] transition-colors cursor-pointer"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Weekday Labels Header */}
-          <div className="grid grid-cols-7 gap-1 text-center mb-1">
-            {weekdays.map((w, i) => (
-              <span
-                key={i}
-                title={w.full}
-                className="text-[11px] font-marker font-bold text-[var(--dp-color-ink-muted)] py-1"
-              >
-                {w.short}
-              </span>
-            ))}
-          </div>
-
-          {/* Days Grid */}
-          <div className="grid grid-cols-7 gap-1 text-center">
-            {calendarGrid.map((cell, idx) => {
-              const isSelected = selectedValue === cell.iso;
-              const isCellToday = today.iso === cell.iso;
-
-              return (
-                <button
-                  key={idx}
-                  type="button"
-                  disabled={cell.disabled}
-                  onClick={() => handleSelectDate(cell.iso)}
-                  className={`h-8 w-full text-xs font-reading rounded-[5px_2px_6px_3px] transition-all flex items-center justify-center cursor-pointer ${
-                    cell.disabled
-                      ? "opacity-25 cursor-not-allowed pointer-events-none"
-                      : isSelected
-                      ? "bg-[var(--dp-color-highlight)] text-[var(--dp-color-ink)] font-bold border border-[var(--dp-color-ink)] shadow-[1px_1px_0px_var(--dp-color-ink)]"
-                      : isCellToday
-                      ? "border border-dashed border-[var(--dp-color-annotation)] text-[var(--dp-color-annotation)] font-bold bg-[var(--dp-color-ground)]/50 hover:bg-[var(--dp-color-ground)]"
-                      : cell.isCurrentMonth
-                      ? "text-[var(--dp-color-ink)] hover:bg-[var(--dp-color-ground)] hover:border hover:border-[var(--dp-color-line)]"
-                      : "text-[var(--dp-color-line)] opacity-40 hover:opacity-80 hover:bg-[var(--dp-color-ground)]"
-                  }`}
-                >
-                  {cell.day}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Popover Footer: Quick Actions */}
-          <div className="mt-3 pt-2 border-t border-dashed border-[var(--dp-color-line)] flex items-center justify-between text-xs font-marker">
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={handleSetToday}
-                className="px-2 py-1 rounded-[4px_2px_5px_3px] border border-[var(--dp-color-line)] bg-[var(--dp-color-ground)] text-[var(--dp-color-ink)] hover:border-[var(--dp-color-ink)] transition-colors flex items-center gap-1 cursor-pointer"
-              >
-                <RotateCcw className="w-3 h-3 text-[var(--dp-color-annotation)]" />
-                <span>{isAr ? "اليوم" : "Today"}</span>
-              </button>
-
-              {clearable && selectedValue && (
-                <button
-                  type="button"
-                  onClick={() => handleClear()}
-                  className="px-2 py-1 rounded-[4px_2px_5px_3px] border border-[var(--dp-color-line)] text-[var(--dp-color-accent)] hover:border-[var(--dp-color-accent)] transition-colors cursor-pointer"
-                >
-                  {isAr ? "مسح" : "Clear"}
-                </button>
-              )}
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setIsOpen(false)}
-              className="px-2.5 py-1 rounded-[4px_2px_5px_3px] border border-[var(--dp-color-ink)] bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] hover:bg-[var(--dp-color-ground)] transition-colors cursor-pointer"
-            >
-              {isAr ? "إغلاق" : "Close"}
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Portaled floating calendar — rendered at document.body to escape stacking contexts */}
+      {popover}
     </div>
   );
 }

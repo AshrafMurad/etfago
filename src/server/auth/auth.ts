@@ -56,6 +56,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token = { ...token, ...session };
       }
 
+      // If token still has no emailVerified, check DB once to see if user has verified their email
+      if (!token.emailVerified && token.id) {
+        const dbUser = await db.user.findUnique({
+          where: { id: token.id as string },
+          select: { emailVerifiedAt: true },
+        });
+        if (dbUser?.emailVerifiedAt) {
+          token.emailVerified = dbUser.emailVerifiedAt;
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
