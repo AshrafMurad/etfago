@@ -102,7 +102,6 @@ export function SketchDatePicker({
   onChange,
   placeholder,
   disabled = false,
-  required = false,
   hasError = false,
   minDate,
   maxDate,
@@ -572,7 +571,6 @@ export function SketchDatePicker({
         onClick={() => setIsOpen((prev) => !prev)}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
-        aria-invalid={hasError ? "true" : undefined}
         data-invalid={hasError ? "true" : undefined}
         aria-label={ariaLabel || displayLabel || defaultPlaceholderText}
         className={`w-full flex items-center justify-between gap-2 bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] border-[1.5px] ${

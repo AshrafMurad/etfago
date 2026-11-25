@@ -8,7 +8,7 @@ import {
 describe("Invitation Schemas (Sprint 3)", () => {
   it("normalizes recipient email address", () => {
     const parsed = InviteParticipantSchema.parse({
-      agreementId: "11111111-1111-1111-1111-111111111111",
+      agreementId: "11111111-1111-4111-8111-111111111111",
       email: "  Alice.Partner+Work@Example.COM  ",
       partyDisplayName: "أليس الشريكة",
       agreementRole: "REVIEWER",
@@ -22,7 +22,7 @@ describe("Invitation Schemas (Sprint 3)", () => {
 
   it("rejects invalid email address", () => {
     const result = InviteParticipantSchema.safeParse({
-      agreementId: "11111111-1111-1111-1111-111111111111",
+      agreementId: "11111111-1111-4111-8111-111111111111",
       email: "not-an-email",
       partyDisplayName: "سالم",
     });
@@ -32,7 +32,7 @@ describe("Invitation Schemas (Sprint 3)", () => {
 
   it("rejects empty party display name", () => {
     const result = InviteParticipantSchema.safeParse({
-      agreementId: "11111111-1111-1111-1111-111111111111",
+      agreementId: "11111111-1111-4111-8111-111111111111",
       email: "salem@example.com",
       partyDisplayName: "   ",
     });
@@ -52,8 +52,8 @@ describe("Invitation Schemas (Sprint 3)", () => {
 
   it("validates participant role update", () => {
     const parsed = UpdateParticipantRoleSchema.parse({
-      agreementId: "11111111-1111-1111-1111-111111111111",
-      participantId: "22222222-2222-2222-2222-222222222222",
+      agreementId: "11111111-1111-4111-8111-111111111111",
+      participantId: "22222222-2222-4222-8222-222222222222",
       agreementRole: "EDITOR",
       requiredByDefault: false,
     });

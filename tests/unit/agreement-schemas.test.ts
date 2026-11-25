@@ -116,7 +116,7 @@ describe("Agreement and Draft Schemas (Sprint 2)", () => {
 
     it("accepts valid agreement creation input", () => {
       const parsed = CreateAgreementSchema.parse({
-        workspaceId: "11111111-1111-1111-1111-111111111111",
+        workspaceId: "11111111-1111-4111-8111-111111111111",
         title: "مشروع تطوير منصة",
         category: "DEVELOPMENT",
       });
@@ -130,7 +130,7 @@ describe("Agreement and Draft Schemas (Sprint 2)", () => {
   describe("UpdateDraftSchema", () => {
     it("requires expectedRevision >= 1 for optimistic lock", () => {
       const valid = UpdateDraftSchema.safeParse({
-        agreementId: "11111111-1111-1111-1111-111111111111",
+        agreementId: "11111111-1111-4111-8111-111111111111",
         expectedRevision: 1,
         content: {
           schemaVersion: 1,
@@ -142,7 +142,7 @@ describe("Agreement and Draft Schemas (Sprint 2)", () => {
       expect(valid.success).toBe(true);
 
       const invalid = UpdateDraftSchema.safeParse({
-        agreementId: "11111111-1111-1111-1111-111111111111",
+        agreementId: "11111111-1111-4111-8111-111111111111",
         expectedRevision: 0,
         content: {
           schemaVersion: 1,

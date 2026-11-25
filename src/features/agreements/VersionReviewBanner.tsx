@@ -8,7 +8,7 @@ import {
   recordReviewDecisionAction,
   withdrawReviewAction,
 } from "../../server/actions/versions";
-import { FieldErrorMessage, FormAlert } from "../ui";
+import { FieldErrorMessage } from "../ui";
 
 interface VersionReviewBannerProps {
   agreementId: string;

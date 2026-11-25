@@ -7,7 +7,7 @@ import {
   updateCommentAction,
   deleteCommentAction,
 } from "../../server/actions/comments";
-import { FieldErrorMessage, FormAlert } from "../ui";
+import { FieldErrorMessage } from "../ui";
 
 interface CommentThreadProps {
   agreementId: string;

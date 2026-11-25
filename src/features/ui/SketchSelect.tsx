@@ -42,7 +42,6 @@ export function SketchSelect({
   placeholder,
   onChange,
   disabled = false,
-  required = false,
   hasError = false,
   className = "",
   triggerClassName = "",
@@ -371,7 +370,6 @@ export function SketchSelect({
         onClick={() => setIsOpen((prev) => !prev)}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        aria-invalid={hasError ? "true" : undefined}
         data-invalid={hasError ? "true" : undefined}
         aria-label={ariaLabel || selectedOption?.label || effectivePlaceholder}
         className={`w-full flex items-center justify-between gap-2.5 bg-[var(--dp-color-scrap)] text-[var(--dp-color-ink)] border-[1.5px] ${

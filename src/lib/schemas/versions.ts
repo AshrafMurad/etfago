@@ -48,7 +48,7 @@ export const RecordReviewDecisionSchema = z.object({
   agreementId: z.string().uuid("Invalid agreement ID"),
   versionId: z.string().uuid("Invalid version ID"),
   decision: z.enum(["APPROVE", "REQUEST_CHANGES"], {
-    errorMap: () => ({ message: "Decision must be either APPROVE or REQUEST_CHANGES" }),
+    error: "Decision must be either APPROVE or REQUEST_CHANGES",
   }),
   expectedVersionHash: z
     .string()

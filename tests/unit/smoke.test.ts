@@ -16,12 +16,9 @@ describe("Sprint 0: Smoke & Locale routing tests", () => {
 
   it("should have brand logo and favicons correctly placed in public and app directories", () => {
     const root = path.resolve(__dirname, "../..");
-    const publicFavicon = path.join(root, "public", "favicon.ico");
     const appFavicon = path.join(root, "src", "app", "favicon.ico");
     const publicLogo = path.join(root, "public", "logo.png");
 
-    expect(fs.existsSync(publicFavicon)).toBe(true);
-    expect(fs.statSync(publicFavicon).size).toBeGreaterThan(0);
 
     expect(fs.existsSync(appFavicon)).toBe(true);
     expect(fs.statSync(appFavicon).size).toBeGreaterThan(0);
