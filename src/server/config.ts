@@ -13,10 +13,15 @@ export function validateProductionEnvironment(
       throw new Error(`${name} must be a strong production secret`);
     }
   }
-  if (!env.RESEND_API_KEY || /replace|placeholder/i.test(env.RESEND_API_KEY)) {
+  const hasEmailKey = Boolean(env.RESEND_API_KEY);
+  const hasEmailSender = Boolean(env.EMAIL_FROM);
+  if (hasEmailKey !== hasEmailSender) {
+    throw new Error("Configure both RESEND_API_KEY and EMAIL_FROM, or neither");
+  }
+  if (hasEmailKey && /replace|placeholder/i.test(env.RESEND_API_KEY!)) {
     throw new Error("Configure a real RESEND_API_KEY");
   }
-  if (!env.EMAIL_FROM || /example\.com|your-verified-domain/i.test(env.EMAIL_FROM)) {
+  if (hasEmailSender && /example\.com|your-verified-domain/i.test(env.EMAIL_FROM!)) {
     throw new Error("Configure a verified EMAIL_FROM sender");
   }
   if (!env.DATABASE_URL) throw new Error("DATABASE_URL is required");

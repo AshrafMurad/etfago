@@ -12,8 +12,9 @@ APP_URL=https://example.com
 DATABASE_URL=postgresql://USER:PASSWORD@db:5432/etfago
 AUTH_SECRET=replace-with-secret
 # AUTH_TRUST_HOST=true     # only if required by reverse proxy/auth setup
-RESEND_API_KEY=replace-with-secret
-EMAIL_FROM=no-reply@example.com
+# Optional; configure both together when outbound email is enabled.
+# RESEND_API_KEY=replace-with-secret
+# EMAIL_FROM=no-reply@example.com
 STORAGE_ROOT=/data/etfago/private-files
 MAX_UPLOAD_BYTES=10485760
 MAX_WORKSPACE_STORAGE_BYTES=209715200
@@ -37,7 +38,7 @@ Recommended DB persistence uses dedicated Docker volume; file persistence uses e
 4. Apply environment secrets; restrict service network, database exposure and firewall.
 5. Configure reverse proxy upload/request size and timeouts consistent with app limits.
 6. Verify app startup fails cleanly if storage path is unavailable/unwritable.
-7. Create first account and send verification email via configured Resend sender.
+7. Create the first password account. During DEC-023 side-project mode, mailbox ownership is not verified.
 8. Invite second account, approve a test version, upload an image and download it.
 9. Replace/recreate app container and repeat file download.
 10. Configure monitoring/backup/restore, and validate retention and privacy policy.

@@ -16,6 +16,8 @@ describe("Production configuration and transport", () => {
       { RESEND_API_KEY: "re_placeholder" }, { EMAIL_FROM: "no-reply@example.com" }, { STORAGE_ROOT: "./storage" }]) {
       expect(() => validateProductionEnvironment({ ...env, ...patch })).toThrow();
     }
+    expect(() => validateProductionEnvironment({ ...env, RESEND_API_KEY: undefined, EMAIL_FROM: undefined })).not.toThrow();
+    expect(() => validateProductionEnvironment({ ...env, EMAIL_FROM: undefined })).toThrow();
   });
   it("sends real provider requests in production without retaining tokens in the development outbox", async () => {
     vi.stubEnv("NODE_ENV", "production");

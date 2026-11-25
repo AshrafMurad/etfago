@@ -9,14 +9,14 @@
 ## Product promise
 Etfago helps people and small businesses **create structured agreements, invite counterparties, review a specific version, record explicit decisions, propose amendments, and follow commitments**. The **currently agreed version** remains visible even while another version is being reviewed.
 
-This is an agreement-tracking and collaboration product, **not an e-signature, identity-verification, legal advice, or legally certified contracting service**. A platform approval means an authenticated user with a verified email clicked a documented decision on an identified version; it does not by itself establish legal identity, authority, or enforceability.
+This is an agreement-tracking and collaboration product, **not an e-signature, identity-verification, legal advice, or legally certified contracting service**. A platform approval means an authenticated user clicked a documented decision on an identified version; it does not by itself establish legal identity, authority, or enforceability. During temporary DEC-023 side-project mode, password accounts are allowed without proving mailbox control.
 
 ## Stack — locked for initial implementation
 - Next.js App Router + React + TypeScript (single full-stack app; no separate Express server).
 - PostgreSQL + Prisma ORM.
 - Auth.js for session/authentication, with verified-email gating for agreement decisions.
 - Tailwind CSS v4, shadcn/ui, React Hook Form, Zod, next-intl.
-- Resend for invitation/notification email; use a provider abstraction so local development can log emails.
+- Optional Resend integration for invitation/notification email. DEC-023 temporarily uses email/password authentication without outbound email for side-project deployment.
 - **Private server filesystem** for attachments (persistent Docker bind mount / named volume). **No S3, no object storage, no public upload directory.**
 - Docker-based deployment on a single persistent VPS. Reverse proxy with HTTPS.
 
@@ -53,7 +53,7 @@ README.md
 ## Delivery definition
 Deployment instructions: [VPS release runbook](docs/13-deployment-runbook.md).
 
-Do not report "done" because UI screens exist. The release is usable when **two separate verified accounts** can collaborate on a real agreement, review and approve an immutable snapshot, propose and approve a subsequent version, track a commitment, and download their authorized private attachment. Non-participants must be denied all agreement and file operations.
+Do not report "done" because UI screens exist. The public release is usable when **two separate verified accounts** can collaborate on a real agreement, review and approve an immutable snapshot, propose and approve a subsequent version, track a commitment, and download their authorized private attachment. DEC-023 is a private side-project exception, not public-release verification. Non-participants must be denied all agreement and file operations.
 
 ### Security and trust boundaries
 - The authenticated requester is untrusted until server-side membership checks succeed.

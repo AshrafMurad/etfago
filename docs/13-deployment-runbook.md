@@ -8,9 +8,10 @@ loopback interface. Use `docker-compose.prod.yml` by itself; do not merge the
 development Compose file into it.
 Local development/CI uses Node 22.12+ (or supported Node 24/26+) and the committed npm lockfile.
 
-1. Point the public domain at the VPS; configure a verified Resend sending domain.
+1. Point the public domain at the VPS. A verified Resend sending domain is optional
+   during DEC-023 side-project mode.
 2. Copy `.env.production.example` to `.env.production`, restrict it to mode 0600,
-   and replace every placeholder. Generate independent AUTH_SECRET, CRON_SECRET,
+   and replace every required placeholder. Generate independent AUTH_SECRET, CRON_SECRET,
    and POSTGRES_PASSWORD values with `openssl rand -hex 32`. Use a URL-safe database
    password. Do not reuse development secrets or copy the development `.env`.
 3. Create the host attachment directory before starting Docker:
@@ -35,8 +36,9 @@ Local development/CI uses Node 22.12+ (or supported Node 24/26+) and the committ
 
    The one-shot `migrate` service applies all Prisma migrations before the app
    starts. Schema rollout failure blocks app startup. Production startup rejects
-   placeholder secrets, missing email settings, non-HTTPS APP_URL, and unusable
-   storage. The image excludes `.env`, local uploads, Git, and development packages.
+   placeholder secrets, partially configured email settings, non-HTTPS APP_URL, and
+   unusable storage. Resend settings may both be omitted during DEC-023. The image
+   excludes `.env`, local uploads, Git, and development packages.
    Do not run `compose config` without `--quiet` in shared logs: it expands secrets.
 
    The production volume is project-scoped `production_pgdata`, deliberately
@@ -47,14 +49,15 @@ Local development/CI uses Node 22.12+ (or supported Node 24/26+) and the committ
 
 ## Sign-in behavior and upgrades
 
-- New and existing accounts request a fresh email link. Opening the link shows a
-  localized confirmation button; only the CSRF-protected Auth.js POST consumes the
-  link and issues the session. Link previews/GET requests do not consume tokens.
-- Tokens expire after 15 minutes, are hashed in VerificationToken, and can be
-  consumed exactly once. Resending replaces previous tokens. All prior insecure
-  sessions are rejected by the session-version guard. Rotate AUTH_SECRET at rollout.
-- Old verification links are intentionally invalidated by hashed-token lookup;
-  request new links. Existing users, agreements, and approved versions are preserved.
+- During DEC-023, new accounts register and sign in with email and a password of at
+  least 12 characters. Passwords are stored only as Argon2id hashes. New password
+  accounts are temporarily marked verified without proving mailbox control; this is
+  disclosed in the UI and must be removed before public launch.
+- Existing email-link verification remains in the code for the future provider-backed
+  flow. Its tokens remain 15-minute, hashed, and single-use, but password login does
+  not depend on outbound email during DEC-023.
+- All sessions created before this authentication change are rejected by the
+  session-version guard. Rotate AUTH_SECRET at rollout.
 - Persistent database rate limits cover sign-in requests and credential callbacks.
   The nginx example adds perimeter protection. An outbox delivery marked SENT means
   the provider accepted the message, not proof that it arrived in the inbox.
@@ -115,8 +118,10 @@ restore. A passing checksum check does not replace the following rehearsal.
 
 ## Final host acceptance before enabling users
 
-- HTTPS and secure session cookies work on the real hostname, including AR/EN sign-in.
-- Real email reaches two controlled mailboxes; no email-only login or token replay.
+- HTTPS and secure session cookies work on the real hostname, including AR/EN
+  password registration and sign-in. Wrong passwords do not issue sessions.
+- When outbound email is later enabled, test real delivery to two controlled
+  mailboxes and remove DEC-023 automatic verification before public traffic.
 - Two accounts invite, join, approve V1, amend, request changes, and approve a fresh
   version; a third account cannot read the agreement or its attachments.
 - Upload/download succeeds; bytes survive container replacement and the documented
