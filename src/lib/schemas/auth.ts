@@ -25,6 +25,19 @@ export const SignInInputSchema = z.object({
 
 export type SignInInput = z.infer<typeof SignInInputSchema>;
 
+const PasswordSchema = z.string().min(12, "Password must be at least 12 characters").max(128);
+
+export const PasswordSignInInputSchema = SignInInputSchema.extend({
+  password: PasswordSchema,
+});
+
+export const PasswordRegisterInputSchema = RegisterInputSchema.extend({
+  password: PasswordSchema,
+});
+
+export type PasswordSignInInput = z.infer<typeof PasswordSignInInputSchema>;
+export type PasswordRegisterInput = z.infer<typeof PasswordRegisterInputSchema>;
+
 export const VerifyEmailInputSchema = z.object({
   token: z.string().min(10, "Invalid verification token"),
 });

@@ -1,7 +1,7 @@
 "use server";
 
-import { RegisterInputSchema, SignInInputSchema } from "../../lib/schemas/auth";
-import { registerOrGetUser, requestVerificationEmail } from "../auth/service";
+import { PasswordRegisterInputSchema, RegisterInputSchema, SignInInputSchema } from "../../lib/schemas/auth";
+import { registerOrGetUser, registerWithPassword, requestVerificationEmail } from "../auth/service";
 import { signOut } from "../auth/auth";
 import { headers } from "next/headers";
 import { consumeAuthRateLimit } from "../auth/rate-limit";
@@ -13,6 +13,22 @@ export type ActionState = {
   message?: string;
   data?: Record<string, unknown>;
 };
+
+export async function registerPasswordAction(input: unknown): Promise<ActionState> {
+  const parsed = PasswordRegisterInputSchema.safeParse(input);
+  if (!parsed.success) return { error: "Invalid input" };
+  try {
+    const ip = (await headers()).get("x-real-ip") || "unknown";
+    if (!await consumeAuthRateLimit("register-ip", ip, 10) ||
+        !await consumeAuthRateLimit("register-email", parsed.data.email, 3)) {
+      return { error: "Please try again later" };
+    }
+    await registerWithPassword(parsed.data);
+    return { success: true };
+  } catch {
+    return { error: "Unable to create account" };
+  }
+}
 
 export async function requestSignInAction(input: unknown): Promise<ActionState> {
   const parsed = RegisterInputSchema.safeParse(input);

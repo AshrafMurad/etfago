@@ -27,6 +27,7 @@ model User {
   name            String?
   emailNormalized String            @unique
   emailVerifiedAt DateTime?
+  passwordHash    String?           @db.Text
   locale          String            @default("ar")
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt

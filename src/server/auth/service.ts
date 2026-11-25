@@ -3,6 +3,8 @@ import { normalizeEmail } from "../../lib/email";
 import { sendVerificationEmail } from "../notifications/email";
 import { ValidationError } from "../../lib/errors";
 import crypto from "crypto";
+import { hashPassword } from "./password";
+import type { PasswordRegisterInput } from "../../lib/schemas/auth";
 
 export interface RegisterResult {
   user: {
@@ -15,6 +17,51 @@ export interface RegisterResult {
   workspaceId: string;
   verificationToken?: string;
   isNewUser: boolean;
+}
+
+export async function registerWithPassword(input: PasswordRegisterInput): Promise<RegisterResult> {
+  const emailNormalized = normalizeEmail(input.email);
+  const locale = input.locale === "en" ? "en" : "ar";
+  const passwordHash = await hashPassword(input.password);
+
+  const result = await db.$transaction(async (tx) => {
+    const existing = await tx.user.findUnique({ where: { emailNormalized }, select: { id: true } });
+    if (existing) throw new ValidationError("Unable to create account");
+
+    const user = await tx.user.create({
+      data: {
+        name: input.name?.trim() || null,
+        emailNormalized,
+        passwordHash,
+        // Temporary side-project mode: remove automatic verification when email delivery is enabled.
+        emailVerifiedAt: new Date(),
+        locale,
+      },
+    });
+    const workspace = await tx.workspace.create({
+      data: {
+        kind: "PERSONAL",
+        name: locale === "en" ? "Personal Workspace" : "مساحتي الشخصية",
+        ownerUserId: user.id,
+      },
+    });
+    await tx.workspaceMember.create({
+      data: { workspaceId: workspace.id, userId: user.id, role: "OWNER" },
+    });
+    return { user, workspace };
+  });
+
+  return {
+    user: {
+      id: result.user.id,
+      emailNormalized: result.user.emailNormalized,
+      name: result.user.name,
+      emailVerifiedAt: result.user.emailVerifiedAt,
+      locale: result.user.locale,
+    },
+    workspaceId: result.workspace.id,
+    isNewUser: true,
+  };
 }
 
 /**
