@@ -3,7 +3,7 @@
 ## Supported topology (V1)
 Executable release/configuration guidance: [13 — Deployment runbook](13-deployment-runbook.md).
 
-A single Ubuntu Linux VPS running an HTTPS reverse proxy, one Next.js application instance, PostgreSQL, and a **persistent local attachment volume**. Docker/Coolify acceptable as orchestration, provided the bind mount survives redeployment and app container replacement. No managed S3/object-storage dependency.
+A single Ubuntu Linux VPS running an HTTPS reverse proxy, one Next.js application instance, PostgreSQL, and a **persistent local attachment volume**. Docker/Coolify acceptable as orchestration, provided the named volume survives redeployment and app container replacement. No managed S3/object-storage dependency.
 
 ## Configuration (.env.example to be created by implementation)
 ```dotenv
@@ -26,10 +26,9 @@ Never commit real credentials. `APP_URL` must match HTTPS hostname; use secret m
 ```text
 /srv/etfago/
   compose/                      # infra definitions and config (secured)
-  private-files/                # persistent attachment bytes (0700)
   backups/                      # temporary local staging only; copy off-host
 ```
-Recommended DB persistence uses dedicated Docker volume; file persistence uses explicit bind mount. Ensure ownership matches non-root app container UID and directory permissions. The public reverse proxy may access the app HTTP port but must NEVER serve the private-files path.
+Database and attachment persistence use separate Docker named volumes. The public reverse proxy may access the app HTTP port but must NEVER serve the private-files volume directly.
 
 ## Deployment checklist
 1. Configure DNS + HTTPS certificate; redirect HTTP → HTTPS; secure cookies.

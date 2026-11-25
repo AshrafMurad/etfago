@@ -20,8 +20,8 @@ services:
       EMAIL_FROM: ${EMAIL_FROM:-}
       LOG_LEVEL: ${LOG_LEVEL:-info}
     volumes:
-      # Private server filesystem mount for persistent attachment bytes (NO S3)
-      - /srv/etfago/private-files:/data/etfago/private-files
+      # Private persistent Docker volume on the server filesystem (NO S3)
+      - private_files:/data/etfago/private-files
     depends_on:
       db:
         condition: service_healthy
@@ -61,3 +61,4 @@ services:
 
 volumes:
   production_pgdata:
+  private_files:

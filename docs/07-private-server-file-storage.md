@@ -5,7 +5,7 @@
 ## Deployment topology and filesystem
 Example (adjust user/group and path to actual VPS):
 ```text
-Host VPS:       /srv/etfago/private-files/     (persistent, owner app UID, 0700)
+Docker volume:  private_files                   (persistent server filesystem)
 Docker mount:   /data/etfago/private-files/    (app process writable)
 Environment:    STORAGE_ROOT=/data/etfago/private-files
 Private key:    ab/ab12...random...               (no extensions from user filename)
@@ -79,7 +79,7 @@ services:
     environment:
       STORAGE_ROOT: /data/etfago/private-files
     volumes:
-      - /srv/etfago/private-files:/data/etfago/private-files
+      - private_files:/data/etfago/private-files
     # run as dedicated non-root UID with matching ownership
   db:
     image: postgres:17

@@ -3,7 +3,7 @@
 ## Runtime and release preparation
 
 Supported: one Ubuntu VPS, Docker Compose, host HTTPS reverse proxy, PostgreSQL 17,
-and `/srv/etfago/private-files` on persistent disk. The app listens only on the host
+and the `private_files` Docker volume on persistent server disk. The app listens only on the host
 loopback interface. Use `docker-compose.prod.yml` by itself; do not merge the
 development Compose file into it.
 Local development/CI uses Node 22.12+ (or supported Node 24/26+) and the committed npm lockfile.
@@ -14,11 +14,8 @@ Local development/CI uses Node 22.12+ (or supported Node 24/26+) and the committ
    and replace every required placeholder. Generate independent AUTH_SECRET, CRON_SECRET,
    and POSTGRES_PASSWORD values with `openssl rand -hex 32`. Use a URL-safe database
    password. Do not reuse development secrets or copy the development `.env`.
-3. Create the host attachment directory before starting Docker:
-
-   ```sh
-   sudo install -d -m 0700 -o 1001 -g 1001 /srv/etfago/private-files
-   ```
+3. Confirm that the Compose resource preserves the `private_files` named volume
+   across redeployments. Do not delete it when recreating the application resource.
 
 4. Install and configure nginx using `deploy/nginx.conf.example`, substituting the
    hostname and certificate paths. Configure valid certificates before enabling
@@ -102,9 +99,9 @@ restore. A passing checksum check does not replace the following rehearsal.
    ```sh
    docker compose --env-file .env.production -f docker-compose.prod.yml exec -T db \
      sh -c 'pg_restore --exit-on-error --no-owner --no-privileges -U "$POSTGRES_USER" -d "$POSTGRES_DB"' < database.dump
-   sudo tar -C /srv/etfago/private-files -xzf private-files.tar.gz
-   sudo chown -R 1001:1001 /srv/etfago/private-files
-   sudo chmod 0700 /srv/etfago/private-files
+   docker compose --env-file .env.production -f docker-compose.prod.yml run --rm \
+     --no-deps --entrypoint sh -T app \
+     -c 'tar -C /data/etfago/private-files -xzf -' < private-files.tar.gz
    docker compose --env-file .env.production -f docker-compose.prod.yml up -d
    ```
 
