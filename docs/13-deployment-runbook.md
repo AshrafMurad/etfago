@@ -3,8 +3,9 @@
 ## Runtime and release preparation
 
 Supported: one Ubuntu VPS, Docker Compose, host HTTPS reverse proxy, PostgreSQL 17,
-and the `private_files` Docker volume on persistent server disk. The app listens only on the host
-loopback interface. Use `docker-compose.prod.yml` by itself; do not merge the
+and the `private_files` Docker volume on persistent server disk. The app exposes port
+3000 only to the internal Docker network for the Coolify proxy. Use
+`docker-compose.prod.yml` by itself; do not merge the
 development Compose file into it.
 Local development/CI uses Node 22.12+ (or supported Node 24/26+) and the committed npm lockfile.
 
@@ -28,7 +29,8 @@ Local development/CI uses Node 22.12+ (or supported Node 24/26+) and the committ
    docker compose --env-file .env.production -f docker-compose.prod.yml config --quiet
    docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
    docker compose --env-file .env.production -f docker-compose.prod.yml ps -a
-   curl --fail http://127.0.0.1:3000/api/health
+   docker compose --env-file .env.production -f docker-compose.prod.yml exec -T app \
+     node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1))"
    ```
 
    The one-shot `migrate` service applies all Prisma migrations before the app
