@@ -1,0 +1,14 @@
+node_modules
+node_modules.old
+.next
+.git
+.env
+.env.*
+!.env.example
+storage
+scratch
+coverage
+test-results
+playwright-report
+*.tsbuildinfo
+*.log

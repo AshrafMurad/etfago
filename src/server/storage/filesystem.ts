@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import crypto from "crypto";
 import { ForbiddenError } from "../../lib/errors";
 
 const MAX_UPLOAD_BYTES = parseInt(
@@ -42,6 +43,13 @@ export function getStorageRoot(): string {
   }
 
   return resolved;
+}
+
+export function verifyStorageWritable(): void {
+  const root = getStorageRoot();
+  const probe = path.join(root, "tmp", `health-${crypto.randomUUID()}`);
+  fs.writeFileSync(probe, "", { flag: "wx", mode: 0o600 });
+  fs.unlinkSync(probe);
 }
 
 /**

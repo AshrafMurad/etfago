@@ -51,6 +51,8 @@ README.md
 6. `docs/08-design-system-and-localization.md`, `docs/09-implementation-roadmap.md`, `docs/10-testing-and-acceptance.md`, `docs/11-deployment-and-operations.md`.
 
 ## Delivery definition
+Deployment instructions: [VPS release runbook](docs/13-deployment-runbook.md).
+
 Do not report "done" because UI screens exist. The release is usable when **two separate verified accounts** can collaborate on a real agreement, review and approve an immutable snapshot, propose and approve a subsequent version, track a commitment, and download their authorized private attachment. Non-participants must be denied all agreement and file operations.
 
 ### Security and trust boundaries

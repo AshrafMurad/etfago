@@ -40,7 +40,7 @@ This file exists so future contributors do not reinterpret the product mid-imple
 
 ## Remaining decisions before public launch
 1. Public domain and sender email verification.
-2. Exact authentication flow/provider and user recovery options.
+2. Account recovery beyond mailbox access (initial sign-in flow is documented below).
 3. Applicable privacy/data-retention policy by launch geography and users.
 4. Whether to require two parties for all categories (initial default yes).
 5. If an organizer may remove a party after approval and how this affects existing sharing/privacy obligations; removal is logged and must never rewrite history.
@@ -48,6 +48,27 @@ This file exists so future contributors do not reinterpret the product mid-imple
 7. Malware scanning provider/engine and moderation for attachments before public traffic.
 8. Exact backup destination, encryption and restore schedule.
 9. Color palette/logo approval; no forced brand resemblance to another project.
+
+## Deployment hardening implementation (2026-11-25)
+
+- Email-link sign-in now requires fresh mailbox control on every login; this repairs
+  the email-only Credentials bypass while retaining Auth.js and the existing email
+  verification flow. Links are 15-minute, hashed, one-use credentials consumed by
+  Auth.js POST after user confirmation. Old insecure sessions are invalidated;
+  client session updates cannot overwrite actor identity. Persistent hashed-key
+  rate limits are added by migration `20261125000000_auth_rate_limits`.
+- Resend is the production transport; development/test retain the local adapter.
+  Initial sign-in and invitation sends report real provider failures, and the
+  persistent dispatcher retries failed deliveries. Other notices are queued.
+- The image excludes local environment files/uploads and development dependencies;
+  a one-shot migration service gates app startup, and production settings/storage
+  are validated on startup. The production database volume is isolated from dev.
+- The existing backup rehearsal script validates integrity only. It does not
+  establish that a database + file backup was restored. The operational restore
+  procedure and host acceptance evidence are required in `13-deployment-runbook.md`.
+- Security fixes update Next.js 15, Auth.js, next-intl 4, and Zod 4 and lock
+  dependency resolution. Canonical agreement/version formats and approval policies
+  are unchanged by this hardening work.
 
 ## Product terminology
 - **Agreement / اتفاق:** named collaboration space for structured terms, participants and history.

@@ -4,7 +4,10 @@ import { runNotificationCycle } from "@/server/notifications/cycle";
 export async function POST(req: NextRequest) {
   const cronSecret = process.env.CRON_SECRET;
 
-  if (cronSecret) {
+  if (!cronSecret) {
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+  }
+  {
     const authHeader = req.headers.get("authorization");
     const expected = `Bearer ${cronSecret}`;
     if (!authHeader || authHeader !== expected) {

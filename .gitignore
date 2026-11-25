@@ -19,6 +19,7 @@ pnpm-debug.log*
 # local env files
 .env*.local
 .env
+.env.production
 
 # storage root for local dev attachments
 /storage/

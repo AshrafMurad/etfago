@@ -1,0 +1,50 @@
+# Install on the VPS host, substituting the hostname and certificate paths.
+# These limit_req_zone directives belong in nginx's http context.
+limit_req_zone $binary_remote_addr zone=etfago_auth:10m rate=10r/m;
+
+server {
+    listen 80;
+    server_name agreements.example.com;
+    return 308 https://agreements.example.com$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name agreements.example.com;
+    ssl_certificate /etc/letsencrypt/live/agreements.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/agreements.example.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    add_header Strict-Transport-Security "max-age=31536000" always;
+
+    # Avoid writing invitation/sign-in query tokens to access logs.
+    access_log off;
+    client_max_body_size 11m;
+    client_body_timeout 60s;
+
+    # Cron uses the loopback app port and a secret; it is not public.
+    location = /api/cron/reminders { return 404; }
+
+    location /api/auth/ {
+        limit_req zone=etfago_auth burst=10 nodelay;
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host agreements.example.com;
+        proxy_set_header X-Forwarded-Host agreements.example.com;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_read_timeout 120s;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host agreements.example.com;
+        proxy_set_header X-Forwarded-Host agreements.example.com;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_read_timeout 120s;
+        proxy_buffering off;
+    }
+}

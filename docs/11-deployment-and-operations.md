@@ -1,6 +1,8 @@
 # 11 — Deployment, environments and operations
 
 ## Supported topology (V1)
+Executable release/configuration guidance: [13 — Deployment runbook](13-deployment-runbook.md).
+
 A single Ubuntu Linux VPS running an HTTPS reverse proxy, one Next.js application instance, PostgreSQL, and a **persistent local attachment volume**. Docker/Coolify acceptable as orchestration, provided the bind mount survives redeployment and app container replacement. No managed S3/object-storage dependency.
 
 ## Configuration (.env.example to be created by implementation)
