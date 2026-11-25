@@ -281,6 +281,11 @@
     "deleteTooltip": "Delete file"
   },
   "Auth": {
+    "sendFailed": "Could not send the sign-in email. Please try again shortly.",
+    "confirmSignIn": "Confirm sign-in",
+    "confirmSignInHelp": "Continue to verify your email and sign in securely.",
+    "invalidLink": "This sign-in link is invalid, expired, or already used. Request a new link.",
+    "requestNewLink": "Request a new sign-in link",
     "signInTitle": "Sign in or Create Account",
     "signInSubtitle": "Enter your email to sign in or create an account",
     "emailLabel": "Email address",

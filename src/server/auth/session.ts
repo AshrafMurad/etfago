@@ -1,5 +1,6 @@
 import { auth } from "./auth";
 import { UnauthorizedError, ForbiddenError } from "../../lib/errors";
+import { db } from "../db/prisma";
 
 export interface CurrentUser {
   id: string;
@@ -17,13 +18,9 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
     return null;
   }
 
-  return {
-    id: session.user.id,
-    name: session.user.name ?? null,
-    email: session.user.email,
-    emailVerified:
-      (session.user as unknown as { emailVerified?: Date | null }).emailVerified ?? null,
-  };
+  const user = await db.user.findUnique({ where: { id: session.user.id } });
+  if (!user || user.emailNormalized !== session.user.email) return null;
+  return { id: user.id, name: user.name, email: user.emailNormalized, emailVerified: user.emailVerifiedAt };
 }
 
 /**

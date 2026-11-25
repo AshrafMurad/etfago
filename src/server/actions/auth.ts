@@ -3,6 +3,8 @@
 import { RegisterInputSchema, SignInInputSchema } from "../../lib/schemas/auth";
 import { registerOrGetUser, requestVerificationEmail } from "../auth/service";
 import { signOut } from "../auth/auth";
+import { headers } from "next/headers";
+import { consumeAuthRateLimit } from "../auth/rate-limit";
 
 export type ActionState = {
   success?: boolean;
@@ -11,6 +13,22 @@ export type ActionState = {
   message?: string;
   data?: Record<string, unknown>;
 };
+
+export async function requestSignInAction(input: unknown): Promise<ActionState> {
+  const parsed = RegisterInputSchema.safeParse(input);
+  if (!parsed.success) return { error: "Invalid input" };
+  try {
+    const ip = (await headers()).get("x-real-ip") || "unknown";
+    if (!await consumeAuthRateLimit("signin-ip", ip, 20) ||
+        !await consumeAuthRateLimit("signin-email", parsed.data.email, 5)) {
+      return { error: "Please try again later" };
+    }
+    await registerOrGetUser(parsed.data);
+    return { success: true };
+  } catch {
+    return { error: "Unable to send sign-in email" };
+  }
+}
 
 export async function registerAction(
   _prevState: ActionState | null,
@@ -32,24 +50,7 @@ export async function registerAction(
   }
 
   try {
-    const result = await registerOrGetUser({
-      email: parsed.data.email,
-      name: parsed.data.name,
-      locale: parsed.data.locale,
-    });
-
-    return {
-      success: true,
-      message: result.isNewUser
-        ? "Account created. A verification link has been sent to your email."
-        : "Welcome back. If not yet verified, a new verification link was sent.",
-      data: {
-        userId: result.user.id,
-        email: result.user.emailNormalized,
-        isNewUser: result.isNewUser,
-        verified: !!result.user.emailVerifiedAt,
-      },
-    };
+    return await requestSignInAction(parsed.data);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Failed to register";
     return {
@@ -75,6 +76,9 @@ export async function requestVerificationAction(
   }
 
   try {
+    const ip = (await headers()).get("x-real-ip") || "unknown";
+    if (!await consumeAuthRateLimit("signin-ip", ip, 20) ||
+        !await consumeAuthRateLimit("signin-email", parsed.data.email, 5)) return { error: "Please try again later" };
     const res = await requestVerificationEmail(parsed.data.email, locale);
     if (res.alreadyVerified) {
       return {

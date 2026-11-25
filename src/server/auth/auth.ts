@@ -2,8 +2,9 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { EtfagoPrismaAdapter } from "./adapter";
 import { db } from "../db/prisma";
-import { normalizeEmail } from "../../lib/email";
-import { registerOrGetUser } from "./service";
+import { verifyEmailToken } from "./service";
+import { z } from "zod";
+import { consumeAuthRateLimit } from "./rate-limit";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: EtfagoPrismaAdapter(db),
@@ -18,44 +19,43 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       name: "Email",
       credentials: {
         email: { label: "Email", type: "email" },
-        name: { label: "Name", type: "text" },
+        token: { label: "Token", type: "text" },
       },
-      async authorize(credentials) {
-        if (!credentials?.email || typeof credentials.email !== "string") {
+      async authorize(credentials, request) {
+        const parsed = z.object({
+          email: z.string().trim().email().max(255),
+          token: z.string().regex(/^[a-f0-9]{64}$/),
+        }).safeParse(credentials);
+        if (!parsed.success) return null;
+        try {
+          const allowed = await consumeAuthRateLimit(
+            "verify-ip", request.headers.get("x-real-ip") || "unknown", 30, 900000
+          );
+          if (!allowed) return null;
+          const result = await verifyEmailToken(parsed.data);
+          return {
+            id: result.user.id,
+            email: result.user.emailNormalized,
+            emailVerified: result.user.emailVerifiedAt,
+          };
+        } catch {
           return null;
         }
-
-        const emailNormalized = normalizeEmail(credentials.email);
-        const name = typeof credentials.name === "string" ? credentials.name : undefined;
-
-        // Register or retrieve user and ensure personal workspace is created
-        const result = await registerOrGetUser({
-          email: emailNormalized,
-          name,
-        });
-
-        return {
-          id: result.user.id,
-          name: result.user.name,
-          email: result.user.emailNormalized,
-          emailVerified: result.user.emailVerifiedAt,
-        };
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user, trigger, session }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.authVersion = 2;
         token.email = user.email;
         token.name = user.name;
         token.emailVerified = (user as unknown as { emailVerified?: Date | null }).emailVerified ?? null;
       }
 
-      if (trigger === "update" && session) {
-        token = { ...token, ...session };
-      }
-
+      // Never merge client-supplied session fields into the signed identity.
+      if (token.authVersion !== 2) return null;
       // If token still has no emailVerified, check DB once to see if user has verified their email
       if (!token.emailVerified && token.id) {
         const dbUser = await db.user.findUnique({

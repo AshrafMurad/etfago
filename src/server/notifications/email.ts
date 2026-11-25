@@ -72,7 +72,7 @@ export function clearDevOutbox(): void {
 
 export function getLatestTokenForEmail(email: string): string | undefined {
   const norm = email.trim().toLowerCase();
-  const found = [...devOutbox].reverse().find((m) => m.toEmail.toLowerCase() === norm);
+  const found = [...devOutbox].reverse().find((m) => m.toEmail.toLowerCase() === norm && m.token);
   return found?.token;
 }
 
@@ -95,7 +95,7 @@ export async function sendVerificationEmail({
       ? "تأكيد بريدك الإلكتروني لمنصة اتفقنا"
       : "Verify your email for Etfago";
 
-  devOutbox.push({
+  if (process.env.NODE_ENV !== "production") devOutbox.push({
     toEmail,
     subject,
     token,
@@ -110,7 +110,7 @@ export async function sendVerificationEmail({
 
   try {
     const eventKey = `verify-${crypto.randomUUID()}`;
-    await db.notificationOutbox.create({
+    const record = await db.notificationOutbox.create({
       data: {
         eventKey,
         recipientUserId: userId ?? null,
@@ -121,12 +121,12 @@ export async function sendVerificationEmail({
           locale,
           notice: "Email verification proves mailbox control, not legal identity.",
         },
-        state: "SENT",
-        sentAt: new Date(),
+        state: "PENDING",
       },
     });
+    await deliverImmediate(record.id, toEmail, subject, verifyUrl);
   } catch (err) {
-    console.error("[Email Outbox] Failed to write outbox record:", err);
+    throw err;
   }
 }
 
@@ -148,7 +148,7 @@ export async function sendInvitationEmail({
       ? `دعوة للمشاركة في اتفاق: ${agreementTitle}`
       : `Invitation to collaborate on: ${agreementTitle}`;
 
-  devOutbox.push({
+  if (process.env.NODE_ENV !== "production") devOutbox.push({
     toEmail,
     subject,
     token,
@@ -163,7 +163,7 @@ export async function sendInvitationEmail({
 
   try {
     const eventKey = `invite-${crypto.randomUUID()}`;
-    await db.notificationOutbox.create({
+    const record = await db.notificationOutbox.create({
       data: {
         eventKey,
         recipientEmailNormalized: toEmail.trim().toLowerCase(),
@@ -175,12 +175,12 @@ export async function sendInvitationEmail({
           locale,
           notice: "Invitation is single-use and bound to the invited verified email.",
         },
-        state: "SENT",
-        sentAt: new Date(),
+        state: "PENDING",
       },
     });
+    await deliverImmediate(record.id, toEmail, subject, `${subject}\n${redeemUrl}`);
   } catch (err) {
-    console.error("[Email Outbox] Failed to write invitation outbox record:", err);
+    throw err;
   }
 }
 
@@ -198,7 +198,7 @@ export async function sendReviewNoticeEmail({
       ? `نسخة جديدة للمراجعة (نسخة ${versionNumber}): ${agreementTitle}`
       : `New Version for Review (V${versionNumber}): ${agreementTitle}`;
 
-  devOutbox.push({
+  if (process.env.NODE_ENV !== "production") devOutbox.push({
     toEmail,
     subject,
     sentAt: new Date(),
@@ -216,8 +216,7 @@ export async function sendReviewNoticeEmail({
           versionNumber,
           locale,
         },
-        state: "SENT",
-        sentAt: new Date(),
+        state: "PENDING",
       },
     });
   } catch (err) {
@@ -240,7 +239,7 @@ export async function sendCommitmentNoticeEmail({
       ? `تكليف بالتزام جديد: ${commitmentTitle} (${agreementTitle})`
       : `New Commitment Assigned: ${commitmentTitle} (${agreementTitle})`;
 
-  devOutbox.push({
+  if (process.env.NODE_ENV !== "production") devOutbox.push({
     toEmail,
     subject,
     sentAt: new Date(),
@@ -259,8 +258,7 @@ export async function sendCommitmentNoticeEmail({
           dueAt: dueAt ? dueAt.toISOString() : null,
           locale,
         },
-        state: "SENT",
-        sentAt: new Date(),
+        state: "PENDING",
       },
     });
   } catch (err) {
@@ -284,7 +282,7 @@ export async function sendCommitmentReminderEmail(
       ? `Alert: Overdue Commitment - ${commitmentTitle} (${agreementTitle})`
       : `Reminder: Commitment Due Soon - ${commitmentTitle} (${agreementTitle})`;
 
-  devOutbox.push({
+  if (process.env.NODE_ENV !== "production") devOutbox.push({
     toEmail,
     subject,
     sentAt: new Date(),
@@ -310,7 +308,7 @@ export async function sendReviewReminderEmail(
   const appUrl = process.env.APP_URL || "http://localhost:3000";
   const agreementUrl = `${appUrl}/${locale}/agreements/${agreementId}`;
 
-  devOutbox.push({
+  if (process.env.NODE_ENV !== "production") devOutbox.push({
     toEmail,
     subject,
     url: agreementUrl,
@@ -341,6 +339,26 @@ class DefaultEmailTransport implements EmailTransport {
     text?: string;
     html?: string;
   }): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    if (process.env.NODE_ENV === "production") {
+      const apiKey = process.env.RESEND_API_KEY;
+      const from = process.env.EMAIL_FROM;
+      if (!apiKey || !from || apiKey.includes("placeholder")) {
+        return { success: false, error: "Email provider is not configured" };
+      }
+      try {
+        const response = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ from, to: [mail.to], subject: mail.subject, text: mail.text, html: mail.html }),
+          signal: AbortSignal.timeout(15000),
+        });
+        if (!response.ok) return { success: false, error: `Email provider returned HTTP ${response.status}` };
+        const result = await response.json() as { id?: string };
+        return { success: true, messageId: result.id };
+      } catch {
+        return { success: false, error: "Email provider request failed" };
+      }
+    }
     devOutbox.push({
       toEmail: mail.to,
       subject: mail.subject,
@@ -348,6 +366,17 @@ class DefaultEmailTransport implements EmailTransport {
     });
     return { success: true, messageId: `mock-${crypto.randomUUID()}` };
   }
+}
+
+async function deliverImmediate(id: string, to: string, subject: string, text: string): Promise<void> {
+  const result = await getActiveEmailTransport().sendMail({ to, subject, text });
+  if (!result.success) {
+    await db.notificationOutbox.update({ where: { id }, data: {
+      state: "FAILED", attempts: 1, nextAttemptAt: new Date(Date.now() + 120000),
+    } });
+    throw new Error("Email delivery failed. Please try again shortly.");
+  }
+  await db.notificationOutbox.update({ where: { id }, data: { state: "SENT", sentAt: new Date() } });
 }
 
 let activeTransporter: EmailTransport = new DefaultEmailTransport();

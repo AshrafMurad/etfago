@@ -18,7 +18,7 @@ export interface RegisterResult {
 }
 
 /**
- * Registers a new user or retrieves an existing unverified user,
+ * Registers a new user or retrieves an existing user,
  * guaranteeing the creation of their initial personal workspace in an atomic transaction.
  */
 export async function registerOrGetUser(input: {
@@ -46,17 +46,9 @@ export async function registerOrGetUser(input: {
       (m) => m.workspace.kind === "PERSONAL"
     );
 
-    // If not verified yet, issue a fresh verification token and send notice
-    let token: string | undefined = undefined;
-    if (!existingUser.emailVerifiedAt) {
-      token = await issueVerificationToken(emailNormalized);
-      await sendVerificationEmail({
-        toEmail: emailNormalized,
-        userId: existingUser.id,
-        token,
-        locale,
-      });
-    }
+    // Every sign-in requires fresh mailbox proof, including verified accounts.
+    const token = await issueVerificationToken(emailNormalized);
+    await sendVerificationEmail({ toEmail: emailNormalized, userId: existingUser.id, token, locale });
 
     return {
       user: {
@@ -74,7 +66,7 @@ export async function registerOrGetUser(input: {
 
   // Create user and personal workspace atomically
   const token = crypto.randomBytes(32).toString("hex");
-  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
   const result = await db.$transaction(async (tx) => {
     const user = await tx.user.create({
@@ -105,7 +97,7 @@ export async function registerOrGetUser(input: {
     await tx.verificationToken.create({
       data: {
         identifier: emailNormalized,
-        token,
+        token: crypto.createHash("sha256").update(token).digest("hex"),
         expires: expiresAt,
       },
     });
@@ -141,18 +133,18 @@ export async function registerOrGetUser(input: {
 export async function issueVerificationToken(email: string): Promise<string> {
   const normalized = normalizeEmail(email);
   const token = crypto.randomBytes(32).toString("hex");
-  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const expires = new Date(Date.now() + 15 * 60 * 1000);
 
-  await db.verificationToken.deleteMany({
-    where: { identifier: normalized },
-  });
-
-  await db.verificationToken.create({
-    data: {
-      identifier: normalized,
-      token,
-      expires,
-    },
+  await db.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT "id" FROM "User" WHERE "emailNormalized" = ${normalized} FOR UPDATE`;
+    await tx.verificationToken.deleteMany({ where: { identifier: normalized } });
+    await tx.verificationToken.create({
+      data: {
+        identifier: normalized,
+        token: crypto.createHash("sha256").update(token).digest("hex"),
+        expires,
+      },
+    });
   });
 
   return token;
@@ -177,40 +169,14 @@ export async function verifyEmailToken(input: {
   };
 }> {
   const emailNormalized = normalizeEmail(input.email);
-
-  const record = await db.verificationToken.findFirst({
-    where: {
-      identifier: emailNormalized,
-      token: input.token,
-    },
-  });
-
-  if (!record) {
-    throw new ValidationError("Invalid or expired verification token");
-  }
-
-  if (record.expires < new Date()) {
-    await db.verificationToken.delete({
-      where: {
-        identifier_token: {
-          identifier: emailNormalized,
-          token: input.token,
-        },
-      },
-    });
-    throw new ValidationError("Verification token has expired");
-  }
+  const tokenHash = crypto.createHash("sha256").update(input.token).digest("hex");
 
   const updatedUser = await db.$transaction(async (tx) => {
-    // Delete token so it cannot be reused
-    await tx.verificationToken.delete({
-      where: {
-        identifier_token: {
-          identifier: emailNormalized,
-          token: input.token,
-        },
-      },
+    // Atomic, expiry-checked consume prevents replay and concurrent use.
+    const consumed = await tx.verificationToken.deleteMany({
+      where: { identifier: emailNormalized, token: tokenHash, expires: { gt: new Date() } },
     });
+    if (consumed.count !== 1) throw new ValidationError("Invalid or expired verification token");
 
     const user = await tx.user.update({
       where: { emailNormalized },

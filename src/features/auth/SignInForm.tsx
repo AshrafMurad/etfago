@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { signIn } from "next-auth/react";
+import { requestSignInAction } from "../../server/actions/auth";
 import { useTranslations } from "next-intl";
 import { FieldErrorMessage, FormAlert } from "../ui";
 import { validateEmail } from "../../lib/validation";
@@ -41,19 +41,16 @@ export function SignInForm({ locale, defaultEmail = "", verified = false }: Sign
     setMessage(null);
 
     try {
-      const res = await signIn("credentials", {
+      const res = await requestSignInAction({
         email: email.trim(),
         name: name.trim() || undefined,
-        redirect: false,
-        callbackUrl: `/${locale}/workspaces`,
+        locale,
       });
 
       if (res?.error) {
-        setError(res.error);
+        setError(t("sendFailed"));
       } else {
         setMessage(t("verificationNotice"));
-        // Redirect to workspaces after short delay if signed in
-        window.location.href = `/${locale}/workspaces`;
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "An error occurred");

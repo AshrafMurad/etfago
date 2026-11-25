@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyEmailToken } from "../../../../server/auth/service";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const token = searchParams.get("token");
   const email = searchParams.get("email");
-  const locale = searchParams.get("locale") || "ar";
+  const locale = searchParams.get("locale") === "en" ? "en" : "ar";
 
   if (!token || !email) {
     return NextResponse.redirect(
@@ -13,15 +12,8 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  try {
-    await verifyEmailToken({ email, token });
-    return NextResponse.redirect(
-      new URL(`/${locale}/auth/signin?verified=true`, request.url)
-    );
-  } catch (error) {
-    console.error("[Verify Email Error]", error);
-    return NextResponse.redirect(
-      new URL(`/${locale}/auth/signin?error=invalid_token`, request.url)
-    );
-  }
+  const target = new URL(`/${locale}/auth/verify`, request.url);
+  target.searchParams.set("email", email);
+  target.searchParams.set("token", token);
+  return NextResponse.redirect(target);
 }

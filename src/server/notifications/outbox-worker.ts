@@ -94,7 +94,7 @@ function renderOutboxMessage(template: string, payload: Record<string, unknown>)
         locale === "ar"
           ? `دعوة للمشاركة في اتفاق: ${agreementTitle}`
           : `Invitation to collaborate on: ${agreementTitle}`;
-      return { subject, body: subject };
+      return { subject, body: `${subject}\n${String(payload.redeemUrl || "")}` };
     }
 
     case "EMAIL_VERIFICATION": {
@@ -102,7 +102,7 @@ function renderOutboxMessage(template: string, payload: Record<string, unknown>)
         locale === "ar"
           ? "تأكيد بريدك الإلكتروني لمنصة اتفقنا"
           : "Verify your email for Etfago";
-      return { subject, body: subject };
+      return { subject, body: `${subject}\n${String(payload.verifyUrl || "")}` };
     }
 
     default: {
