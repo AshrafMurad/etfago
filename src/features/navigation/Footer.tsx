@@ -4,14 +4,17 @@ import { getTranslations } from "next-intl/server";
 
 interface FooterProps {
   locale: string;
+  className?: string;
 }
 
-export async function Footer({ locale }: FooterProps) {
+export async function Footer({ locale, className = "" }: FooterProps) {
   const tCommon = await getTranslations({ locale, namespace: "Common" });
   const tNav = await getTranslations({ locale, namespace: "Navigation" });
 
   return (
-    <footer className="border-t-[1.5px] border-dashed border-[var(--dp-color-line)] bg-[var(--dp-color-ground)] py-8 px-6 mt-auto text-sm text-[var(--dp-color-ink-muted)] font-reading">
+    <footer
+      className={`mt-12 sm:mt-16 border-t-[1.5px] border-dashed border-[var(--dp-color-line)] bg-[var(--dp-color-ground)] py-8 px-6 text-sm text-[var(--dp-color-ink-muted)] font-reading ${className}`.trim()}
+    >
       <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex flex-col sm:flex-row items-center gap-2.5 text-center sm:text-start">
           <Link href={`/${locale}`} className="inline-flex items-center">
